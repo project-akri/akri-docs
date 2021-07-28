@@ -20,8 +20,8 @@ Akri has [implemented discovery via several protocols](../community/roadmap.md#c
 
 Install [`cargo-generate`](https://github.com/cargo-generate/cargo-generate#installation) and use the tool to pull down Akri's template, specifying the name of the project with the `--name` parameter.
 
-```bash
-cargo generate --git https://github.com/kate-goldenring/akri-discovery-handler-template.git --name akri-http-discovery-handler
+```sh
+cargo generate --git https://github.com/deislabs/akri-discovery-handler-template.git --name akri-http-discovery-handler
 ```
 
 ### Specify the DiscoveryHandler name and whether discovered devices are sharable
