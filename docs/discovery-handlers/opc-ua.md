@@ -2,7 +2,7 @@
 
 ## Background
 
-OPC UA \(Object Linking and Embedding for Process Control Unified Architecture\) is a communication protocol for industrial automation. Akri has implemented a Discovery Handler for discovering OPC UA Servers that live at specified endpoints or are registered with specified Local Discovery Servers. Background on the OPC UA Discovery Handler implementation can be found in the [proposal](proposals/opcua.md). To try out using Akri to discover and utilize OPC UA servers, see the [OPC UA end-to-end demo](opcua-demo.md).
+OPC UA \(Object Linking and Embedding for Process Control Unified Architecture\) is a communication protocol for industrial automation. Akri has implemented a Discovery Handler for discovering OPC UA Servers that live at specified endpoints or are registered with specified Local Discovery Servers. Background on the OPC UA Discovery Handler implementation can be found in the [proposal](proposals/opcua.md). To try out using Akri to discover and utilize OPC UA servers, see the [OPC UA end-to-end demo](../demos/opc-thermometer-demo.md).
 
 All of Akri's components can be deployed by specifying values in its Helm chart during an installation. This section will cover the values that should be set to \(1\) deploy the OPC UA Discovery Handlers and \(2\) apply a Configuration that tells Akri to discover devices using that Discovery Handler.
 
@@ -12,7 +12,7 @@ In order for the Agent to know how to discover OPC UA servers an OPC UA Discover
 
 ## OPC UA Configuration Settings
 
-Instead of having to assemble your own OPC UA Configuration yaml, we have provided a [Helm template](../deployment/helm/templates/opcua-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for OPC UA \(to see them, run `helm inspect values akri-helm-charts/akri`\). More information about the Akri Helm charts can be found in the [user guide](user-guide.md#understanding-akri-helm-charts). To apply the OPC UA Configuration to your cluster, simply set `opcua.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
+Instead of having to assemble your own OPC UA Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for OPC UA \(to see them, run `helm inspect values akri-helm-charts/akri`\). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the OPC UA Configuration to your cluster, simply set `opcua.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
 
 ### Discovery Handler Discovery Details Settings
 
@@ -28,7 +28,7 @@ The generic OPC UA Configuration takes in a list of DiscoveryURLs, whether for L
 
 ### Broker Pod Settings
 
-If you would like workloads \("broker" Pods\) to be deployed automatically to discovered devices, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker \("ghcr.io/deislabs/akri/opcua-video-broker"\). If you would rather manually deploy pods to utilize the devices advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](requesting-akri-resources.md).
+If you would like workloads \("broker" Pods\) to be deployed automatically to discovered devices, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker \("ghcr.io/deislabs/akri/opcua-video-broker"\). If you would rather manually deploy pods to utilize the devices advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -170,9 +170,9 @@ kubectl create secret generic opcua-broker-credentials \
 --from-file=ca_crl=/path/to/SomeCA.crl
 ```
 
-Certificates can be created and signed with a CA manually using openssl, by using the OPC Foundation [certificate generator tool](https://github.com/OPCFoundation/Misc-Tools), or Akri's [certificate generator](../samples/opcua-certificate-generator/README.md). Be sure that the certificates are in the format expected by your OPC UA Client.
+Certificates can be created and signed with a CA manually using openssl, by using the OPC Foundation [certificate generator tool](https://github.com/OPCFoundation/Misc-Tools), or Akri's [certificate generator](https://github.com/deislabs/akri/blob/main/samples/opcua-certificate-generator/README.md). Be sure that the certificates are in the format expected by your OPC UA Client.
 
-Finally, when mounting certificates is enabled with Helm via `--set opcua.configuration.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Helm template](../deployment/helm/templates/opcua.configuration.yaml). This is the path where the broker expects to find the certificates. The following is an example how to enable security:
+Finally, when mounting certificates is enabled with Helm via `--set opcua.configuration.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). This is the path where the broker expects to find the certificates. The following is an example how to enable security:
 
 ```bash
 helm repo add akri-helm-charts https://deislabs.github.io/akri/
@@ -182,13 +182,16 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.mountCertificates='true'
 ```
 
-> **Note**: If the Helm template for the OPC UA Configuration is too specific, you can [customize the Configuration yaml](customizing-akri-installation.md#generating-modifying-and-applying-a-custom-configuration) to suit your needs.
+> **Note**: If the Helm template for the OPC UA Configuration is too specific, you can [customize the Configuration yaml](../user-guide/customizing-an-akri-installation.md#generating-modifying-and-applying-a-custom-configuration) to suit your needs.
 
 ## Modifying a Configuration
 
-Akri has provided further documentation on [modifying the broker PodSpec](customizing-akri-installation.md#modifying-the-brokerpodspec), [instanceServiceSpec, or configurationServiceSpec](customizing-akri-installation.md#modifying-instanceservicespec-or-configurationservicespec) More information about how to modify an installed Configuration, add additional Configurations to a cluster, or delete a Configuration can be found in the [Customizing an Akri Installation document](customizing-akri-installation.md).
+Akri has provided further documentation on [modifying the broker PodSpec](../user-guide/customizing-an-akri-installation.md#modifying-the-brokerpodspec), [instanceServiceSpec, or configurationServiceSpec](../user-guide/customizing-an-akri-installation.md#modifying-instanceservicespec-or-configurationservicespec) More information about how to modify an installed Configuration, add additional Configurations to a cluster, or delete a Configuration can be found in the [Customizing an Akri Installation document](../user-guide/customizing-an-akri-installation.md).
 
 ## Implementation details
 
-The OPC UA implementation can be understood by looking at several things: 1. [OpcuaDiscoveryDetails](../discovery-handlers/opcua/src/discovery_handler.rs) defines the required properties. 1. [OpcuaDiscoveryHandler](../discovery-handlers/opcua/src/discovery_handler.rs) defines OPC UA Server discovery. 1. [sample-brokers/opcua-monitoring-broker](../samples/brokers/opcua-monitoring-broker) defines a sample OPC UA protocol broker that monitors an OPC UA Variable with a specific NodeID.
+The OPC UA implementation can be understood by looking at several things: 
+1. [OpcuaDiscoveryDetails](https://github.com/deislabs/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines the required properties. 
+1. [OpcuaDiscoveryHandler](https://github.com/deislabs/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines OPC UA Server discovery. 
+1. [sample-brokers/opcua-monitoring-broker](https://github.com/deislabs/akri/tree/main/samples/brokers/opcua-monitoring-broker) defines a sample OPC UA protocol broker that monitors an OPC UA Variable with a specific NodeID.
 

@@ -1,6 +1,6 @@
 # Home
 
-![](../art/logo-horizontal/akri-logo-horizontal-light.png)
+![Akri Logo](../art/logo-horizontal/akri-logo-horizontal-light.png)
 
 ## What is Akri?
 

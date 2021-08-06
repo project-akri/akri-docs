@@ -1,4 +1,4 @@
-# Development Walkthrough
+# Walkthrough of Implementing a Custom Discovery Handler and Broker
 
 This document will walk through an end-to-end example of creating Discovery Handler to discover **HTTP-based devices** that publish random sensor data. It will also walk through how to create a custom broker to leverage the discovered devices. Reference the [Discovery Handler development](handler-development.md) and [broker Pod development](broker-development.md) documents if you prefer generic documentation over an example.
 

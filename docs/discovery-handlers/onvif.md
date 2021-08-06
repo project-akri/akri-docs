@@ -1,4 +1,4 @@
-# IP Cameras
+# ONVIF for IP Cameras
 
 ## Background
 
@@ -6,7 +6,7 @@ ONVIF is a standard used by many IP cameras and defines discovery and access for
 
 Using Akri's default ONVIF Configuration to discover and utilize ONVIF cameras looks like the following:
 
-![](../.gitbook/assets/image%20%282%29.png)
+![Akri ONVIF Flow](../../media/onvif-flow.svg)
 
 1. An operator applies the ONVIF Configuration to the cluster \(by enabling ONVIF when installing the Akri Helm chart\). They also specific a broker image -- `akri-onvif-video-broker` in the figure.
 2. The Akri Agent uses the ONVIF Discovery Handler to discover the IP cameras and creates Instances for each discovered camera.
@@ -20,7 +20,7 @@ In order for the Agent to know how to discover IP cameras an ONVIF Discovery Han
 
 ## ONVIF Configuration Settings
 
-Instead of having to assemble your own ONVIF Configuration yaml, we have provided a [Helm template](../deployment/helm/templates/onvif-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for ONVIF \(to see them, run `helm inspect values akri-helm-charts/akri`\). More information about the Akri Helm charts can be found in the [user guide](user-guide.md#understanding-akri-helm-charts). To apply the ONVIF Configuration to your cluster, simply set `onvif.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
+Instead of having to assemble your own ONVIF Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/onvif-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for ONVIF \(to see them, run `helm inspect values akri-helm-charts/akri`\). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the ONVIF Configuration to your cluster, simply set `onvif.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
 
 ### Discovery Handler Discovery Details Settings
 

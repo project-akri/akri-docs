@@ -1,4 +1,4 @@
-# Thermometer
+# Discovering and Using OPC UA Thermometers
 
 OPC UA is a communication protocol for industrial automation. It is a client/server technology that comes with a security and communication framework. This demo will help you get started using Akri to discover OPC UA Servers and utilize them via a broker that contains an OPC UA Client. Specifically, a Akri Configuration called OPC UA Monitoring was created for this scenario, which will show how Akri can be used to detect anomaly values of a specific OPC UA Variable. To do so, the OPC UA Clients in the brokers will subscribe to that variable and serve its value over gRPC for an anomaly detection web application to consume. This Configuration could be used to monitor a barometer, CO detector, and more; however, for this example, that variable will represent the temperature of a thermostat and any value outside the range of 70-80 degrees is an anomaly.
 
@@ -7,33 +7,28 @@ The demo consists of the following components:
 1. Two .NET OPC UA Servers with a temperature variable
 2. \(Optional\) Certificates for the Servers and Akri brokers
 3. An OPC UA Monitoring broker that contains an OPC UA Client that subscribes to a specific NodeID \(for that temperature variable\)
-4. An Akri installation
-5.  An anomaly detection web application
+4.  A Akri installation
+5. An anomaly detection web application
 
 ## Demo Flow
 
-1.  An operator \(meaning you!\) applies to a single-node cluster the OPC UA Configuration, which specifies the addresses of the OPC UA Servers, which OPC UA Variable to monitor, and whether to use security. 
+![OPC UA Demo Overview](../../media/opcua-demo-diagram.svg)
+
+1. An operator \(meaning you!\) applies to a single-node cluster the OPC UA Configuration, which specifies the addresses of the OPC UA Servers, which OPC UA Variable to monitor, and whether to use security.
 2. Agent sees the OPC UA Configuration, discovers the servers specified in the Configuration, and creates an Instance for each server.
-3. The Akri Controller sees the Instances in etcd and schedules an OPC UA Monitoring broker pod for each server. 
+3. The Akri Controller sees the Instances in etcd and schedules an OPC UA Monitoring broker pod for each server.
 4. Once the OPC UA Monitoring broker pod starts up, it will create an OPC UA Client that will create a secure channel with its server.
-5. The OPC UA Client will subscribe to the OPC UA Variable with the NodeID with `Identifier` "Thermometer\_Temperature" and `NamespaceIndex` 2 as specified in the OPC UA Configuration. The server will publish any time the value of that variable changes. 
-6. The OPC UA Monitoring broker will serve over gRPC the latest value of the OPC UA Variable and the address of the OPC UA Server that published the value. 1. The anomaly detection web application will test whether that value is an outlier to its pre-configured dataset. It then will display a log of the values on a web application, showing outliers in red and normal values in green.
+5. The OPC UA Client will subscribe to the OPC UA Variable with the NodeID with `Identifier` "Thermometer\_Temperature" and `NamespaceIndex` 2 as specified in the OPC UA Configuration. The server will publish any time the value of that variable changes.
+6. The OPC UA Monitoring broker will serve over gRPC the latest value of the OPC UA Variable and the address of the OPC UA Server that published the value.
+7. The anomaly detection web application will test whether that value is an outlier to its pre-configured dataset. It then will display a log of the values on a web application, showing outliers in red and normal values in green.
 
-The following steps need to be completed to run the demo: 
+The following steps need to be completed to run the demo: 1. Setting up a single-node cluster 1. \(Optional\) Creating X.509 v3 Certificates for the servers and Akri broker and storing them in a Kubernetes Secret 1. Creating two OPC UA Servers 1. Running Akri 1. Deploying an anomaly detection web application as an end consumer of the brokers
 
-1. Setting up a single-node cluster
-2. \(Optional\) Creating X.509 v3 Certificates for the servers and Akri broker and storing them in a Kubernetes Secret 
-3. Creating two OPC UA Servers
-4. Running Akri
-5. Deploying an anomaly detection web application as an end consumer of the brokers
-
-{% hint style="info" %}
 If at any point in the demo, you want to dive deeper into OPC UA or clarify a term, you can reference the [online OPC UA specifications](https://reference.opcfoundation.org/v104/).
-{% endhint %}
 
 ## Setting up a cluster
 
-Reference our [cluster setup documentation](setting-up-cluster.md) to set up a cluster for this demo. For ease of setup, only create a single-node cluster, so if installing K3s or MicroK8s, you can skip the last step of the installation instructions of adding additional nodes. If you have an existing cluster, feel free to leverage it for the demo. This documentation assumes you are using a single-node cluster; however, you can certainly use a multi-node cluster.
+Reference our [cluster setup documentation](../user-guide/cluster-setup.md) to set up a cluster for this demo. For ease of setup, only create a single-node cluster, so if installing K3s or MicroK8s, you can skip the last step of the installation instructions of adding additional nodes. If you have an existing cluster, feel free to leverage it for the demo. This documentation assumes you are using a single-node cluster; however, you can certainly use a multi-node cluster.
 
 ## Creating X.509 v3 Certificates
 
@@ -43,16 +38,17 @@ Akri will deploy an OPC UA Monitoring broker for each OPC UA Server a node in th
 
 Every OPC UA Application, whether Client, Server, or DiscoveryServer, has a certificate store, which includes the application's own credentials along with a list of trusted and rejected application instance certificates. According to OPC UA specification, there are three ways to configure OPC UA Server and Clients' certificate stores so that they trust each other's certificates, which are explained in the [OPC UA proposal](proposals/opcua.md). This demo will walk through the third method of creating Client and Server certificates that are issued by a common Certificate Authority \(CA\). Then, that CA's certificate simply needs to be added to the trusted folder of Client and Servers' certificate stores, and they will automatically trust each other on the basis of having a common CA. The following image walks through how to configure the Client and Server certificate stores for Akri.
 
-1. Generate an X.509 v3 Certificate for Akri OPC UA Monitoring brokers and sign it with the same CA that has signed the certificates of all the OPC UA Servers that will be discovered. 1. Create a Kubernetes Secret named opcua-broker-credentials that contains four items with the following key names: client\_certificate, client\_key, ca\_certificate, and ca\_crl.
-2. The credentials will be mounted in the broker at the path /etc/opcua-certs/client-pki.
+1. Generate an X.509 v3 Certificate for Akri OPC UA Monitoring brokers and sign it with the same CA that has signed the certificates of all the OPC UA Servers that will be discovered.
+2. Create a Kubernetes Secret named opcua-broker-credentials that contains four items with the following key names: client\_certificate, client\_key, ca\_certificate, and ca\_crl.
+3. The credentials will be mounted in the broker at the path /etc/opcua-certs/client-pki.
 
 ### Running the certificate creation application
 
-A .NET Console [OPC UA Certificate Generator application](../samples/opcua-certificate-generator) has been created to simplify the process of creating a Certificate Authority \(CA\) and X.509 v3 certificates issued by that CA for the OPC UA Client and Servers in this demo. Clone the Akri repository, navigate to the `opcua-certificate-generator` and follow the instructions of the [README](../samples/opcua-certificate-generator/README.md) to generate the necessary certificates.
+A .NET Console [OPC UA Certificate Generator application](https://github.com/deislabs/akri/tree/main/samples/opcua-certificate-generator) has been created to simplify the process of creating a Certificate Authority \(CA\) and X.509 v3 certificates issued by that CA for the OPC UA Client and Servers in this demo. Clone the Akri repository, navigate to the `opcua-certificate-generator` and follow the instructions of the [README](https://github.com/deislabs/akri/blob/main/samples/opcua-certificate-generator/README.md) to generate the necessary certificates.
 
 ### Creating an opcua-broker-credentials Kubernetes Secret
 
-The OPC UA Client certificate will be passed to the OPC UA Monitoring broker as a Kubernetes Secret mounted as a volume. Read more about the decision to use Kubernetes secrets to pass the Client certificates in the [Credentials Passing Proposal](proposals/credentials-passing.md). Create a Kubernetes Secret, projecting each certificate/crl/private key with the expected key name \(ie `client_certificate`, `client_key`, `ca_certificate`, and `ca_crl`\). Specify the file paths such that they point to the credentials made in the previous section.
+The OPC UA Client certificate will be passed to the OPC UA Monitoring broker as a Kubernetes Secret mounted as a volume. Read more about the decision to use Kubernetes secrets to pass the Client certificates in the [Credentials Passing Proposal](../proposals/credentials-passing-in-akri.md). Create a Kubernetes Secret, projecting each certificate/crl/private key with the expected key name \(ie `client_certificate`, `client_key`, `ca_certificate`, and `ca_crl`\). Specify the file paths such that they point to the credentials made in the previous section.
 
 ```bash
 kubectl create secret generic opcua-broker-credentials \
@@ -62,7 +58,7 @@ kubectl create secret generic opcua-broker-credentials \
 --from-file=ca_crl=/path/to/ca/crl/SomeCA\ \[<hash>\].crl
 ```
 
-When mounting certificates is enabled later in the [Running Akri section]() with Helm via `--set opcua.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA monitoring brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Configuration Helm template](../deployment/helm/templates/opcua-configuration.yaml). This is the path where the brokers expect to find the certificates.
+When mounting certificates is enabled later in the [Running Akri section](opc-thermometer-demo.md#running-akri) with Helm via `--set opcua.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA monitoring brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Configuration Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). This is the path where the brokers expect to find the certificates.
 
 ## Creating OPC UA Servers
 
@@ -124,7 +120,7 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
 
    this document to use a LDS -- we must specify the DiscoveryURLs of the OPC UA Servers we want Agent to discover.
 
-   Those are the tcp addresses that we modified in step 3 of [Creating OPC UA Servers](). Be
+   Those are the tcp addresses that we modified in step 3 of [Creating OPC UA Servers](opc-thermometer-demo.md#creating-opc-ua-servers). Be
 
    sure to set the appropriate IP address and port number for the DiscoveryURLs in the Helm command below. If using
 
@@ -168,24 +164,27 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
 
 ## Deploying an anomaly detection web application as an end consumer of the brokers
 
-A sample anomaly detection web application was created for this end-to-end demo. It has a gRPC stub that calls the brokers' gRPC clients, getting the latest temperature value. It then determines whether this value is an outlier to the dataset using the Local Outlier Factor strategy. The dataset is simply a csv with the numbers between 70-80 repeated several times; therefore, any value significantly outside this range will be seen as an outlier. The web application serves as a log, displaying all the temperature values and the address of the OPC UA Server that sent the values. It shows anomaly values in red. The anomalies always have a value of 120 due to how we set up the `DoSimulation` function in the OPC UA Servers. 1. Deploy the anomaly detection app and watch a pod spin up for the app.
+A sample anomaly detection web application was created for this end-to-end demo. It has a gRPC stub that calls the brokers' gRPC clients, getting the latest temperature value. It then determines whether this value is an outlier to the dataset using the Local Outlier Factor strategy. The dataset is simply a csv with the numbers between 70-80 repeated several times; therefore, any value significantly outside this range will be seen as an outlier. The web application serves as a log, displaying all the temperature values and the address of the OPC UA Server that sent the values. It shows anomaly values in red. The anomalies always have a value of 120 due to how we set up the `DoSimulation` function in the OPC UA Servers. 
 
-```bash
-    kubectl apply -f https://raw.githubusercontent.com/deislabs/akri/main/deployment/samples/akri-anomaly-detection-app.yaml
-```
+1. Deploy the anomaly detection app and watch a pod spin up for the app.  
 
-```text
-For MicroK8s
-```sh
-watch microk8s kubectl get pods -o wide
-```
-For K3s and vanilla Kubernetes
-```sh
-watch kubectl get pods -o wide
-```
-```
 
-1. Determine which port the service is running on.
+   ```bash
+   kubectl apply -f https://raw.githubusercontent.com/deislabs/akri/main/deployment/samples/akri-anomaly-detection-app.yaml
+   ```
+
+   ```text
+   For MicroK8s
+   ```sh
+   watch microk8s kubectl get pods -o wide
+   ```
+   For K3s and vanilla Kubernetes
+   ```sh
+   watch kubectl get pods -o wide
+   ```
+   ```
+
+2. Determine which port the service is running on.
 
    ```bash
     kubectl get services
@@ -204,7 +203,7 @@ watch kubectl get pods -o wide
     akri-opcua-monitoring-svc          ClusterIP   10.XXX.XXX.XXX   <none>        80/TCP         3m38s
    ```
 
-2. Navigate in your browser to [http://ip-address:32624/](http://ip-address:32624/) where ip-address is the IP address of your Ubuntu VM \(not the
+3. Navigate in your browser to [http://ip-address:32624/](http://ip-address:32624/) where ip-address is the IP address of your Ubuntu VM \(not the
 
    cluster-IP\) and the port number is from the output of `kubectl get services`. It takes 3 seconds for the site to
 
@@ -249,17 +248,25 @@ watch kubectl get pods -o wide
 
 ## Extensions
 
-Now that you have the end to end demo running let's talk about some ways you can go beyond the demo to better understand the advantages of Akri. This section will cover: 1. Adding a node to the cluster 1. Using a Local Discovery Server to discover the Servers instead of passing the DiscoveryURLs to the OPC UA Monitoring Configuration 1. Modifying the OPC UA Configuration to filter out an OPC UA Server 1. Creating a different broker and end application 1. Creating a new OPC UA Configuration
+Now that you have the end to end demo running let's talk about some ways you can go beyond the demo to better understand the advantages of Akri. This section will cover: 
+
+1. Adding a node to the cluster
+2. Using a Local Discovery Server to discover the Servers instead of passing the DiscoveryURLs to the OPC UA Monitoring Configuration
+3. Modifying the OPC UA Configuration to filter out an OPC UA Server
+4. Creating a different broker and end application
+5. Creating a new OPC UA Configuration
 
 ### Adding a Node to the cluster
 
-To see how Akri easily scales as nodes are added to the cluster, add another node to your \(K3s, MicroK8s, or vanilla Kubernetes\) cluster. 1. If you are using MicroK8s, create another MicroK8s instance, following the same steps as in [Setting up a single-node cluster]() above. Then, in your first VM that is currently running Akri, get the join command by running `microk8s add-node`. In your new VM, run one of the join commands outputted in the previous step. 1. Confirm that you have successfully added a node to the cluster by running the following in your control plane VM:
+To see how Akri easily scales as nodes are added to the cluster, add another node to your \(K3s, MicroK8s, or vanilla Kubernetes\) cluster. 1. If you are using MicroK8s, create another MicroK8s instance, following the same steps as in [Setting up a single-node cluster](opc-thermometer-demo.md#setting-up-a-cluster) above. Then, in your first VM that is currently running Akri, get the join command by running `microk8s add-node`. In your new VM, run one of the join commands outputted in the previous step. 
 
-```bash
-   kubectl get no
-```
+1. Confirm that you have successfully added a node to the cluster by running the following in your control plane VM:
 
-1. You can see that another Agent pod has been deployed to the new node; however, no new OPC UA Monitoring brokers have
+   ```bash
+      kubectl get no
+   ```
+
+2. You can see that another Agent pod has been deployed to the new node; however, no new OPC UA Monitoring brokers have
 
    been deployed. This is because the default `capacity` for OPC UA is 1, so by default only one Node is allowed to
 
@@ -269,7 +276,7 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
    kubectl get pods -o wide
    ```
 
-2. Let's play around with the capacity value and use the `helm upgrade` command to modify our OPC UA Monitoring
+3. Let's play around with the capacity value and use the `helm upgrade` command to modify our OPC UA Monitoring
 
    Configuration such that the capacity is 2. On the control plane node, run the following, once again uncommenting
 
@@ -303,7 +310,7 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
    watch kubectl get pods,akrii -o wide
    ```
 
-3. Once you are done using Akri, you can remove your worker node from the cluster. For MicroK8s this is done by running
+4. Once you are done using Akri, you can remove your worker node from the cluster. For MicroK8s this is done by running
 
    on the worker node:
 
@@ -404,9 +411,9 @@ helm install akri akri-helm-charts/akri \
 
 > Note: set `opcua.configuration.brokerPod.image.tag` to specify an image tag \(defaults to `latest`\).
 
-Now, your broker will be deployed to all discovered OPC UA servers. Next, you can create a Kubernetes deployment for your own end application like [anomaly-detection-app.yaml](../deployment/samples/akri-anomaly-detection-app.yaml) and apply it to your Kubernetes cluster.
+Now, your broker will be deployed to all discovered OPC UA servers. Next, you can create a Kubernetes deployment for your own end application like [anomaly-detection-app.yaml](https://github.com/deislabs/akri/blob/main/deployment/samples/akri-anomaly-detection-app.yaml) and apply it to your Kubernetes cluster.
 
 ### Creating a new OPC UA Configuration
 
-Helm allows us to parametrize the commonly modified fields in our Configuration files, and we have provided many. Run `helm inspect values akri-helm-charts/akri` to see what values of the generic OPC UA Configuration can be customized, such as the Configuration and Instance `ServiceSpec`s, `capacity`, and broker `PodSpec`. We saw in the previous section how broker Pod environment variables can be specified via `--set opcua.configuration.brokerProperties.KEY='VALUE'`. For more advanced configuration changes that are not aided by the generic OPC UA Configuration Helm chart, such as credentials naming, we suggest downloading the OPC UA Configuration file using Helm and then manually modifying it. See the documentation on [customizing an Akri installation](customizing-akri-installation.md#generating-modifying-and-applying-a-custom-configuration) for more details.
+Helm allows us to parametrize the commonly modified fields in our Configuration files, and we have provided many. Run `helm inspect values akri-helm-charts/akri` to see what values of the generic OPC UA Configuration can be customized, such as the Configuration and Instance `ServiceSpec`s, `capacity`, and broker `PodSpec`. We saw in the previous section how broker Pod environment variables can be specified via `--set opcua.configuration.brokerProperties.KEY='VALUE'`. For more advanced configuration changes that are not aided by the generic OPC UA Configuration Helm chart, such as credentials naming, we suggest downloading the OPC UA Configuration file using Helm and then manually modifying it. See the documentation on [customizing an Akri installation](../user-guide/customizing-an-akri-installation.md) for more details.
 

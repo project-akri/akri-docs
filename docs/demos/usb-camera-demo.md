@@ -1,4 +1,4 @@
-# Camera ⁠– Mocked
+# Discovering and Using USB Cameras
 
 In this guide, we will walk through using Akri to discover mock USB cameras attached to nodes in a Kubernetes cluster. You'll see how Akri automatically deploys workloads to pull frames from the cameras. We will then deploy a streaming application that will point to services automatically created by Akri to access the video frames from the workloads.
 

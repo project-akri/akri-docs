@@ -1,6 +1,6 @@
 # Getting Started
 
-To best understand the benefits of Akri and jump into using it, we recommend you start off by completing the [end to end demo](../demos/camera-mocked.md). In the demo, you will see Akri discover mock video cameras and a streaming app display the footage from those cameras. It includes instructions on K8s cluster setup.
+To best understand the benefits of Akri and jump into using it, we recommend you start off by completing the [end to end demo](../demos/usb-camera-demo.md). In the demo, you will see Akri discover mock video cameras and a streaming app display the footage from those cameras. It includes instructions on K8s cluster setup.
 
 ## The Journey Begins
 
