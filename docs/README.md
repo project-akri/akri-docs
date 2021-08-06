@@ -1,6 +1,6 @@
 # Home
 
-![](.gitbook/assets/image.png)
+![](../art/logo-horizontal/akri-logo-horizontal-light.png)
 
 ## What is Akri?
 
