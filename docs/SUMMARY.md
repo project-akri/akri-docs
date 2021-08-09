@@ -17,6 +17,7 @@
 * [Custom Brokers](development/broker-development.md)
 * [Mock Discovery Handler for Testing](development/debugging.md)
 * [Walkthrough of Implementing a Custom Discovery Handler and Broker](development/development-walkthrough.md)
+* [End to End Test Workflow](development/test-cases-workflow.md)
 
 ## Architecture
 
