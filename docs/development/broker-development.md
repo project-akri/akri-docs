@@ -4,17 +4,17 @@ Akri's Agent discovers devices described by an Akri Configuration, and for each 
 
 > Background: Akri chose the term "broker" because one use case Akri initially envisioned was deploying Pods that acted as protocol translation gateways. For example, Akri could discover USB cameras and automatically deploy a broker to each camera that advertizes the camera as an IP camera that could be accessed outside the Node.
 
-Akri takes a micro-service approach to deploying brokers. A broker is deployed to each Node that can see a discovered device \(limited by a `capacity` that can be set in a Configuration to limit the number of Nodes that can utilize a device at once\). Each broker is provisioned with device connection information and other metadata as environment variables. These environment variables come from two sources: a Configuration's `brokerProperties` and the `properties` of a `Device` discovered by a Discovery Handler. The former is where an operator can specify environment variables that will be set in brokers that utilize any device discovered via the Configuration. The latter is specific to one device and usually contains connection information such as an RTSP URL for an ONVIF camera or a devnode for a USB device. Also, while `brokerProperties` can be unique to a scenario, the `properties` environment variable keys are consistent to a Discovery Handler with values changing based on device. All the environment variables from these two sources are displayed in an Instance that represents a discovered device, making it a good reference for what environment variables the broker should expect. The image below expresses how a broker Pod's environment variables come from the two aforementioned sources.
+Akri takes a micro-service approach to deploying brokers. A broker is deployed to each Node that can see a discovered device (limited by a `capacity` that can be set in a Configuration to limit the number of Nodes that can utilize a device at once). Each broker is provisioned with device connection information and other metadata as environment variables. These environment variables come from two sources: a Configuration's `brokerProperties` and the `properties` of a `Device` discovered by a Discovery Handler. The former is where an operator can specify environment variables that will be set in brokers that utilize any device discovered via the Configuration. The latter is specific to one device and usually contains connection information such as an RTSP URL for an ONVIF camera or a devnode for a USB device. Also, while `brokerProperties` can be unique to a scenario, the `properties` environment variable keys are consistent to a Discovery Handler with values changing based on device. All the environment variables from these two sources are displayed in an Instance that represents a discovered device, making it a good reference for what environment variables the broker should expect. The image below expresses how a broker Pod's environment variables come from the two aforementioned sources.
 
 ![Diagram depicting source of broker Pod environment variable](../../media/setting-broker-environment-variables.svg)
 
 ## Discovery Handler specified environment variables
 
-The first step to developing a broker is understanding what information will be made available to the Pod via the Discovery Handler \(aka the `Device.properties`\). The following table contains the environment variables specified by each of Akri's currently supported Discovery Handlers, and the expected content of the environment variables.
+The first step to developing a broker is understanding what information will be made available to the Pod via the Discovery Handler (aka the `Device.properties`). The following table contains the environment variables specified by each of Akri's currently supported Discovery Handlers, and the expected content of the environment variables.
 
-| Discovery Handler | Env Var Name | Value Type | Examples | Always Present? \(Y/N\) |
+| Discovery Handler | Env Var Name | Value Type | Examples | Always Present? (Y/N) |
 | :--- | :--- | :--- | :--- | :--- |
-| debugEcho \(for testing\) | `DEBUG_ECHO_DESCRIPTION` | some random string | `foo`, `bar` | Y |
+| debugEcho (for testing) | `DEBUG_ECHO_DESCRIPTION` | some random string | `foo`, `bar` | Y |
 | ONVIF | `ONVIF_DEVICE_SERVICE_URL` | ONVIF camera source URL | `http://10.123.456.789:1000/onvif/device_service` | Y |
 | ONVIF | `ONVIF_DEVICE_IP_ADDRESS` | IP address of the camera | `10.123.456.789` | Y |
 | ONVIF | `ONVIF_DEVICE_MAC_ADDRESS` | MAC address of the camera | `48:0f:cf:4e:1b:3d`, `480fcf4e1b3d` | Y |
@@ -25,7 +25,7 @@ A broker should look up the variables set by the appropriate Discovery Handler a
 
 ## Exposing device information over a service
 
-Oftentimes, it is useful for a broker to expose some information from its device over a service. Akri, by default, assumes this behavior, creating a Kubernetes service for each broker \(called an Instance level service\) and for all brokers of a Configuration \(called a Configuration level service\). This allows an application to target a specific device/broker or all devices/brokers, the latter of which allows the application to be oblivious to the coming and going of devices \(and thereby brokers\).
+Oftentimes, it is useful for a broker to expose some information from its device over a service. Akri, by default, assumes this behavior, creating a Kubernetes service for each broker (called an Instance level service) and for all brokers of a Configuration (called a Configuration level service). This allows an application to target a specific device/broker or all devices/brokers, the latter of which allows the application to be oblivious to the coming and going of devices (and thereby brokers).
 
 {% hint style="info" %}
 This default creation of Instance and Configuration services can be disabled by setting `<Discovery Handler name>.configuration.createInstanceServices=false` and `<Discovery Handler name>.configuration.createConfigurationService=false` when installing Akri's Helm chart.
@@ -35,7 +35,7 @@ A broker can expose information via REST, gRPC, etc. Akri's [sample brokers](htt
 
 ## Deploying your custom broker
 
-Once you have created a broker, you can ask Akri to automatically deploy it to all all devices discovered by a Configuration by specifying the image in `<Discovery Handler name>.configuration.brokerPod.image.repository` and `<Discovery Handler name>.configuration.brokerPod.image.tag`. For example, say you created a broker that connects to a USB camera and advertises it as an IP camera. You want to deploy it to all USB cameras on your cluster's nodes using Akri, so you deploy Akri with a Configuration that uses the udev Discovery Handler and set the image of your broker \(say `ghcr.io/brokers/camera-broker:v0.0.1`\), like so:
+Once you have created a broker, you can ask Akri to automatically deploy it to all all devices discovered by a Configuration by specifying the image in `<Discovery Handler name>.configuration.brokerPod.image.repository` and `<Discovery Handler name>.configuration.brokerPod.image.tag`. For example, say you created a broker that connects to a USB camera and advertises it as an IP camera. You want to deploy it to all USB cameras on your cluster's nodes using Akri, so you deploy Akri with a Configuration that uses the udev Discovery Handler and set the image of your broker (say `ghcr.io/brokers/camera-broker:v0.0.1`), like so:
 
 ```bash
 helm repo add akri-helm-charts https://deislabs.github.io/akri/
@@ -59,7 +59,7 @@ The default broker Pod memory and CPU resource request and limits in Akri's Helm
 | OPC UA | `ghcr.io/deislabs/akri/opcua-monitoring-broker:latest` | .Net App subscribes to specific NodeID and serves latest value |
 | udev | `ghcr.io/deislabs/akri/udev-video-broker:latest` | Rust camera frame server |
 
-The limit and request bounds were obtained using Kubernetes' [Vertical Pod Autoscaler \(VPA\)](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler). You should choose bounds appropriate to your broker Pod. [This blog](https://pretired.dazwilkin.com/posts/210305/#vertical-pod-autoscaler-vpa) is a good starting point for learning how to use the VPA to choose bounds.
+The limit and request bounds were obtained using Kubernetes' [Vertical Pod Autoscaler (VPA)](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler). You should choose bounds appropriate to your broker Pod. [This blog](https://pretired.dazwilkin.com/posts/210305/#vertical-pod-autoscaler-vpa) is a good starting point for learning how to use the VPA to choose bounds.
 
 ## Specifying additional broker environment variables in a Configuration
 

@@ -27,8 +27,8 @@ The makefiles allow for several configurations:
 * BUILD\_AMD64: if set not to 1, the make commands will ignore AMD64
 * BUILD\_ARM32: if set not to 1, the make commands will ignore ARM32
 * BUILD\_ARM64: if set not to 1, the make commands will ignore ARM64
-* REGISTRY: allows configuration of the container registry \(defaults to imaginary: devcaptest.azurecr.io\)
-* UNIQUE\_ID: allows configuration of container registry account \(defaults to $USER\)
+* REGISTRY: allows configuration of the container registry (defaults to imaginary: devcaptest.azurecr.io)
+* UNIQUE\_ID: allows configuration of container registry account (defaults to $USER)
 * PREFIX: allows configuration of container registry path for containers
 * LABEL\_PREFIX: allows configuration of container labels
 * CACHE\_OPTION: when `CACHE_OPTION=--no-cache`, the `docker build` commands will not use local caches
@@ -64,7 +64,7 @@ For each component, there will be a common set of targets:
 
 ### Adding a new component
 
-To add a new Rust-based component, follow these steps \(substituting the new component name for `<new-component>`\): 
+To add a new Rust-based component, follow these steps (substituting the new component name for `<new-component>`): 
 
 1. Add `$(eval $(call add_rust_targets,<new-component>,<new-component>))` to `build/akri-containers.mk` 
 1. Create `build/Dockerfile.<new-component>`
@@ -89,8 +89,8 @@ BUILD_AMD64=1 BUILD_ARM32=1 BUILD_AMD64=1 make rust-crossbuild
 
 If a change needs to be made to this container, 2 pull requests are needed. 
 
-1. Create PR with desired `rust-crossbuild` changes \(new dependencies, etc\) AND update `BUILD_RUST_CROSSBUILD_VERSION` in `build/intermediate-containers.mk`. This PR is intended to create the new version of `rust-crossbuild` \(not to use it\). 
-1. After 1st PR is merged and the new version of `rust-crossbuild` is pushed to ghcr.io/akri, create PR with any changes that will leverage the new version of `rust-crossbuild` AND update `Cross.toml` \(the `BUILD_RUST_CROSSBUILD_VERSION` value specified in step 1 should be each label's suffix\). This PR is intended to **use** the new version of `rust-crossbuild`.
+1. Create PR with desired `rust-crossbuild` changes (new dependencies, etc) AND update `BUILD_RUST_CROSSBUILD_VERSION` in `build/intermediate-containers.mk`. This PR is intended to create the new version of `rust-crossbuild` (not to use it). 
+1. After 1st PR is merged and the new version of `rust-crossbuild` is pushed to ghcr.io/akri, create PR with any changes that will leverage the new version of `rust-crossbuild` AND update `Cross.toml` (the `BUILD_RUST_CROSSBUILD_VERSION` value specified in step 1 should be each label's suffix). This PR is intended to **use** the new version of `rust-crossbuild`.
 
 ### opencvsharp-build
 
@@ -102,12 +102,12 @@ BUILD_AMD64=1 BUILD_ARM32=1 BUILD_AMD64=1 make opencv-base
 
 If a change needs to be made to this container, 2 pull requests are needed. 
 
-1. Create PR with desired `opencvsharp-build` changes \(new dependencies, etc\) AND update `BUILD_OPENCV_BASE_VERSION` in `build/intermediate-containers.mk`. This PR is intended to create the new version of `opencvsharp-build` \(not to use it\). 
+1. Create PR with desired `opencvsharp-build` changes (new dependencies, etc) AND update `BUILD_OPENCV_BASE_VERSION` in `build/intermediate-containers.mk`. This PR is intended to create the new version of `opencvsharp-build` (not to use it). 
 1. After 1st PR is merged and the new version of `opencvsharp-build` is pushed to ghcr.io/akri, create PR with any changes that will leverage the new version of `opencvsharp-build` AND update `USE_OPENCV_BASE_VERSION` in `build/akri-containers.mk`. This PR is intended to **use** the new version of `opencvsharp-build`.
 
 ## Automated builds usage
 
-The automated CI builds essentially run these commands, where `<component>` is one of \(`controller`\|`agent`\|`udev`\|`webhook-configuration`\|`onvif`\|`opcua-monitoring`\|`anomaly-detection`\|`streaming`\) and `<platform>` is one of \(`amd64`\|`arm32`\|`arm64`\):
+The automated CI builds essentially run these commands, where `<component>` is one of (`controller`\|`agent`\|`udev`\|`webhook-configuration`\|`onvif`\|`opcua-monitoring`\|`anomaly-detection`\|`streaming`) and `<platform>` is one of (`amd64`\|`arm32`\|`arm64`):
 
 ```bash
 # Install the Rust cross building tools

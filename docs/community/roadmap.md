@@ -10,9 +10,9 @@ There are endless sensors, controllers, and MCU class devices on the edge and ea
 
 ### Currently supported Discovery Handlers
 
-1. ONVIF \(to discover IP cameras\)
-2. udev \(to discover anything in the Linux device file system\)
-3. OPC UA \(to discover OPC UA Servers\) 
+1. ONVIF (to discover IP cameras)
+2. udev (to discover anything in the Linux device file system)
+3. OPC UA (to discover OPC UA Servers) 
 
 ### Protocols we are thinking about adding support for
 

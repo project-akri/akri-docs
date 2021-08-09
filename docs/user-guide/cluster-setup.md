@@ -1,6 +1,6 @@
 # Kubernetes Cluster Setup
 
-Before deploying Akri, you must have a Kubernetes cluster \(v1.16 or higher\) running with `kubectl` and `Helm` installed. Akri is Kubernetes native, so it should run on most Kubernetes distributions. This document provides cluster setup instructions for the three Kubernetes distributions that all of our end-to-end tests run on.
+Before deploying Akri, you must have a Kubernetes cluster (v1.16 or higher) running with `kubectl` and `Helm` installed. Akri is Kubernetes native, so it should run on most Kubernetes distributions. This document provides cluster setup instructions for the three Kubernetes distributions that all of our end-to-end tests run on.
 
 {% hint style="info" %}
 Note: All nodes must be Linux on amd64, arm64v8, or arm32v7.
@@ -63,7 +63,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
     curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
    ```
 
-5. Akri depends on crictl to track some Pod information. If using K3s versions 1.19 or greater, install crictl locally \(note: there are no known version limitations, any crictl version is expected to work\). Previous K3s versions come when crictl embedded.
+5. Akri depends on crictl to track some Pod information. If using K3s versions 1.19 or greater, install crictl locally (note: there are no known version limitations, any crictl version is expected to work). Previous K3s versions come when crictl embedded.
 
    ```bash
         VERSION="v1.17.0"

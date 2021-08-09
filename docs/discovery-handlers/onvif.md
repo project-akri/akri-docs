@@ -2,17 +2,17 @@
 
 ## Background
 
-ONVIF is a standard used by many IP cameras and defines discovery and access for RTSP camera streams. Along with an ONVIF Discovery Handler, Akri has provided a generic ONVIF Configuration for initiating ONVIF discovery. Akri has also provided a sample broker \(`akri-onvif-video-broker`\), which acts as a frame server.
+ONVIF is a standard used by many IP cameras and defines discovery and access for RTSP camera streams. Along with an ONVIF Discovery Handler, Akri has provided a generic ONVIF Configuration for initiating ONVIF discovery. Akri has also provided a sample broker (`akri-onvif-video-broker`), which acts as a frame server.
 
 Using Akri's default ONVIF Configuration to discover and utilize ONVIF cameras looks like the following:
 
 ![Akri ONVIF Flow](../../media/onvif-flow.svg)
 
-1. An operator applies the ONVIF Configuration to the cluster \(by enabling ONVIF when installing the Akri Helm chart\). They also specific a broker image -- `akri-onvif-video-broker` in the figure.
+1. An operator applies the ONVIF Configuration to the cluster (by enabling ONVIF when installing the Akri Helm chart). They also specific a broker image -- `akri-onvif-video-broker` in the figure.
 2. The Akri Agent uses the ONVIF Discovery Handler to discover the IP cameras and creates Instances for each discovered camera.
 3. The Akri Controller sees the Instances and deploys `akri-onvif-video-broker` pods, which were specified in the Configuration. The Controller also creates a Kubernetes service for each ONVIF camera along with one service for all the ONVIF cameras.
 
-All of Akri's components can be deployed by specifying values in its Helm chart during an installation. This section will cover the values that should be set to \(1\) deploy the ONVIF Discovery Handlers and \(2\) apply a Configuration that tells Akri to discover devices using that Discovery Handler.
+All of Akri's components can be deployed by specifying values in its Helm chart during an installation. This section will cover the values that should be set to (1) deploy the ONVIF Discovery Handlers and (2) apply a Configuration that tells Akri to discover devices using that Discovery Handler.
 
 ## Deploying the ONVIF Discovery Handler
 
@@ -20,7 +20,7 @@ In order for the Agent to know how to discover IP cameras an ONVIF Discovery Han
 
 ## ONVIF Configuration Settings
 
-Instead of having to assemble your own ONVIF Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/onvif-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for ONVIF \(to see them, run `helm inspect values akri-helm-charts/akri`\). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the ONVIF Configuration to your cluster, simply set `onvif.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
+Instead of having to assemble your own ONVIF Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/onvif-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for ONVIF (to see them, run `helm inspect values akri-helm-charts/akri`). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the ONVIF Configuration to your cluster, simply set `onvif.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
 
 ### Discovery Handler Discovery Details Settings
 
@@ -34,11 +34,11 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 | onvif.configuration.discoveryDetails.macAddresses.items | array of mac addresses | empty | mac addresses that the filter action acts upon |
 | onvif.configuration.discoveryDetails.scope.action | Include, Exclude | Exclude | filter action to take on a set of scopes |
 | onvif.configuration.discoveryDetails.scope.items | array of scopes | empty | scopes that the filter action acts upon |
-| onvif.configuration.discoveryDetails.discoveryTimeoutSeconds | number of seconds | 1 | max amount of time the Discovery Handler should search before reporting any \(newly\) discovered devices |
+| onvif.configuration.discoveryDetails.discoveryTimeoutSeconds | number of seconds | 1 | max amount of time the Discovery Handler should search before reporting any (newly) discovered devices |
 
 ### Broker Pod Settings
 
-If you would like workloads \("broker" Pods\) to be deployed automatically to discovered cameras, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker \("ghcr.io/deislabs/akri/onvif-video-broker"\). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+If you would like workloads ("broker" Pods) to be deployed automatically to discovered cameras, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/deislabs/akri/onvif-video-broker"). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -60,7 +60,7 @@ By default, if a broker Pod is specified, a single broker Pod is deployed to eac
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
-| onvif.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device \(up to 1 per Node\) |
+| onvif.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device (up to 1 per Node) |
 
 ### Installing Akri with the ONVIF Configuration and Discovery Handler
 

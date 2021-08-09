@@ -17,11 +17,11 @@ Akri utilizes a variety of technologies, and different background knowledge is m
 
 Contributions can be made by forking the repository and creating a pull request. Ideally, every pull request should have a corresponding issue that it is resolving. Each pull request will kick off a set of CI builds to validate that:
 
-* the code adheres to standard Rust formatting \(`cargo fmt`\)
-* the code builds properly \(`cargo build`\)
-* the code is free of common mistakes \(`cargo clippy`\)
-* the Akri tests all pass \(`cargo test`\)
-* the inline documentation builds \(`cargo doc`\)
+* the code adheres to standard Rust formatting (`cargo fmt`)
+* the code builds properly (`cargo build`)
+* the code is free of common mistakes (`cargo clippy`)
+* the Akri tests all pass (`cargo test`)
+* the inline documentation builds (`cargo doc`)
 
 See the [Development](development.md) documentation for more information on how to set up your environment and build Akri components locally.
 
@@ -45,7 +45,7 @@ Akri follows similar logging conventions as defined by the [Tracing crate](https
 | :--- | :--- |
 | error | Unrecoverable fatal errors |
 | warn | Unexpected errors that may/may not lead to serious problems |
-| info | Useful information that provides an overview of the current state of things \(ex: config values, state change\) |
+| info | Useful information that provides an overview of the current state of things (ex: config values, state change) |
 | debug | Verbose information for high-level debugging and diagnoses of issues |
 | trace | Extremely verbose information for developers of Akri |
 
@@ -53,17 +53,17 @@ Akri follows similar logging conventions as defined by the [Tracing crate](https
 
 Akri's workflows check for three flags in the titles of PRs in order to decide whether to execute certain checks.
 
-The [version check workflow](../.github/workflows/check-versioning.yml) will run, ensuring you have increased the version number, unless you \(A\) only change a a file that is on an ignored path of the workflow, such as all `*.md` files OR \(B\) specify the `[SAME VERSION]` flag. Use this flag if your change will trigger the workflow and the version should not be changed by your PR. The flag will cause the check to automatically succeed.
+The [version check workflow](../.github/workflows/check-versioning.yml) will run, ensuring you have increased the version number, unless you (A) only change a a file that is on an ignored path of the workflow, such as all `*.md` files OR (B) specify the `[SAME VERSION]` flag. Use this flag if your change will trigger the workflow and the version should not be changed by your PR. The flag will cause the check to automatically succeed.
 
-Akri has some intermediate containers that decrease the build time of the more frequently built final containers. These intermediate builds are long running and should only be run when absolutely needed. If your PR triggers a workflow to build them, you will see the workflow fail and get a message that requests that you add a tag to your PR to either allow them to build \(`[ALLOW INTERMEDIATE BUILDS]`\) or \(`[IGNORE INTERMEDIATE BUILDS]`\).
+Akri has some intermediate containers that decrease the build time of the more frequently built final containers. These intermediate builds are long running and should only be run when absolutely needed. If your PR triggers a workflow to build them, you will see the workflow fail and get a message that requests that you add a tag to your PR to either allow them to build (`[ALLOW INTERMEDIATE BUILDS]`) or (`[IGNORE INTERMEDIATE BUILDS]`).
 
 Please add any appropriate flags to the end of your PR title.
 
 ## CLA
 
-Most contributions require you to agree to a Contributor License Agreement \(CLA\) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit [https://cla.microsoft.com](https://cla.microsoft.com).
+Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit [https://cla.microsoft.com](https://cla.microsoft.com).
 
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately \(e.g., label, comment\). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
+When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
 ## Code of Conduct
 

@@ -2,9 +2,9 @@
 
 ## Background
 
-OPC UA \(Object Linking and Embedding for Process Control Unified Architecture\) is a communication protocol for industrial automation. Akri has implemented a Discovery Handler for discovering OPC UA Servers that live at specified endpoints or are registered with specified Local Discovery Servers. Background on the OPC UA Discovery Handler implementation can be found in the [proposal](proposals/opcua.md). To try out using Akri to discover and utilize OPC UA servers, see the [OPC UA end-to-end demo](../demos/opc-thermometer-demo.md).
+OPC UA (Object Linking and Embedding for Process Control Unified Architecture) is a communication protocol for industrial automation. Akri has implemented a Discovery Handler for discovering OPC UA Servers that live at specified endpoints or are registered with specified Local Discovery Servers. Background on the OPC UA Discovery Handler implementation can be found in the [proposal](proposals/opcua.md). To try out using Akri to discover and utilize OPC UA servers, see the [OPC UA end-to-end demo](../demos/opc-thermometer-demo.md).
 
-All of Akri's components can be deployed by specifying values in its Helm chart during an installation. This section will cover the values that should be set to \(1\) deploy the OPC UA Discovery Handlers and \(2\) apply a Configuration that tells Akri to discover devices using that Discovery Handler.
+All of Akri's components can be deployed by specifying values in its Helm chart during an installation. This section will cover the values that should be set to (1) deploy the OPC UA Discovery Handlers and (2) apply a Configuration that tells Akri to discover devices using that Discovery Handler.
 
 ## Deploying the OPC UA Discovery Handler
 
@@ -12,11 +12,11 @@ In order for the Agent to know how to discover OPC UA servers an OPC UA Discover
 
 ## OPC UA Configuration Settings
 
-Instead of having to assemble your own OPC UA Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for OPC UA \(to see them, run `helm inspect values akri-helm-charts/akri`\). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the OPC UA Configuration to your cluster, simply set `opcua.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
+Instead of having to assemble your own OPC UA Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for OPC UA (to see them, run `helm inspect values akri-helm-charts/akri`). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the OPC UA Configuration to your cluster, simply set `opcua.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
 
 ### Discovery Handler Discovery Details Settings
 
-Discovery Handlers are passed discovery details that are set in a Configuration to determine what to discover, filter out of discovery, and so on. The OPC UA Discovery Handler, requires a set of DiscoveryURLs to direct its search. Every OPC UA server/application has a DiscoveryEndpoint that Clients can access without establishing a session. The address for this endpoint is defined by a DiscoveryURL. A Local Discovery Server \(LDS\) is a unique type of OPC UA server which maintains a list of OPC UA servers that have registered with it.
+Discovery Handlers are passed discovery details that are set in a Configuration to determine what to discover, filter out of discovery, and so on. The OPC UA Discovery Handler, requires a set of DiscoveryURLs to direct its search. Every OPC UA server/application has a DiscoveryEndpoint that Clients can access without establishing a session. The address for this endpoint is defined by a DiscoveryURL. A Local Discovery Server (LDS) is a unique type of OPC UA server which maintains a list of OPC UA servers that have registered with it.
 
 The generic OPC UA Configuration takes in a list of DiscoveryURLs, whether for LDSes or a specific servers and an optional list of application names to either include or exclude. By default, if no DiscoveryURLs are set, the Discovery Handler will attempt to reach out to the Local Discovery Server on its host at the default address [from OPC UA Specification 12](https://reference.opcfoundation.org/v104/Core/docs/Part6/7.6/) of `opc.tcp://localhost:4840/` and get the list of OPC UA servers registered with it.
 
@@ -28,7 +28,7 @@ The generic OPC UA Configuration takes in a list of DiscoveryURLs, whether for L
 
 ### Broker Pod Settings
 
-If you would like workloads \("broker" Pods\) to be deployed automatically to discovered devices, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker \("ghcr.io/deislabs/akri/opcua-video-broker"\). If you would rather manually deploy pods to utilize the devices advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+If you would like workloads ("broker" Pods) to be deployed automatically to discovered devices, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/deislabs/akri/opcua-video-broker"). If you would rather manually deploy pods to utilize the devices advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -58,7 +58,7 @@ By default, if a broker Pod is specified, a single broker Pod is deployed to eac
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
-| opcua.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device \(up to 1 per Node\) |
+| opcua.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device (up to 1 per Node) |
 
 ### Installing Akri with the OPC UA Configuration and Discovery Handler
 
@@ -81,7 +81,7 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.brokerPod.image.repository=nginx
 ```
 
-> Note: set `opcua.configuration.brokerPod.image.tag` to specify an image tag \(defaults to `latest`\).
+> Note: set `opcua.configuration.brokerPod.image.tag` to specify an image tag (defaults to `latest`).
 
 The following installation examples have been given to show how to the OPC UA Configuration can be tailored to you cluster:
 
@@ -130,11 +130,11 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.discoveryDetails.discoveryUrls[2]="opc.tcp://10.123.456.7:4855/"
 ```
 
-> **Note**: The Agent's OPC UA discovery method only supports tcp DiscoveryURLs, since the [Rust OPC UA library](https://github.com/locka99/opcua) has yet to support http\(s\).
+> **Note**: The Agent's OPC UA discovery method only supports tcp DiscoveryURLs, since the [Rust OPC UA library](https://github.com/locka99/opcua) has yet to support http(s).
 
 ### Filtering the Servers by application name
 
-Instead of discovering all servers registered with specified Local Discovery Servers, you can choose to include or exclude a list of application names \(the `applicationName` property of a server's `ApplicationDescription` as specified by [OPC UA Specification](https://reference.opcfoundation.org/v104/Core/DataTypes/ApplicationDescription/)\). For example, to discover all servers registered with the default LDS except for the server named "Duke", do the following.
+Instead of discovering all servers registered with specified Local Discovery Servers, you can choose to include or exclude a list of application names (the `applicationName` property of a server's `ApplicationDescription` as specified by [OPC UA Specification](https://reference.opcfoundation.org/v104/Core/DataTypes/ApplicationDescription/)). For example, to discover all servers registered with the default LDS except for the server named "Duke", do the following.
 
 ```bash
 helm repo add akri-helm-charts https://deislabs.github.io/akri/
@@ -158,9 +158,9 @@ helm install akri akri-helm-charts/akri \
 
 ### Mounting OPC UA credentials to enable security
 
-For your broker pod to utilize a discovered OPC UA server, it will need to contain an OPC UA Client. OPC UA Clients and Servers can establish an insecure connection so long as the OPC UA Servers support a Security Policy of None. However, if you would like your broker's OPC UA Client to establish a secure connection with an OPC UA server, the Client and Server must trust each other's x509 v3 certificates. This can be done in one of the three ways explained in the [OPC UA proposal](proposals/opcua.configuration.md#giving-proper-credentials-to-the-akri-broker). The simplest method is to sign the OPC UA broker's certificate with the same Certificate Authority \(CA\) as the Server with which it wishes to connect. The certificates are passed to the broker via a Kubernetes Secret mounted as a volume to the directory `/etc/opcua-certs/client-pki`.
+For your broker pod to utilize a discovered OPC UA server, it will need to contain an OPC UA Client. OPC UA Clients and Servers can establish an insecure connection so long as the OPC UA Servers support a Security Policy of None. However, if you would like your broker's OPC UA Client to establish a secure connection with an OPC UA server, the Client and Server must trust each other's x509 v3 certificates. This can be done in one of the three ways explained in the [OPC UA proposal](proposals/opcua.configuration.md#giving-proper-credentials-to-the-akri-broker). The simplest method is to sign the OPC UA broker's certificate with the same Certificate Authority (CA) as the Server with which it wishes to connect. The certificates are passed to the broker via a Kubernetes Secret mounted as a volume to the directory `/etc/opcua-certs/client-pki`.
 
-It is the operator's responsibility to generate the certificates and securely create a Kubernetes Secret named `opcua-broker-credentials`, ideally using a KMS. More information about using Kubernetes Secrets securely can be found in the [credentials passing proposal](proposals/credentials-passing.md). The following is an example kubectl command to create the Kubernetes Secret, projecting each certificate/crl/private key with the expected key name \(ie `client_certificate`, `client_key`, `ca_certificate`, and `ca_crl`\).
+It is the operator's responsibility to generate the certificates and securely create a Kubernetes Secret named `opcua-broker-credentials`, ideally using a KMS. More information about using Kubernetes Secrets securely can be found in the [credentials passing proposal](proposals/credentials-passing.md). The following is an example kubectl command to create the Kubernetes Secret, projecting each certificate/crl/private key with the expected key name (ie `client_certificate`, `client_key`, `ca_certificate`, and `ca_crl`).
 
 ```bash
 kubectl create secret generic opcua-broker-credentials \

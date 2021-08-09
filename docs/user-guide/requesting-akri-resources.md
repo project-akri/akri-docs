@@ -1,6 +1,6 @@
 # Requesting Akri Resources
 
-Akri discovers tiny devices, advertizes them as resources, and automatically deploys workloads to utilize those devices. The latter functionality is optional. You can use Akri solely to discover and advertize devices by omitting a broker pod image from a Configuration. Then, you can schedule your own pods, requesting the discovered Akri Instances \(which represent each tiny device\) as resource limits.
+Akri discovers tiny devices, advertizes them as resources, and automatically deploys workloads to utilize those devices. The latter functionality is optional. You can use Akri solely to discover and advertize devices by omitting a broker pod image from a Configuration. Then, you can schedule your own pods, requesting the discovered Akri Instances (which represent each tiny device) as resource limits.
 
 Lets walk through how this works, using the ONVIF Discovery Handler as an example. Install Akri with the ONVIF Discovery Handler and Configuration, omitting a broker pod image.
 

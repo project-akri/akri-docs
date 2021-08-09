@@ -4,7 +4,7 @@ This document will walk through an end-to-end example of creating Discovery Hand
 
 Before continuing, you may wish to reference the [Akri architecture](../architecture/architecture-overview.md) and [Akri agent](../architecture/agent-in-depth.md) documentation. They will provide a good understanding of Akri, how it works, and what components it is composed of.
 
-Any Docker-compatible container registry will work for hosting the containers being used in this example \(Docker Hub, Github Container Registry, Azure Container Registry, etc\). Here, we are using the [GitHub Container Registry](https://github.blog/2020-09-01-introducing-github-container-registry/). You can follow the [getting started guide here to enable it for yourself](https://docs.github.com/en/free-pro-team@latest/packages/getting-started-with-github-container-registry).
+Any Docker-compatible container registry will work for hosting the containers being used in this example (Docker Hub, Github Container Registry, Azure Container Registry, etc). Here, we are using the [GitHub Container Registry](https://github.blog/2020-09-01-introducing-github-container-registry/). You can follow the [getting started guide here to enable it for yourself](https://docs.github.com/en/free-pro-team@latest/packages/getting-started-with-github-container-registry).
 
 {% hint style="info" %}
  if your container registry is private, you will need to create a kubernetes secret `kubectl create secret docker-registry crPullSecret --docker-server=<cr> --docker-username=<cr-user> --docker-password=<cr-token>` and access it with an `imagePullSecret`. Here, we will assume the secret is named `crPullSecret`.
@@ -12,7 +12,7 @@ Any Docker-compatible container registry will work for hosting the containers be
 
 ## Background on Discovery Handlers
 
-Akri has [implemented discovery via several protocols](../community/roadmap.md#currently-supported-discovery-handlers) with sample brokers and applications to demonstrate usage. However, there may be protocols you would like to use to discover resources that have not been implemented as Discovery Handlers yet. To enable the discovery of resources via a new protocol, you will implement a Discovery Handler \(DH\), which does discovery on behalf of the Agent. A Discovery Handler is anything that implements the `Discovery` service and `Registration` client defined in the [Akri's discovery gRPC proto file](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto). These DHs run as their own Pods and are expected to register with the Agent, which hosts the `Registration` service defined in the gRPC interface.
+Akri has [implemented discovery via several protocols](../community/roadmap.md#currently-supported-discovery-handlers) with sample brokers and applications to demonstrate usage. However, there may be protocols you would like to use to discover resources that have not been implemented as Discovery Handlers yet. To enable the discovery of resources via a new protocol, you will implement a Discovery Handler (DH), which does discovery on behalf of the Agent. A Discovery Handler is anything that implements the `Discovery` service and `Registration` client defined in the [Akri's discovery gRPC proto file](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto). These DHs run as their own Pods and are expected to register with the Agent, which hosts the `Registration` service defined in the gRPC interface.
 
 ## New DiscoveryHandler implementation
 
@@ -61,7 +61,7 @@ Now that we know what will be passed to our Discovery Handler, let's implement t
 
 ### Add discovery logic to the `DiscoveryHandler`
 
-A `DiscoveryHandlerImpl` Struct has been created \(in `discovery_handler.rs`\) that minimally implements the `DiscoveryHandler` service. Let's fill in the `discover` function, which returns the list of discovered devices. It should have all the functionality desired for discovering devices via your protocol and filtering for only the desired set. For the HTTP protocol, `discover` will perform an HTTP GET on the Discovery Handler's discovery service URL received in the `DiscoverRequest`.
+A `DiscoveryHandlerImpl` Struct has been created (in `discovery_handler.rs`) that minimally implements the `DiscoveryHandler` service. Let's fill in the `discover` function, which returns the list of discovered devices. It should have all the functionality desired for discovering devices via your protocol and filtering for only the desired set. For the HTTP protocol, `discover` will perform an HTTP GET on the Discovery Handler's discovery service URL received in the `DiscoverRequest`.
 
 First, let's add the additional crates we are using to our `Cargo.toml` under dependencies.
 
@@ -164,7 +164,7 @@ To that end, let's:
 
 ### Mock HTTP devices and Discovery service
 
-To simulate a set of discoverable HTTP devices and a discovery service, create a simple HTTP server \(`samples/apps/http-apps/cmd/device/main.go`\). The application will accept a list of `path` arguments, which will define endpoints that the service will respond to. These endpoints represent devices in our HTTP Discovery Handler. The application will also accept a set of `device` arguments, which will define the set of discovered devices.
+To simulate a set of discoverable HTTP devices and a discovery service, create a simple HTTP server (`samples/apps/http-apps/cmd/device/main.go`). The application will accept a list of `path` arguments, which will define endpoints that the service will respond to. These endpoints represent devices in our HTTP Discovery Handler. The application will also accept a set of `device` arguments, which will define the set of discovered devices.
 
 ```go
 package main
@@ -294,7 +294,7 @@ docker build \
 docker push ${IMAGE}
 ```
 
-The mock devices can be deployed with a Kubernetes deployment `samples/apps/http-apps/kubernetes/device.yaml` \(update **image** based on the ${IMAGE}\):
+The mock devices can be deployed with a Kubernetes deployment `samples/apps/http-apps/kubernetes/device.yaml` (update **image** based on the ${IMAGE}):
 
 ```yaml
 apiVersion: apps/v1
@@ -334,14 +334,14 @@ spec:
               containerPort: 8080
 ```
 
-Then apply `device.yaml` to create a deployment \(called `device`\) and a pod \(called `device-...`\):
+Then apply `device.yaml` to create a deployment (called `device`) and a pod (called `device-...`):
 
 ```bash
 kubectl apply --filename=./samples/apps/http-apps/kubernetes/device.yaml
 ```
 
 {% hint style="info" %}
-We're using one deployment\|pod to represent 9 devices AND a discovery service ... we will create 9 \(distinct\) Services against it \(1 for each mock device\) and 1 Service to present the discovery service.
+We're using one deployment\|pod to represent 9 devices AND a discovery service ... we will create 9 (distinct) Services against it (1 for each mock device) and 1 Service to present the discovery service.
 {% endhint %}
 
 Then create 9 mock device Services:
@@ -372,9 +372,9 @@ done
 > curl device-${X}:8080
 > ```
 >
-> Any or all of these should return a \(random\) 'sensor' value.
+> Any or all of these should return a (random) 'sensor' value.
 
-Then create a Service \(called `discovery`\) using the deployment:
+Then create a Service (called `discovery`) using the deployment:
 
 ```bash
 kubectl expose deployment/device \
@@ -410,7 +410,7 @@ sudo helm delete akri
 ```
 {% endhint %}
 
-Akri has provided helm templates for custom Discovery Handlers and their Configurations. These templates are provided as a starting point. They may need to be modified to meet the needs of a Discovery Handler. When installing Akri, specify that you want to deploy a custom Discovery Handler as a DaemonSet by setting `custom.discovery.enabled=true`. Specify the container for that DaemonSet as the HTTP discovery handler that you built [above](development-walkthrough.md#build-the-discoveryhandler-container) by setting `custom.discovery.image.repository=$DH_IMAGE` and `custom.discovery.image.repository=$TAGS`. To automatically deploy a custom Configuration, set `custom.configuration.enabled=true`. We will customize this Configuration to contain the discovery endpoint needed by our HTTP Discovery Handler by setting it in the `discovery_details` string of the Configuration, like so: `custom.configuration.discoveryDetails=http://discovery:9999/discovery`. We also need to set the name the Discovery Handler will register under \(`custom.configuration.discoveryHandlerName`\) and a name for the Discovery Handler and Configuration \(`custom.discovery.name` and `custom.configuration.name`\). All these settings come together as the following Akri installation command:
+Akri has provided helm templates for custom Discovery Handlers and their Configurations. These templates are provided as a starting point. They may need to be modified to meet the needs of a Discovery Handler. When installing Akri, specify that you want to deploy a custom Discovery Handler as a DaemonSet by setting `custom.discovery.enabled=true`. Specify the container for that DaemonSet as the HTTP discovery handler that you built [above](development-walkthrough.md#build-the-discoveryhandler-container) by setting `custom.discovery.image.repository=$DH_IMAGE` and `custom.discovery.image.repository=$TAGS`. To automatically deploy a custom Configuration, set `custom.configuration.enabled=true`. We will customize this Configuration to contain the discovery endpoint needed by our HTTP Discovery Handler by setting it in the `discovery_details` string of the Configuration, like so: `custom.configuration.discoveryDetails=http://discovery:9999/discovery`. We also need to set the name the Discovery Handler will register under (`custom.configuration.discoveryHandlerName`) and a name for the Discovery Handler and Configuration (`custom.discovery.name` and `custom.configuration.name`). All these settings come together as the following Akri installation command:
 
 > Note: Be sure to consult the [user guide](../user-guide/getting-started.md) to see whether your Kubernetes distribution needs any additional configuration.
 
@@ -455,7 +455,7 @@ Our empty nginx brokers do not do anything with the devices they've requested, s
 
 ## Create a sample broker
 
-We have successfully created our Discovery Handler. If you want Akri to also automatically deploy Pods \(called brokers\) to each discovered device, this section will show you how to create a custom broker that will make the HTTP-based Device data available to the cluster. The broker can be written in any language as it will be deployed as an individual pod.
+We have successfully created our Discovery Handler. If you want Akri to also automatically deploy Pods (called brokers) to each discovered device, this section will show you how to create a custom broker that will make the HTTP-based Device data available to the cluster. The broker can be written in any language as it will be deployed as an individual pod.
 
 3 different broker implementations have been created for the HTTP Discovery Handler in the [http-extensibility branch](https://github.com/deislabs/akri/tree/http-extensibility), 2 in Rust and 1 in Go:
 

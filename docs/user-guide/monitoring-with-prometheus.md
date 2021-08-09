@@ -73,7 +73,7 @@ Now that Akri's metrics are being exposed to Prometheus, they can be visualized 
 
 ## Akri's currently exposed metrics
 
-Akri uses the [Rust Prometheus client library](https://github.com/tikv/rust-prometheus) to expose metrics. It exposes all the [default process metrics](https://prometheus.io/docs/instrumenting/writing_clientlibs/#process-metrics), such as Agent or Controller total CPU time usage \(`process_cpu_seconds_total`\) and RAM usage \(`process_resident_memory_bytes`\), along with the following custom metrics, all of which are prefixed with `akri`.
+Akri uses the [Rust Prometheus client library](https://github.com/tikv/rust-prometheus) to expose metrics. It exposes all the [default process metrics](https://prometheus.io/docs/instrumenting/writing_clientlibs/#process-metrics), such as Agent or Controller total CPU time usage (`process_cpu_seconds_total`) and RAM usage (`process_resident_memory_bytes`), along with the following custom metrics, all of which are prefixed with `akri`.
 
 | Metric Name | Metric Type | Metric Source | Buckets |
 | :--- | :--- | :--- | :--- |
@@ -82,7 +82,7 @@ Akri uses the [Rust Prometheus client library](https://github.com/tikv/rust-prom
 
 ## Exposing metrics from an Akri Broker Pod
 
-Metrics can also be published by Broker Pods and exposed to Prometheus. This workflow is not unique to Akri and is equivalent to exposing metrics from any deployment to Prometheus. Using the [appropriate Prometheus client library](https://prometheus.io/docs/instrumenting/clientlibs/) for your broker, expose some metrics. Then, deploy a Service to expose the metrics, specifying the name of the associated Akri Configuration as a selector \(`akri.sh/configuration: <Akri Configuration>`\), since the Configuration name is added as a label to all the Broker Pods by the Akri Controller. Finally, deploy a ServiceMonitor that selects for the previously mentioned service. This tells Prometheus which service\(s\) to discover.
+Metrics can also be published by Broker Pods and exposed to Prometheus. This workflow is not unique to Akri and is equivalent to exposing metrics from any deployment to Prometheus. Using the [appropriate Prometheus client library](https://prometheus.io/docs/instrumenting/clientlibs/) for your broker, expose some metrics. Then, deploy a Service to expose the metrics, specifying the name of the associated Akri Configuration as a selector (`akri.sh/configuration: <Akri Configuration>`), since the Configuration name is added as a label to all the Broker Pods by the Akri Controller. Finally, deploy a ServiceMonitor that selects for the previously mentioned service. This tells Prometheus which service(s) to discover.
 
 ### Example: Exposing metrics from the udev video sample Broker
 

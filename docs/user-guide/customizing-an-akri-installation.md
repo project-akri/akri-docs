@@ -1,6 +1,6 @@
 # Customizing an Akri Installation
 
-The [ONVIF](../discovery-handlers/onvif.md), [udev](../discovery-handlers/udev.md), and [OPC UA](../discovery-handlers/opc-ua.md) Configurations documentation explains how to deploy Akri and utilize a specific Discovery Handler using Helm \(more information about the Akri Helm charts can be found in the [user guide](getting-started.md#understanding-akri-helm-charts)\). This documentation elaborates upon them, covering the following: 
+The [ONVIF](../discovery-handlers/onvif.md), [udev](../discovery-handlers/udev.md), and [OPC UA](../discovery-handlers/opc-ua.md) Configurations documentation explains how to deploy Akri and utilize a specific Discovery Handler using Helm (more information about the Akri Helm charts can be found in the [user guide](getting-started.md#understanding-akri-helm-charts)). This documentation elaborates upon them, covering the following: 
 
 1. Starting Akri without any Configurations 
 2. Generating, modifying and applying a Configuration
@@ -23,9 +23,9 @@ This will deploy the Akri Controller and deploy Akri Agents.
 
 ## Generating, modifying and applying a Configuration
 
-Helm allows us to parametrize the commonly modified fields in our Configuration templates and we have provided many \(to see them, run `helm inspect values akri-helm-charts/akri`\). For more advanced Configuration changes that are not aided by our Helm chart, we suggest creating a Configuration file using Helm and then manually modifying it.
+Helm allows us to parametrize the commonly modified fields in our Configuration templates and we have provided many (to see them, run `helm inspect values akri-helm-charts/akri`). For more advanced Configuration changes that are not aided by our Helm chart, we suggest creating a Configuration file using Helm and then manually modifying it.
 
-For example, to create an ONVIF Configuration file, run the following. \(To instead create a udev Configuration, substitute `onvif.configuration.enabled` with `udev.configuration.enabled` and add a udev rule. For OPC UA, substitute with `opcua.configuration.enabled`.\)
+For example, to create an ONVIF Configuration file, run the following. (To instead create a udev Configuration, substitute `onvif.configuration.enabled` with `udev.configuration.enabled` and add a udev rule. For OPC UA, substitute with `opcua.configuration.enabled`.)
 
 ```bash
 helm template akri akri-helm-charts/akri \
@@ -147,7 +147,7 @@ The`{{PLACEHOLDER}}` imit will be used by Akri to utilize this Configuration's I
 
 #### Modifying instanceServiceSpec or configurationServiceSpec
 
-The `instanceServiceSpec` and `configurationServiceSpec` properties are full [ServiceSpecs](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#servicespec-v1-core) and can be modified as such. The simplest reason to modify either might be to specify different ports \(perhaps 8085 and 8086\):
+The `instanceServiceSpec` and `configurationServiceSpec` properties are full [ServiceSpecs](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#servicespec-v1-core) and can be modified as such. The simplest reason to modify either might be to specify different ports (perhaps 8085 and 8086):
 
 ```yaml
 spec:
@@ -164,7 +164,7 @@ spec:
 ```
 
 {% hint style="info" %}
-The simple properties of `instanceServiceSpec` and `configurationServiceSpec` \(like name, port, targetPort, and protocol\) can be set using Helm's `--set` command, e.g.`--set onvif.instanceService.targetPort=90`.
+The simple properties of `instanceServiceSpec` and `configurationServiceSpec` (like name, port, targetPort, and protocol) can be set using Helm's `--set` command, e.g.`--set onvif.instanceService.targetPort=90`.
 {% endhint %}
 
 ## Adding another Configuration to a cluster
@@ -210,7 +210,7 @@ helm upgrade akri akri-helm-charts/akri \
 
 ### Deleting a Configuration using `helm delete`
 
-If the Configuration was applied in its own Helm installation \(named `udev-config` in this example\), the Configuration can be deleted by deleting the installation.
+If the Configuration was applied in its own Helm installation (named `udev-config` in this example), the Configuration can be deleted by deleting the installation.
 
 ```bash
 helm delete udev-config

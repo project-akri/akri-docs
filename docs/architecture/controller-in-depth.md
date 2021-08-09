@@ -9,7 +9,7 @@ These tasks enable Akri to provide resources with high availability, while allow
 
 ## Enabling cluster access to resources
 
-The first step to enable cluster access to resources \(leaf devices\) is, of course, finding them. The work of discovering resources and making them known to the Kubernetes cluster is handled by the [Akri Agent](agent-in-depth.md). The Akri Agents ensure that Instances are created and updated to enforce capability sharing.
+The first step to enable cluster access to resources (leaf devices) is, of course, finding them. The work of discovering resources and making them known to the Kubernetes cluster is handled by the [Akri Agent](agent-in-depth.md). The Akri Agents ensure that Instances are created and updated to enforce capability sharing.
 
 Once a capability has been discovered and Instances are created, it is up to the Akri Controller to provide cluster access.
 
@@ -25,7 +25,7 @@ When an instance is deleted, the Akri Controller needs to do several things:
 
 1. Ensure that the protocol broker Pod based on `Configuration.brokerPodSpec` is removed
 2. Ensure that the protocol broker Service based on `Configuration.instanceServiceSpec` is removed
-3. Ensure that the capability Service based on `Configuration.configurationServiceSpec` is removed, if there are no Pods supporting the Service \(note that many instances can contribute supporting Pods to a given configuration\)
+3. Ensure that the capability Service based on `Configuration.configurationServiceSpec` is removed, if there are no Pods supporting the Service (note that many instances can contribute supporting Pods to a given configuration)
 
 ## Handling node disappearances
 

@@ -38,7 +38,7 @@ helm install akri akri-helm-charts/akri \
 ```
 {% endhint %}
 
-By default, the Debug Echo Configuration discovers two devices, `foo1` and `foo2`, and automatically deploys an empty nginx broker Pod to each discovered device, so you should see two instances and two brokers created as a result of your installation. By default, it also creates an Instance service for each device and a Configuration service for all discovered devices. The Akri Agents, Controller, and \(if using external Discovery Handlers\) Debug Echo Discovery Handlers should also be created.
+By default, the Debug Echo Configuration discovers two devices, `foo1` and `foo2`, and automatically deploys an empty nginx broker Pod to each discovered device, so you should see two instances and two brokers created as a result of your installation. By default, it also creates an Instance service for each device and a Configuration service for all discovered devices. The Akri Agents, Controller, and (if using external Discovery Handlers) Debug Echo Discovery Handlers should also be created.
 
 ```bash
 watch kubectl get pods,akric,akrii,services -o wide
@@ -134,7 +134,7 @@ By default, if a broker Pod is specified, a single broker Pod is deployed to eac
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
-| debugEcho.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device \(up to 1 per Node\) |
+| debugEcho.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device (up to 1 per Node) |
 
 ## Modifying a Configuration
 

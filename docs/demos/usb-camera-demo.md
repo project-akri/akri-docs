@@ -20,9 +20,9 @@ The following will be covered in this demo:
 
    instructions for [DigitalOcean](end-to-end-demo-do.md) or \[Google Compute
 
-   Engine\]\(end-to-end-demo-gce.md\) \(and you can skip the rest of the steps in
+   Engine\](end-to-end-demo-gce.md) (and you can skip the rest of the steps in
 
-   this document\).
+   this document).
 
 1. To setup fake usb video devices, install the v4l2loopback kernel module and its prerequisites. Learn more about v4l2 loopback [here](https://github.com/umlaeute/v4l2loopback)
 
@@ -35,7 +35,7 @@ The following will be covered in this demo:
     sudo dpkg -i v4l2loopback-dkms_0.12.5-1_all.deb
    ```
 
-   > **Note** When running on Ubuntu 20.04 LTS, 18.04 LTS or 16.04 LTS, do NOT install v4l2loopback through `sudo apt install -y v4l2loopback-dkms`, you will get an older version \(0.12.3\). 0.12.5-1 is required for gstreamer to work properly.
+   > **Note** When running on Ubuntu 20.04 LTS, 18.04 LTS or 16.04 LTS, do NOT install v4l2loopback through `sudo apt install -y v4l2loopback-dkms`, you will get an older version (0.12.3). 0.12.5-1 is required for gstreamer to work properly.
 
    > **Note**: If not able to install the debian package of v4l2loopback due to using a different Linux kernel, you can clone the repo, build the module, and setup the module dependencies like so:
    >
@@ -53,7 +53,7 @@ The following will be covered in this demo:
     sudo modprobe v4l2loopback exclusive_caps=1 video_nr=1,2
    ```
 
-1. Confirm that two video device nodes \(video1 and video2\) have been created.
+1. Confirm that two video device nodes (video1 and video2) have been created.
 
    ```bash
     ls /dev/video*
@@ -91,9 +91,9 @@ Reference our [cluster setup documentation](setting-up-cluster.md) to set up a c
 
 ## Installing Akri
 
-You tell Akri what you want to find with an Akri Configuration, which is one of Akri's Kubernetes custom resources. The Akri Configuration is simply a `yaml` file that you apply to your cluster. Within it, you specify three things: 1. a Discovery Handler 2. any additional device filtering 3. an image for a Pod \(that we call a "broker"\) that you want to be automatically deployed to utilize each discovered device
+You tell Akri what you want to find with an Akri Configuration, which is one of Akri's Kubernetes custom resources. The Akri Configuration is simply a `yaml` file that you apply to your cluster. Within it, you specify three things: 1. a Discovery Handler 2. any additional device filtering 3. an image for a Pod (that we call a "broker") that you want to be automatically deployed to utilize each discovered device
 
-For this demo, we will specify \(1\) Akri's udev Discovery Handler, which is used to discover devices in the Linux device file system. Akri's udev Discovery Handler supports \(2\) filtering by udev rules. We want to find all video devices in the Linux device file system, which can be specified with the udev rule `KERNEL=="video[0-9]*"`. Say we wanted to be more specific and only discover devices made by Great Vendor, we could adjust our rule to be `KERNEL=="video[0-9]*"\, ENV{ID_VENDOR}=="Great Vendor"`. For \(3\) a broker Pod image, we will use a sample container that Akri has provided that pulls frames from the cameras and serves them over gRPC.
+For this demo, we will specify (1) Akri's udev Discovery Handler, which is used to discover devices in the Linux device file system. Akri's udev Discovery Handler supports (2) filtering by udev rules. We want to find all video devices in the Linux device file system, which can be specified with the udev rule `KERNEL=="video[0-9]*"`. Say we wanted to be more specific and only discover devices made by Great Vendor, we could adjust our rule to be `KERNEL=="video[0-9]*"\, ENV{ID_VENDOR}=="Great Vendor"`. For (3) a broker Pod image, we will use a sample container that Akri has provided that pulls frames from the cameras and serves them over gRPC.
 
 All of Akri's components can be deployed by specifying values in its Helm chart during an installation. Instead of having to build a Configuration from scratch, Akri has provided [Helm templates](../deployment/helm/templates) for Configurations for each supported Discovery Handler. Lets customize the generic [udev Configuration Helm template](../deployment/helm/templates/udev-configuration.yaml) with our three specifications above. We can also set the name for the Configuration to be `akri-udev-video`. Also, if using MicroK8s or K3s, configure the crictl path and socket using the `AKRI_HELM_CRICTL_CONFIGURATION` variable created when setting up your cluster.
 
@@ -116,7 +116,7 @@ In order for the Agent to know how to discover video devices, the udev Discovery
 
 After installing Akri, since the /dev/video1 and /dev/video2 devices are running on this node, the Akri Agent will discover them and create an Instance for each camera.
 
-1. List all that Akri has automatically created and deployed, namely Akri Configuration we created when installing Akri, two Instances \(which are the Akri custom resource that represents each device\), two broker Pods \(one for each camera\), a service for each broker Pod, a service for all brokers, the Controller Pod, Agent Pod, and the udev Discovery Handler Pod.
+1. List all that Akri has automatically created and deployed, namely Akri Configuration we created when installing Akri, two Instances (which are the Akri custom resource that represents each device), two broker Pods (one for each camera), a service for each broker Pod, a service for all brokers, the Controller Pod, Agent Pod, and the udev Discovery Handler Pod.
 
    ```bash
     watch microk8s kubectl get pods,akric,akrii,services -o wide
@@ -136,13 +136,13 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
     kubectl get akric -o yaml
    ```
 
-3. Inspect the two Instances. Notice that in the `brokerProperties` of each instance, you can see the device nodes \(`/dev/video1` or `/dev/video2`\) that the Instance represents. The `brokerProperties` of an Instance are set as environment variables in the broker Pods that are utilizing the device the Instance represents. This told the broker which device to connect to. We can also see in the Instance a usage slot and that it was reserved for this node. Each Instance represents a device and its usage.
+3. Inspect the two Instances. Notice that in the `brokerProperties` of each instance, you can see the device nodes (`/dev/video1` or `/dev/video2`) that the Instance represents. The `brokerProperties` of an Instance are set as environment variables in the broker Pods that are utilizing the device the Instance represents. This told the broker which device to connect to. We can also see in the Instance a usage slot and that it was reserved for this node. Each Instance represents a device and its usage.
 
    ```bash
     kubectl get akrii -o yaml
    ```
 
-    If this was a shared device \(such as an IP camera\), you may have wanted to increase the number of nodes that could use the same device by specifying `capacity`. There is a `capacity` parameter for each Configuration, which defaults to `1`. Its value could have been increased when installing Akri \(via `--set <discovery handler name>.configuration.capacity=2` to allow 2 nodes to use the same device\) and more usage slots \(the number of usage slots is equal to `capacity`\) would have been created in the Instance. 
+    If this was a shared device (such as an IP camera), you may have wanted to increase the number of nodes that could use the same device by specifying `capacity`. There is a `capacity` parameter for each Configuration, which defaults to `1`. Its value could have been increased when installing Akri (via `--set <discovery handler name>.configuration.capacity=2` to allow 2 nodes to use the same device) and more usage slots (the number of usage slots is equal to `capacity`) would have been created in the Instance. 
 
    **Deploying a streaming application**
 
@@ -178,7 +178,7 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
 
    > **Note** we've noticed issues with port forwarding with WSL 2. Please use a different terminal.
 
-7. Navigate to `http://localhost:50000/`. The large feed points to Configuration level service \(`udev-camera-svc`\), while the bottom feed points to the service for each Instance or camera \(`udev-camera-svc-<id>`\).
+7. Navigate to `http://localhost:50000/`. The large feed points to Configuration level service (`udev-camera-svc`), while the bottom feed points to the service for each Instance or camera (`udev-camera-svc-<id>`).
 
 ## Cleanup
 
