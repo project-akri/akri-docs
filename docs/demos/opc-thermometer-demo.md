@@ -12,7 +12,7 @@ The demo consists of the following components:
 
 ## Demo Flow
 
-![OPC UA Demo Overview](../../media/opcua-demo-diagram.svg)
+![](../../media/opcua-demo-diagram.svg)
 
 1. An operator (meaning you!) applies to a single-node cluster the OPC UA Configuration, which specifies the addresses of the OPC UA Servers, which OPC UA Variable to monitor, and whether to use security.
 2. Agent sees the OPC UA Configuration, discovers the servers specified in the Configuration, and creates an Instance for each server.

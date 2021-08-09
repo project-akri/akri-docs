@@ -6,7 +6,7 @@ Akri's Agent discovers devices described by an Akri Configuration, and for each 
 
 Akri takes a micro-service approach to deploying brokers. A broker is deployed to each Node that can see a discovered device (limited by a `capacity` that can be set in a Configuration to limit the number of Nodes that can utilize a device at once). Each broker is provisioned with device connection information and other metadata as environment variables. These environment variables come from two sources: a Configuration's `brokerProperties` and the `properties` of a `Device` discovered by a Discovery Handler. The former is where an operator can specify environment variables that will be set in brokers that utilize any device discovered via the Configuration. The latter is specific to one device and usually contains connection information such as an RTSP URL for an ONVIF camera or a devnode for a USB device. Also, while `brokerProperties` can be unique to a scenario, the `properties` environment variable keys are consistent to a Discovery Handler with values changing based on device. All the environment variables from these two sources are displayed in an Instance that represents a discovered device, making it a good reference for what environment variables the broker should expect. The image below expresses how a broker Pod's environment variables come from the two aforementioned sources.
 
-![Diagram depicting source of broker Pod environment variable](../../media/setting-broker-environment-variables.svg)
+![](../../media/setting-broker-environment-variables.svg)
 
 ## Discovery Handler specified environment variables
 

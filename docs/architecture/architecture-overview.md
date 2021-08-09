@@ -5,7 +5,7 @@ This document will describe Akri's components. The word "resource" is used to de
 ## How Akri Works
 Akri's architecture is made up of five key components: two custom resources, Discovery Handlers, an Agent (device plugin implementation), and a custom Controller. The first custom resource, the Akri Configuration, is where **you name it**. This tells Akri what kind of device it should look for. At this point, **Akri finds it**! Akri's Discovery Handlers look for the device and inform the Agent of discovered devices. The Agent then creates Akri's second custom resource, the Akri Instance, to track the availability and usage of the device. Having found your device, the Akri Controller helps **you use it**. It sees each Akri Instance (which represents a leaf device) and deploys a ("broker") Pod that knows how to connect to the resource and utilize it.
 
-![Akri Architecture](../../media/akri-architecture.svg)
+![](../../media/akri-architecture.svg)
 
 ## Custom Resource Definitions
 
@@ -64,7 +64,7 @@ For a more in-depth understanding, see [Controller In-depth](controller-in-depth
 
 ## Akri Flow - In Depth
 
-![Akri Flow Sequence Diagram](../../media/flow-sequence-diagram.svg)
+![](../../media/flow-sequence-diagram.svg)
 
 {% hint style="info" %}
 For the sake of this example, some content has been excluded from the Pod, Configuration and Instances shown below. 

@@ -6,7 +6,7 @@ ONVIF is a standard used by many IP cameras and defines discovery and access for
 
 Using Akri's default ONVIF Configuration to discover and utilize ONVIF cameras looks like the following:
 
-![Akri ONVIF Flow](../../media/onvif-flow.svg)
+![](../../media/onvif-flow.svg)
 
 1. An operator applies the ONVIF Configuration to the cluster (by enabling ONVIF when installing the Akri Helm chart). They also specific a broker image -- `akri-onvif-video-broker` in the figure.
 2. The Akri Agent uses the ONVIF Discovery Handler to discover the IP cameras and creates Instances for each discovered camera.
