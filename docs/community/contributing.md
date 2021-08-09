@@ -9,7 +9,7 @@ Akri utilizes a variety of technologies, and different background knowledge is m
 * Some understanding of [Kubernetes](https://kubernetes.io/) and [Helm](https://helm.sh/) is needed to deploy and use Akri. 
 * The Akri Controller and Agent are written in the [Rust programming language](https://www.rust-lang.org/learn). 
 * All of Akri's components run on Linux, so you will need to set up an Ubuntu VM if you do not already have a Linux environment. 
-* [Sample brokers](../proposals/new-broker-deployment-strategies.md) and end applications can be written in any language and are individually containerized.
+* [Sample brokers](../development/broker-development.md) and end applications can be written in any language and are individually containerized.
 * [Discovery handlers](../development/handler-development.md) can be written in any language and can be deployed in their own Pods. However, if you would like your discovery handler to be embedded in the Akri Agent Pods, it must be written in Rust. 
 * We use Docker to build our [containers](https://www.docker.com/resources/what-container).
 
@@ -23,7 +23,7 @@ Contributions can be made by forking the repository and creating a pull request.
 * the Akri tests all pass (`cargo test`)
 * the inline documentation builds (`cargo doc`)
 
-See the [Development](development.md) documentation for more information on how to set up your environment and build Akri components locally.
+See the [Development](../development/development-walkthrough.md) documentation for more information on how to set up your environment and build Akri components locally.
 
 ## Versioning
 
@@ -53,7 +53,7 @@ Akri follows similar logging conventions as defined by the [Tracing crate](https
 
 Akri's workflows check for three flags in the titles of PRs in order to decide whether to execute certain checks.
 
-The [version check workflow](../.github/workflows/check-versioning.yml) will run, ensuring you have increased the version number, unless you (A) only change a a file that is on an ignored path of the workflow, such as all `*.md` files OR (B) specify the `[SAME VERSION]` flag. Use this flag if your change will trigger the workflow and the version should not be changed by your PR. The flag will cause the check to automatically succeed.
+The [version check workflow](https://github.com/deislabs/akri/blob/main/.github/workflows/check-versioning.yml) will run, ensuring you have increased the version number, unless you (A) only change a a file that is on an ignored path of the workflow, such as all `*.md` files OR (B) specify the `[SAME VERSION]` flag. Use this flag if your change will trigger the workflow and the version should not be changed by your PR. The flag will cause the check to automatically succeed.
 
 Akri has some intermediate containers that decrease the build time of the more frequently built final containers. These intermediate builds are long running and should only be run when absolutely needed. If your PR triggers a workflow to build them, you will see the workflow fail and get a message that requests that you add a tag to your PR to either allow them to build (`[ALLOW INTERMEDIATE BUILDS]`) or (`[IGNORE INTERMEDIATE BUILDS]`).
 
@@ -67,5 +67,5 @@ When you submit a pull request, a CLA-bot will automatically determine whether y
 
 ## Code of Conduct
 
-Participation in the Akri community is governed by the [Code of Conduct](../CODE_OF_CONDUCT.md).
+Participation in the Akri community is governed by the [Code of Conduct](../../CODE_OF_CONDUCT.md).
 

@@ -2,7 +2,7 @@
 
 ## Background
 
-OPC UA (Object Linking and Embedding for Process Control Unified Architecture) is a communication protocol for industrial automation. Akri has implemented a Discovery Handler for discovering OPC UA Servers that live at specified endpoints or are registered with specified Local Discovery Servers. Background on the OPC UA Discovery Handler implementation can be found in the [proposal](proposals/opcua.md). To try out using Akri to discover and utilize OPC UA servers, see the [OPC UA end-to-end demo](../demos/opc-thermometer-demo.md).
+OPC UA (Object Linking and Embedding for Process Control Unified Architecture) is a communication protocol for industrial automation. Akri has implemented a Discovery Handler for discovering OPC UA Servers that live at specified endpoints or are registered with specified Local Discovery Servers. Background on the OPC UA Discovery Handler implementation can be found in the [proposal](../../proposals/opcua.md). To try out using Akri to discover and utilize OPC UA servers, see the [OPC UA end-to-end demo](../demos/opc-thermometer-demo.md).
 
 All of Akri's components can be deployed by specifying values in its Helm chart during an installation. This section will cover the values that should be set to (1) deploy the OPC UA Discovery Handlers and (2) apply a Configuration that tells Akri to discover devices using that Discovery Handler.
 
@@ -37,7 +37,7 @@ If you would like workloads ("broker" Pods) to be deployed automatically to disc
 
 ### Mounting Credentials Settings
 
-See [Mounting OPC UA credentials to enable security]() for more details on how to use this setting.
+See [Mounting OPC UA credentials to enable security](#mounting-opc-ua-credentials-to-enable-security) for more details on how to use this setting.
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -158,9 +158,9 @@ helm install akri akri-helm-charts/akri \
 
 ### Mounting OPC UA credentials to enable security
 
-For your broker pod to utilize a discovered OPC UA server, it will need to contain an OPC UA Client. OPC UA Clients and Servers can establish an insecure connection so long as the OPC UA Servers support a Security Policy of None. However, if you would like your broker's OPC UA Client to establish a secure connection with an OPC UA server, the Client and Server must trust each other's x509 v3 certificates. This can be done in one of the three ways explained in the [OPC UA proposal](proposals/opcua.configuration.md#giving-proper-credentials-to-the-akri-broker). The simplest method is to sign the OPC UA broker's certificate with the same Certificate Authority (CA) as the Server with which it wishes to connect. The certificates are passed to the broker via a Kubernetes Secret mounted as a volume to the directory `/etc/opcua-certs/client-pki`.
+For your broker pod to utilize a discovered OPC UA server, it will need to contain an OPC UA Client. OPC UA Clients and Servers can establish an insecure connection so long as the OPC UA Servers support a Security Policy of None. However, if you would like your broker's OPC UA Client to establish a secure connection with an OPC UA server, the Client and Server must trust each other's x509 v3 certificates. This can be done in one of the three ways explained in the [OPC UA proposal](../../proposals/opcua.md#giving-proper-credentials-to-the-akri-broker). The simplest method is to sign the OPC UA broker's certificate with the same Certificate Authority (CA) as the Server with which it wishes to connect. The certificates are passed to the broker via a Kubernetes Secret mounted as a volume to the directory `/etc/opcua-certs/client-pki`.
 
-It is the operator's responsibility to generate the certificates and securely create a Kubernetes Secret named `opcua-broker-credentials`, ideally using a KMS. More information about using Kubernetes Secrets securely can be found in the [credentials passing proposal](proposals/credentials-passing.md). The following is an example kubectl command to create the Kubernetes Secret, projecting each certificate/crl/private key with the expected key name (ie `client_certificate`, `client_key`, `ca_certificate`, and `ca_crl`).
+It is the operator's responsibility to generate the certificates and securely create a Kubernetes Secret named `opcua-broker-credentials`, ideally using a KMS. More information about using Kubernetes Secrets securely can be found in the [credentials passing proposal](../../proposals/credentials-passing.md). The following is an example kubectl command to create the Kubernetes Secret, projecting each certificate/crl/private key with the expected key name (ie `client_certificate`, `client_key`, `ca_certificate`, and `ca_crl`).
 
 ```bash
 kubectl create secret generic opcua-broker-credentials \

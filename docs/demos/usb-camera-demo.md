@@ -18,11 +18,11 @@ The following will be covered in this demo:
 
    commands. If you would like to deploy the demo to a cloud-based VM, see the
 
-   instructions for [DigitalOcean](end-to-end-demo-do.md) or \[Google Compute
+   guides on Akri's HackMD for [DigitalOcean](https://hackmd.io/@akri/Hyz1GW1gY) or \[Google Compute
 
-   Engine\](end-to-end-demo-gce.md) (and you can skip the rest of the steps in
+   Engine\](https://hackmd.io/@akri/rJHdQWJeF) (and you can skip the rest of the steps in
 
-   this document).
+   this document). Note, these guides are unmaintained and may not be up to date.
 
 1. To setup fake usb video devices, install the v4l2loopback kernel module and its prerequisites. Learn more about v4l2 loopback [here](https://github.com/umlaeute/v4l2loopback)
 
@@ -85,17 +85,21 @@ The following will be covered in this demo:
 
 ## Setting up a cluster
 
-Reference our [cluster setup documentation](setting-up-cluster.md) to set up a cluster for this demo. For ease of setup, only create single-node cluster, so if installing K3s or MicroK8s, you can skip the last step of the installation instructions of adding additional nodes. If you have an existing cluster, feel free to leverage it for the demo. This documentation assumes you are using a single-node cluster; however, you can certainly use a multi-node cluster. You will see additional Akri Agents and Discovery Handlers deployed [when inspecting the Akri installation]().
+Reference our [cluster setup documentation](../user-guide/cluster-setup.md) to set up a cluster for this demo. For ease of setup, only create single-node cluster, so if installing K3s or MicroK8s, you can skip the last step of the installation instructions of adding additional nodes. If you have an existing cluster, feel free to leverage it for the demo. This documentation assumes you are using a single-node cluster; however, you can certainly use a multi-node cluster. You will see additional Akri Agents and Discovery Handlers deployed [when inspecting the Akri installation](#Inspecting-Akri).
 
-> Note, if using MicroK8s, enable privileged Pods, as the udev video broker pods run privileged to easily grant them access to video devices. More explicit device access could have been configured by setting the appropriate [security context](udev-configuration.md#setting-the-broker-pod-security-context) in the broker PodSpec in the Configuration.
+> Note, if using MicroK8s, enable privileged Pods, as the udev video broker pods run privileged to easily grant them access to video devices. More explicit device access could have been configured by setting the appropriate [security context](../discovery-handlers/udev.md#setting-the-broker-pod-security-context) in the broker PodSpec in the Configuration.
 
 ## Installing Akri
 
-You tell Akri what you want to find with an Akri Configuration, which is one of Akri's Kubernetes custom resources. The Akri Configuration is simply a `yaml` file that you apply to your cluster. Within it, you specify three things: 1. a Discovery Handler 2. any additional device filtering 3. an image for a Pod (that we call a "broker") that you want to be automatically deployed to utilize each discovered device
+You tell Akri what you want to find with an Akri Configuration, which is one of Akri's Kubernetes custom resources. The Akri Configuration is simply a `yaml` file that you apply to your cluster. Within it, you specify three things: 
+
+1. a Discovery Handler 
+2. any additional device filtering 
+3. an image for a Pod (that we call a "broker") that you want to be automatically deployed to utilize each discovered device
 
 For this demo, we will specify (1) Akri's udev Discovery Handler, which is used to discover devices in the Linux device file system. Akri's udev Discovery Handler supports (2) filtering by udev rules. We want to find all video devices in the Linux device file system, which can be specified with the udev rule `KERNEL=="video[0-9]*"`. Say we wanted to be more specific and only discover devices made by Great Vendor, we could adjust our rule to be `KERNEL=="video[0-9]*"\, ENV{ID_VENDOR}=="Great Vendor"`. For (3) a broker Pod image, we will use a sample container that Akri has provided that pulls frames from the cameras and serves them over gRPC.
 
-All of Akri's components can be deployed by specifying values in its Helm chart during an installation. Instead of having to build a Configuration from scratch, Akri has provided [Helm templates](../deployment/helm/templates) for Configurations for each supported Discovery Handler. Lets customize the generic [udev Configuration Helm template](../deployment/helm/templates/udev-configuration.yaml) with our three specifications above. We can also set the name for the Configuration to be `akri-udev-video`. Also, if using MicroK8s or K3s, configure the crictl path and socket using the `AKRI_HELM_CRICTL_CONFIGURATION` variable created when setting up your cluster.
+All of Akri's components can be deployed by specifying values in its Helm chart during an installation. Instead of having to build a Configuration from scratch, Akri has provided [Helm templates](https://github.com/deislabs/akri/blob/main/deployment/helm/templates) for Configurations for each supported Discovery Handler. Lets customize the generic [udev Configuration Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/udev-configuration.yaml) with our three specifications above. We can also set the name for the Configuration to be `akri-udev-video`. Also, if using MicroK8s or K3s, configure the crictl path and socket using the `AKRI_HELM_CRICTL_CONFIGURATION` variable created when setting up your cluster.
 
 In order for the Agent to know how to discover video devices, the udev Discovery Handler must exist. Akri supports an Agent image that includes all supported Discovery Handlers. This Agent will be used if `agent.full=true` is set. By default, a slim Agent without any embedded Discovery Handlers is deployed and the required Discovery Handlers can be deployed as DaemonSets. This demo will use that strategy, deploying the udev Discovery Handlers by specifying `udev.discovery.enabled=true` when installing Akri.
 
@@ -248,9 +252,31 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
 
 ## Going beyond the demo
 
-1. Plug in real cameras! You can [pass environment variables](broker-development#Specifying-additional-broker-environment-variables-in-a-Configuration) to the frame server broker to specify the format, resolution width/height, and frames per second of your cameras.
-2. Apply the [ONVIF Configuration](onvif-configuration.md) and make the streaming app display footage from both the local video devices and onvif cameras. To do this, modify the [video streaming yaml](../deployment/samples/akri-video-streaming-app.yaml) as described in the inline comments in order to create a larger service that aggregates the output from both the `udev-camera-svc` service and `onvif-camera-svc` service.
+1. Plug in real cameras! You can [pass environment variables](../development/broker-development.md#Specifying-additional-broker-environment-variables-in-a-Configuration) to the frame server broker to specify the format, resolution width/height, and frames per second of your cameras.
+2. Apply the [ONVIF Configuration](../discovery-handlers/onvif.md) and make the streaming app display footage from both the local video devices and onvif cameras. To do this, modify the [video streaming yaml](https://github.com/deislabs/akri/blob/main/deployment/samples/akri-video-streaming-app.yaml) as described in the inline comments in order to create a larger service that aggregates the output from both the `udev-camera-svc` service and `onvif-camera-svc` service.
 3. Add more nodes to the cluster.
-4. [Modify the udev rule](udev-video-sample.md#modifying-the-udev-rule) to find a more specific subset of cameras.
-5. Discover other udev devices by creating a new udev configuration and broker. Learn more about the udev Discovery Handler Configuration [here](udev-configuration.md).
+4. Modify the udev rule to find a more specific subset of cameras
+   Instead of finding all video4linux device nodes, the udev rule can be modified to exclude certain device nodes, find devices only made by a certain manufacturer, and more. For example, the rule can be narrowed by matching cameras with specific properties. To see the properties of a camera on a node, do `udevadm info --query=property --name /dev/video0`, passing in the proper devnode name. In this example, `ID_VENDOR=Microsoft` was one of the outputted properties. To only find cameras made by Microsoft, the rule can be modified like the following:
+   ```bash
+   helm repo add akri-helm-charts https://deislabs.github.io/akri/
+   helm install akri akri-helm-charts/akri \
+      --set udev.discovery.enabled=true \
+      --set udev.configuration.enabled=true \
+      --set udev.configuration.name=akri-udev-video \
+      --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_VENDOR}=="Microsoft"' \
+      --set udev.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/udev-video-broker" 
+   ```
+
+   As another example, to make sure that the camera has a capture capability rather than just being a video output device, modify the udev rule as follows: 
+   ```bash
+   helm repo add akri-helm-charts https://deislabs.github.io/akri/
+   helm install akri akri-helm-charts/akri \
+      --set udev.discovery.enabled=true \
+      --set udev.configuration.enabled=true \
+      --set udev.configuration.name=akri-udev-video \
+      --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}=="*:capture:*"' \
+      --set udev.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/udev-video-broker" 
+   ```
+5. Discover other udev devices by creating a new udev configuration and broker. Learn more about the udev Discovery Handler Configuration [here](../discovery-handlers/udev.md).
+
 

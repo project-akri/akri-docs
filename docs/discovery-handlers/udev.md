@@ -12,7 +12,7 @@ In order for the Agent to discover udev devices, a udev Discovery Handler must e
 
 ## udev Configuration Settings
 
-Instead of having to assemble your own udev Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/udev-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for udev (to see them, run `helm inspect values akri-helm-charts/akri`). To apply the udev Configuration to your cluster, simply set `udev.configuration.enabled=true` when installing Akri. Be sure to also **specify one or more udev rules** for the Configuration, as explained [below]().
+Instead of having to assemble your own udev Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/udev-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for udev (to see them, run `helm inspect values akri-helm-charts/akri`). To apply the udev Configuration to your cluster, simply set `udev.configuration.enabled=true` when installing Akri. Be sure to also **specify one or more udev rules** for the Configuration, as explained [below](#discovery-handler-discovery-details-settings).
 
 ### Discovery Handler Discovery Details Settings
 
@@ -20,7 +20,7 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
-| udev.configuration.discoveryDetails.udevRules | array of udev rules | empty | udev rule [supported by the udev Discovery Handler]() |
+| udev.configuration.discoveryDetails.udevRules | array of udev rules | empty | udev rule [supported by the udev Discovery Handler](#udev-rule-format) |
 
 The udev Discovery Handler parses the udev rules listed in a Configuration, searches for them using udev, and returns a list of discovered device nodes (ie: /dev/video0). It parses the udev rules via a grammar [grammar](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) Akri has created. It expects the udev rules to be formatted according to the [Linux Man pages](https://linux.die.net/man/7/udev).
 

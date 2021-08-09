@@ -256,7 +256,7 @@ Now that you can discover new devices, see our [documentation on creating broker
 Now that you have a working Discovery Handler and broker, we'd love for you to contribute your code to Akri. The following steps will need to be completed to do so: 
 
 1. Create an Issue with a feature request for this Discovery Handler.
-2. Create a proposal and put in PR for it to be added to the [proposals folder](../proposals/untitled-1.md). 
+2. Create a proposal and put in PR for it to be added to the [proposals folder](../../proposals). 
 3. Implement your Discovery Handler and a document named `/akri/docs/<name>-configuration.md` on how to create a Configuration that uses your Discovery Handler.
 4. Create a pull request, that includes Discovery Handler and Dockerfile in the [Discovery Handler modules](https://github.com/deislabs/akri/tree/main/discovery-handler-modules) and [build](https://github.com/deislabs/akri/tree/main/build/containers) directories, respectively. Be sure to also update the minor version of Akri. See [contributing](../community/contributing.md#versioning) to learn more about our versioning strategy.
 

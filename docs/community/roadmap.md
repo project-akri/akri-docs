@@ -24,5 +24,5 @@ There are endless sensors, controllers, and MCU class devices on the edge and ea
 
 ## New broker deployment strategies
 
-Currently, for every leaf device that is discovered by a node's Akri Agent, a single broker is deployed to that node -- how many nodes get the broker is limited by capacity. This is a fairly specific implementation that does not support all users' scenarios. The [New Broker Deployment Strategies proposal](../proposals/new-broker-deployment-strategies.md) discusses some ways the Akri Controller and Agent could be extended to allow for other broker deployment strategies.
+Currently, for every leaf device that is discovered by a node's Akri Agent, a single broker is deployed to that node -- how many nodes get the broker is limited by capacity. This is a fairly specific implementation that does not support all users' scenarios. The [New Broker Deployment Strategies proposal](../../proposals/broker-deployment-strategies.md) discusses some ways the Akri Controller and Agent could be extended to allow for other broker deployment strategies.
 
