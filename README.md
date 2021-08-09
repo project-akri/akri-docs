@@ -11,12 +11,10 @@ within `docs`.
 
 Akri's documentation is divided into six sections:
 1. :blue_book: User Guide: Documentation for Akri users.
-1. :computer: Development: Documentation for Akri developers or how to build, test, and extend Akri.
+1. :mag_right: Discovery Handlers: Documentation on how to configure Akri using Akri's currently supported Discovery Handlers
+1. :rocket: Demos: End-to-End demos that demostrate how Akri can discover and use devices. Contain sample brokers and end applications.
 1. :gear: Architecture: Documentation that details the design and implementation of Akri's components.
-1. :mag_right: Discovery Handlers: Documentation on how to configure Akri using Akri's currently supported Discovery
-   Handlers
-1. :rocket: Demos: End-to-End demos that demostrate how Akri can discover and use devices. Contain sample brokers and
-   end applications.
+1. :computer: Development: Documentation for Akri developers or how to build, test, and extend Akri.
 1. :tada: Community: Information on what's next for Akri and how to get involved! 
 
 Then, link to it in [`SUMMARY.md`](docs/SUMMARY.md) to ensure it is displayed on Akri's site. 
