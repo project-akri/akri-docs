@@ -80,7 +80,9 @@ discoveryHandler:
 
 ### Testing a udev rule
 
-To test which devices Akri will discover with a udev rule, you can run the rule locally adding a tag action to it. Then you can search for all devices with that tag, which will be the ones discovered by Akri. 1. Create a new rules file called `90-akri.rules` in the `/etc/udev/rules.d` directory, and add your udev rule\(s\) to it. For this example, we will be testing the rule `SUBSYSTEM=="sound", KERNEL=="card[0-9]*"`. Add `TAG+="akri_tag"` to the end of each rule. Note how 90 is the prefix to the file name. This makes sure these rules are run after the others in the default `70-snap.core.rules`, preventing them from being overwritten. Feel free to explore `70-snap.core.rules` to see numerous examples of udev rules.
+To test which devices Akri will discover with a udev rule, you can run the rule locally adding a tag action to it. Then you can search for all devices with that tag, which will be the ones discovered by Akri. 
+
+1. Create a new rules file called `90-akri.rules` in the `/etc/udev/rules.d` directory, and add your udev rule\(s\) to it. For this example, we will be testing the rule `SUBSYSTEM=="sound", KERNEL=="card[0-9]*"`. Add `TAG+="akri_tag"` to the end of each rule. Note how 90 is the prefix to the file name. This makes sure these rules are run after the others in the default `70-snap.core.rules`, preventing them from being overwritten. Feel free to explore `70-snap.core.rules` to see numerous examples of udev rules.
 
 ```bash
       sudo echo 'SUBSYSTEM=="sound", KERNEL=="card[0-9]*", TAG+="akri_tag"' | sudo tee -a /etc/udev/rules.d/90-akri.rules
@@ -93,20 +95,20 @@ To test which devices Akri will discover with a udev rule, you can run the rule 
     sudo udevadm trigger
    ```
 
-2. List the devices that have been tagged, which Akri will discover. Akri will only discover devices with device nodes \(devices within the `/dev` directory\). These device node paths will be mounted into broker Pods so the brokers can utilize the devices.
+1. List the devices that have been tagged, which Akri will discover. Akri will only discover devices with device nodes \(devices within the `/dev` directory\). These device node paths will be mounted into broker Pods so the brokers can utilize the devices.
 
    ```bash
     udevadm trigger --verbose --dry-run --type=devices --tag-match=akri_tag | xargs -l bash -c 'if [ -e $0/dev ]; then echo $0/dev; fi'
    ```
 
-3. Explore the attributes of each device in order to decide how to refine your udev rule.
+1. Explore the attributes of each device in order to decide how to refine your udev rule.
 
    ```bash
     udevadm trigger --verbose --dry-run --type=devices --tag-match=akri_tag | xargs -l bash -c 'if [ -e $0/dev ]; then echo $0; fi' | xargs -l bash -c 'udevadm info --path=$0 --attribute-walk' | less
    ```
 
-4. Modify the rule as needed, being sure to reload and trigger the rules each time.
-5. Remove the tag from the devices -- note how  `+=` turns to `-=` -- and reload and trigger the udev rules. Alternatively, if you are trying to discover devices with fields that Akri does not yet support, such as `ATTRS`, you could leave the tag and add it to the rule in your Configuration with `TAG=="akri_tag"`.
+1. Modify the rule as needed, being sure to reload and trigger the rules each time.
+1. Remove the tag from the devices -- note how  `+=` turns to `-=` -- and reload and trigger the udev rules. Alternatively, if you are trying to discover devices with fields that Akri does not yet support, such as `ATTRS`, you could leave the tag and add it to the rule in your Configuration with `TAG=="akri_tag"`.
 
    ```bash
       sudo echo 'SUBSYSTEM=="sound", KERNEL=="card[0-9]*", TAG-="akri_tag"' | sudo tee -a /etc/udev/rules.d/90-akri.rules
@@ -114,13 +116,13 @@ To test which devices Akri will discover with a udev rule, you can run the rule 
       sudo udevadm trigger
    ```
 
-6. Confirm that the tag has been removed and no devices are listed.
+1. Confirm that the tag has been removed and no devices are listed.
 
    ```bash
     udevadm trigger --verbose --dry-run --type=devices --tag-match=akri_tag
    ```
 
-7. Create an Akri Configuration with your udev rule!
+1. Create an Akri Configuration with your udev rule!
 
 ## Installing Akri with a udev Configuration and Discovery Handler
 
@@ -194,5 +196,10 @@ Akri has provided further documentation on [modifying the broker PodSpec](../use
 
 ## Implementation details
 
-The udev implementation can be understood by looking at several things: 1. [UdevDiscoveryDetails](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines the required properties 1. [UdevDiscoveryHandler](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines udev discovery 1. [samples/brokers/udev-video-broker](https://github.com/deislabs/akri/blob/main/samples/brokers/udev-video-broker) defines the udev broker 1. [udev\_rule\_grammar.pest](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) defines the grammar for parsing udev rules and enumerate which fields are supported \(such as `ATTR` and `TAG`\), which are yet to be supported \(`ATTRS` and `TAGS`\), and which fields will never be supported, mainly due to be assignment rather than matching fields \(such as `ACTION` and `GOTO`\).
+The udev implementation can be understood by looking at several things: 
+
+1. [UdevDiscoveryDetails](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines the required properties 
+1. [UdevDiscoveryHandler](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines udev discovery 
+1. [samples/brokers/udev-video-broker](https://github.com/deislabs/akri/blob/main/samples/brokers/udev-video-broker) defines the udev broker 
+1. [udev\_rule\_grammar.pest](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) defines the grammar for parsing udev rules and enumerate which fields are supported \(such as `ATTR` and `TAG`\), which are yet to be supported \(`ATTRS` and `TAGS`\), and which fields will never be supported, mainly due to be assignment rather than matching fields \(such as `ACTION` and `GOTO`\).
 

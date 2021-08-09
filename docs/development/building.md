@@ -64,9 +64,13 @@ For each component, there will be a common set of targets:
 
 ### Adding a new component
 
-To add a new Rust-based component, follow these steps \(substituting the new component name for `<new-component>`\): 1. Add `$(eval $(call add_rust_targets,<new-component>,<new-component>))` to `build/akri-containers.mk` 1. Create `build/Dockerfile.<new-component>`
+To add a new Rust-based component, follow these steps \(substituting the new component name for `<new-component>`\): 
 
-> A simple way to do this is to copy `build/Dockerfile.agent` and replace `agent` with whatever `<new-component>` is. 1. Create `.github/workflows/build-<new-component>-container.yml` A simple way to do this is to copy `.github/workflows/build-agent-container.yml` and replace `agent` with whatever `<new-component>` is.
+1. Add `$(eval $(call add_rust_targets,<new-component>,<new-component>))` to `build/akri-containers.mk` 
+1. Create `build/Dockerfile.<new-component>`
+> A simple way to do this is to copy `build/Dockerfile.agent` and replace `agent` with whatever `<new-component>` is. 
+
+1. Create `.github/workflows/build-<new-component>-container.yml` A simple way to do this is to copy `.github/workflows/build-agent-container.yml` and replace `agent` with whatever `<new-component>` is.
 
 ## Intermediate components
 
@@ -83,7 +87,10 @@ This container is used by the Akri cross-build process. The main purpose of thes
 BUILD_AMD64=1 BUILD_ARM32=1 BUILD_AMD64=1 make rust-crossbuild
 ```
 
-If a change needs to be made to this container, 2 pull requests are needed. 1. Create PR with desired `rust-crossbuild` changes \(new dependencies, etc\) AND update `BUILD_RUST_CROSSBUILD_VERSION` in `build/intermediate-containers.mk`. This PR is intended to create the new version of `rust-crossbuild` \(not to use it\). 1. After 1st PR is merged and the new version of `rust-crossbuild` is pushed to ghcr.io/akri, create PR with any changes that will leverage the new version of `rust-crossbuild` AND update `Cross.toml` \(the `BUILD_RUST_CROSSBUILD_VERSION` value specified in step 1 should be each label's suffix\). This PR is intended to **use** the new version of `rust-crossbuild`.
+If a change needs to be made to this container, 2 pull requests are needed. 
+
+1. Create PR with desired `rust-crossbuild` changes \(new dependencies, etc\) AND update `BUILD_RUST_CROSSBUILD_VERSION` in `build/intermediate-containers.mk`. This PR is intended to create the new version of `rust-crossbuild` \(not to use it\). 
+1. After 1st PR is merged and the new version of `rust-crossbuild` is pushed to ghcr.io/akri, create PR with any changes that will leverage the new version of `rust-crossbuild` AND update `Cross.toml` \(the `BUILD_RUST_CROSSBUILD_VERSION` value specified in step 1 should be each label's suffix\). This PR is intended to **use** the new version of `rust-crossbuild`.
 
 ### opencvsharp-build
 
@@ -93,7 +100,10 @@ This container is used by the [onvif-video-broker](https://github.com/orgs/deisl
 BUILD_AMD64=1 BUILD_ARM32=1 BUILD_AMD64=1 make opencv-base
 ```
 
-If a change needs to be made to this container, 2 pull requests are needed. 1. Create PR with desired `opencvsharp-build` changes \(new dependencies, etc\) AND update `BUILD_OPENCV_BASE_VERSION` in `build/intermediate-containers.mk`. This PR is intended to create the new version of `opencvsharp-build` \(not to use it\). 1. After 1st PR is merged and the new version of `opencvsharp-build` is pushed to ghcr.io/akri, create PR with any changes that will leverage the new version of `opencvsharp-build` AND update `USE_OPENCV_BASE_VERSION` in `build/akri-containers.mk`. This PR is intended to **use** the new version of `opencvsharp-build`.
+If a change needs to be made to this container, 2 pull requests are needed. 
+
+1. Create PR with desired `opencvsharp-build` changes \(new dependencies, etc\) AND update `BUILD_OPENCV_BASE_VERSION` in `build/intermediate-containers.mk`. This PR is intended to create the new version of `opencvsharp-build` \(not to use it\). 
+1. After 1st PR is merged and the new version of `opencvsharp-build` is pushed to ghcr.io/akri, create PR with any changes that will leverage the new version of `opencvsharp-build` AND update `USE_OPENCV_BASE_VERSION` in `build/akri-containers.mk`. This PR is intended to **use** the new version of `opencvsharp-build`.
 
 ## Automated builds usage
 
@@ -133,7 +143,9 @@ LABEL_PREFIX=`latest-dev` make <component>-docker-multi-arch-push
 
 For development and/or testing, it can be convenient to run Akri without a Container Registry. For example, the Akri CI tests that validate pull requests build Akri components locally, store the containers only in local docker, and configure Helm to only use the local docker containers.
 
-There are two steps to this. For the sake of this demonstration, only the amd64 version of the agent and controller will be built, but this method can be extended to any and all components: 1. Build:
+There are two steps to this. For the sake of this demonstration, only the amd64 version of the agent and controller will be built, but this method can be extended to any and all components: 
+
+1. Build:
 
 ```bash
     # Only build AMD64

@@ -190,7 +190,8 @@ Akri has provided further documentation on [modifying the broker PodSpec](../use
 
 ## Implementation details
 
-The OPC UA implementation can be understood by looking at several things: 
+The OPC UA implementation can be understood by looking at several things:
+ 
 1. [OpcuaDiscoveryDetails](https://github.com/deislabs/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines the required properties. 
 1. [OpcuaDiscoveryHandler](https://github.com/deislabs/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines OPC UA Server discovery. 
 1. [sample-brokers/opcua-monitoring-broker](https://github.com/deislabs/akri/tree/main/samples/brokers/opcua-monitoring-broker) defines a sample OPC UA protocol broker that monitors an OPC UA Variable with a specific NodeID.

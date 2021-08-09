@@ -259,12 +259,13 @@ Now that you have a working Discovery Handler and broker, we'd love for you to c
 3. Implement your Discovery Handler and a document named `/akri/docs/<name>-configuration.md` on how to create a Configuration that uses your Discovery Handler.
 4. Create a pull request, that includes Discovery Handler and Dockerfile in the [Discovery Handler modules](https://github.com/deislabs/akri/tree/main/discovery-handler-modules) and [build](https://github.com/deislabs/akri/tree/main/build/containers) directories, respectively. Be sure to also update the minor version of Akri. See [contributing](../community/contributing.md#versioning) to learn more about our versioning strategy.
 
-For a Discovery Handler to be considered fully implemented the following must be included in the PR. 1. A new [`DiscoveryHandler`](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto) implementation
+For a Discovery Handler to be considered fully implemented the following must be included in the PR. 
 
-1. A [sample broker](broker-development.md) for the new resource.
-2. A sample Configuration that uses the new protocol in the form of a Helm template and values. 
-3. \(Optional\) A sample end application that utilizes the services exposed by the Configuration 
-4. Dockerfile\[s\] for broker \[and sample app\] and associated update to the [makefile](https://github.com/deislabs/akri/blob/main/build/akri-containers.mk)
-5. Github workflow\[s\] for broker \[and sample app\] to build containers and push to Akri container repository.
-6. Documentation on how to use the new sample Configuration, like the [udev Configuration document](../discovery-handlers/udev.md)
+1. A new [`DiscoveryHandler`](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto) implementation
+2. A [sample broker](broker-development.md) for the new resource.
+3. A sample Configuration that uses the new protocol in the form of a Helm template and values. 
+4. \(Optional\) A sample end application that utilizes the services exposed by the Configuration 
+5. Dockerfile\[s\] for broker \[and sample app\] and associated update to the [makefile](https://github.com/deislabs/akri/blob/main/build/akri-containers.mk)
+6. Github workflow\[s\] for broker \[and sample app\] to build containers and push to Akri container repository.
+7. Documentation on how to use the new sample Configuration, like the [udev Configuration document](../discovery-handlers/udev.md)
 

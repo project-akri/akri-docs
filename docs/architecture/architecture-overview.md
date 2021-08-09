@@ -4,6 +4,7 @@ This document will describe Akri's components. The word "resource" is used to de
 
 ## How Akri Works
 Akri's architecture is made up of five key components: two custom resources, Discovery Handlers, an Agent (device plugin implementation), and a custom Controller. The first custom resource, the Akri Configuration, is where **you name it**. This tells Akri what kind of device it should look for. At this point, **Akri finds it**! Akri's Discovery Handlers look for the device and inform the Agent of discovered devices. The Agent then creates Akri's second custom resource, the Akri Instance, to track the availability and usage of the device. Having found your device, the Akri Controller helps **you use it**. It sees each Akri Instance (which represents a leaf device) and deploys a ("broker") Pod that knows how to connect to the resource and utilize it.
+
 ![Akri Architecture](../../media/akri-architecture.svg)
 
 ## Custom Resource Definitions
@@ -33,7 +34,11 @@ Each Instance represents an individual resource that is visible to the cluster. 
 
 The Akri Agent implements [Kubernetes Device-Plugins](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/) for discovered resources.
 
-The basic flow of the Akri Agent is: 1. Watch for Configuration changes to determine what resources to search for 1. Monitor resource availability \(as edge devices may come and go\) to determine what resources to advertise 1. Inform Kubernetes of resource health/availability as it changes
+The basic flow of the Akri Agent is: 
+
+1. Watch for Configuration changes to determine what resources to search for 
+1. Monitor resource availability \(as edge devices may come and go\) to determine what resources to advertise 
+1. Inform Kubernetes of resource health/availability as it changes
 
 This basic flow combined with the state stored in the Instance allows multiple nodes to share a resource while respecting the limitations defined by Configuration.capacity.
 
@@ -58,7 +63,9 @@ This basic flow allows the Akri controller to ensure that protocol brokers and K
 For a more in-depth understanding, see [Controller In-depth](controller-in-depth.md).
 
 ## Akri Flow - In Depth
+
 ![Akri Flow Sequence Diagram](../../media/flow-sequence-diagram.svg)
+
 {% hint style="info" %}
 For the sake of this example, some content has been excluded from the Pod, Configuration and Instances shown below. 
 {% endhint %}
