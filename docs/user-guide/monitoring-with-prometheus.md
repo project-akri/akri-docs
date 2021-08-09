@@ -101,15 +101,11 @@ As an example, an `akri_frame_count` metric has been created in the sample [udev
         --set udev.brokerPod.image.repository="ghcr.io/deislabs/akri/udev-video-broker"
    ```
 
-   > This instruction assumes you are using vanilla Kubernetes. Be sure to reference the user guide to determine whether the distribution you are using requires crictl path configuration.
-   >
-   >
-   >
-   > Expose the Agent and Controller's Prometheus metrics by adding `--set prometheus.enabled=true`.
-   >
-   >
-   >
-   > If Prometheus is running in a different namespace as Akri and was not enabled to discover ServiceMonitors in other namespaces when installed, upgrade your Prometheus Helm installation to set `prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues` to `false`.
+   > **Note**: This instruction assumes you are using vanilla Kubernetes. Be sure to reference the user guide to determine whether the distribution you are using requires crictl path configuration.
+   
+   > **Note**: To expose the Agent and Controller's Prometheus metrics, add `--set prometheus.enabled=true`.
+
+   > **Note**: If Prometheus is running in a different namespace as Akri and was not enabled to discover ServiceMonitors in other namespaces when installed, upgrade your Prometheus Helm installation to set `prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues` to `false`.
    >
    > > ```bash
    > > helm upgrade prometheus prometheus-community/kube-prometheus-stack \

@@ -402,30 +402,31 @@ kubectl expose deployment/device \
 
 Now that we have created a HTTP Discovery Handler and created some mock devices, let's deploy Akri and see how it discovers the devices and creates Akri Instances for each Device.
 
-> Optional: If you've previous installed Akri and wish to reset, you may:
->
-> ```bash
-> # Delete Akri Helm
-> sudo helm delete akri
-> ```
+{% hint style="info" %}
+Optional: If you've previous installed Akri and wish to reset, you may:
+
+```bash
+sudo helm delete akri
+```
+{% endhint %}
 
 Akri has provided helm templates for custom Discovery Handlers and their Configurations. These templates are provided as a starting point. They may need to be modified to meet the needs of a Discovery Handler. When installing Akri, specify that you want to deploy a custom Discovery Handler as a DaemonSet by setting `custom.discovery.enabled=true`. Specify the container for that DaemonSet as the HTTP discovery handler that you built [above](development-walkthrough.md#build-the-discoveryhandler-container) by setting `custom.discovery.image.repository=$DH_IMAGE` and `custom.discovery.image.repository=$TAGS`. To automatically deploy a custom Configuration, set `custom.configuration.enabled=true`. We will customize this Configuration to contain the discovery endpoint needed by our HTTP Discovery Handler by setting it in the `discovery_details` string of the Configuration, like so: `custom.configuration.discoveryDetails=http://discovery:9999/discovery`. We also need to set the name the Discovery Handler will register under \(`custom.configuration.discoveryHandlerName`\) and a name for the Discovery Handler and Configuration \(`custom.discovery.name` and `custom.configuration.name`\). All these settings come together as the following Akri installation command:
 
 > Note: Be sure to consult the [user guide](../user-guide/getting-started.md) to see whether your Kubernetes distribution needs any additional configuration.
->
-> ```bash
->   helm repo add akri-helm-charts https://deislabs.github.io/akri/
->   helm install akri akri-helm-charts/akri \
->     --set imagePullSecrets[0].name="crPullSecret" \
->     --set custom.discovery.enabled=true  \
->     --set custom.discovery.image.repository=$DH_IMAGE \
->     --set custom.discovery.image.tag=$TAGS \
->     --set custom.discovery.name=akri-http-discovery  \
->     --set custom.configuration.enabled=true  \
->     --set custom.configuration.name=akri-http  \
->     --set custom.configuration.discoveryHandlerName=http \
->     --set custom.configuration.discoveryDetails=http://discovery:9999/discovery
-> ```
+
+```bash
+  helm repo add akri-helm-charts https://deislabs.github.io/akri/
+  helm install akri akri-helm-charts/akri \
+    --set imagePullSecrets[0].name="crPullSecret" \
+    --set custom.discovery.enabled=true  \
+    --set custom.discovery.image.repository=$DH_IMAGE \
+    --set custom.discovery.image.tag=$TAGS \
+    --set custom.discovery.name=akri-http-discovery  \
+    --set custom.configuration.enabled=true  \
+    --set custom.configuration.name=akri-http  \
+    --set custom.configuration.discoveryHandlerName=http \
+    --set custom.configuration.discoveryDetails=http://discovery:9999/discovery
+```
 
 Watch as the Agent, Controller, and Discovery Handler Pods are spun up and as Instances are created for each of the discovery devices.
 

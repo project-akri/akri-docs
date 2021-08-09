@@ -160,56 +160,57 @@ This template abstracts away the work of registering with the Agent and creating
 
 Now that you have created a Discovery Handler, deploy Akri and see how it discovers the devices and creates Akri Instances for each Device.
 
-> Optional: If you've previous installed Akri and wish to reset, you may:
->
-> ```bash
-> # Delete Akri Helm
-> sudo helm delete akri
-> ```
+{% hint style="info" %}
+Optional: If you've previous installed Akri and wish to reset, you may:
+```bash
+sudo helm delete akri
+```
+{% endhint %}
 
 Akri has provided Helm templates for custom Discovery Handlers and their Configurations. These templates are provided as a starting point. They may need to be modified to meet the needs of a Discovery Handler. When installing Akri, specify that you want to deploy a custom Discovery Handler as a DaemonSet by setting `custom.discovery.enabled=true`. Specify the container for that DaemonSet as the Discovery Handler that you built [above](handler-development.md#creating-a-discovery-handler-in-rust-using-a-template) by setting `custom.discovery.image.repository=$DH_IMAGE` and `custom.discovery.image.repository=$TAGS`. To automatically deploy a custom Configuration, set `custom.configuration.enabled=true`. Customize the Configuration's `discovery_details` string to contain any filtering information: `custom.configuration.discoveryDetails=<filtering info>`.
 
 Also set the name the Discovery Handler will register under \(`custom.configuration.discoveryHandlerName`\) and a name for the Discovery Handler and Configuration \(`custom.discovery.name` and `custom.configuration.name`\). All these settings come together as the following Akri installation command:
 
 > Note: Be sure to consult the [user guide](../user-guide/getting-started.md) to see whether your Kubernetes distribution needs any additional configuration.
->
-> ```bash
->   helm repo add akri-helm-charts https://deislabs.github.io/akri/
->   helm install akri akri-helm-charts/akri \
->   --set imagePullSecrets[0].name="crPullSecret" \
->   --set custom.discovery.enabled=true  \
->   --set custom.discovery.image.repository=$DH_IMAGE \
->   --set custom.discovery.image.tag=$TAGS \
->   --set custom.discovery.name=akri-<name>-discovery  \
->   --set custom.configuration.enabled=true  \
->   --set custom.configuration.name=akri-<name>  \
->   --set custom.configuration.discoveryHandlerName=<name> \
->   --set custom.configuration.discoveryDetails=<filtering info>
-> ```
->
-> Note: if your Discovery Handler's `discoveryDetails` cannot be easily set using Helm, generate a Configuration file and modify it as needed. configuration.enabled\`.\)
->
-> ```bash
->   helm install akri akri-helm-charts/akri \
->    --set imagePullSecrets[0].name="crPullSecret" \
->    --set custom.discovery.enabled=true  \
->    --set custom.discovery.image.repository=$DH_IMAGE \
->    --set custom.discovery.image.tag=$TAGS \
->    --set custom.discovery.name=akri-<name>-discovery  \
->    --set custom.configuration.enabled=true  \
->    --set custom.configuration.name=akri-<name>  \
->    --set custom.configuration.discoveryHandlerName=<name> \
->    --set custom.configuration.discoveryDetails=to-modify \
->    --set rbac.enabled=false \
->    --set controller.enabled=false \
->    --set agent.enabled=false > configuration.yaml
-> ```
->
-> After modifying the file, apply it to the cluster using standard kubectl:
->
-> ```bash
-> kubectl apply -f configuration.yaml
-> ```
+
+```bash
+  helm repo add akri-helm-charts https://deislabs.github.io/akri/
+  helm install akri akri-helm-charts/akri \
+  --set imagePullSecrets[0].name="crPullSecret" \
+  --set custom.discovery.enabled=true  \
+  --set custom.discovery.image.repository=$DH_IMAGE \
+  --set custom.discovery.image.tag=$TAGS \
+  --set custom.discovery.name=akri-<name>-discovery  \
+  --set custom.configuration.enabled=true  \
+  --set custom.configuration.name=akri-<name>  \
+  --set custom.configuration.discoveryHandlerName=<name> \
+  --set custom.configuration.discoveryDetails=<filtering info>
+```
+
+{% hint style="info" %}
+Note: if your Discovery Handler's `discoveryDetails` cannot be easily set using Helm, generate a Configuration file and modify it as needed. configuration.enabled\`.\)
+
+```bash
+  helm install akri akri-helm-charts/akri \
+   --set imagePullSecrets[0].name="crPullSecret" \
+   --set custom.discovery.enabled=true  \
+   --set custom.discovery.image.repository=$DH_IMAGE \
+   --set custom.discovery.image.tag=$TAGS \
+   --set custom.discovery.name=akri-<name>-discovery  \
+   --set custom.configuration.enabled=true  \
+   --set custom.configuration.name=akri-<name>  \
+   --set custom.configuration.discoveryHandlerName=<name> \
+   --set custom.configuration.discoveryDetails=to-modify \
+   --set rbac.enabled=false \
+   --set controller.enabled=false \
+   --set agent.enabled=false > configuration.yaml
+```
+After modifying the file, apply it to the cluster using standard kubectl:
+
+```bash
+kubectl apply -f configuration.yaml
+```
+{% endhint %}
 
 Watch as the Agent, Controller, and Discovery Handler Pods are spun up and as Instances are created for each of the discovery devices.
 

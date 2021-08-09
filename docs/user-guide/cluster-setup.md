@@ -18,11 +18,13 @@ Note: All nodes must be Linux on amd64, arm64v8, or arm32v7.
     curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
    ```
 
-> Note: To enable workloads on a single-node cluster, remove the master taint.
->
-> ```bash
-> kubectl taint nodes --all node-role.kubernetes.io/master-
-> ```
+{% hint style="info" %}
+Note: To enable workloads on a single-node cluster, remove the master taint.
+
+```bash
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+{% endhint %}
 {% endtab %}
 
 {% tab title="K3s" %}

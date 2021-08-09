@@ -24,7 +24,7 @@ The following will be covered in this demo:
 
    this document\).
 
-2. To setup fake usb video devices, install the v4l2loopback kernel module and its prerequisites. Learn more about v4l2 loopback [here](https://github.com/umlaeute/v4l2loopback)
+1. To setup fake usb video devices, install the v4l2loopback kernel module and its prerequisites. Learn more about v4l2 loopback [here](https://github.com/umlaeute/v4l2loopback)
 
    ```bash
     sudo apt update
@@ -37,15 +37,15 @@ The following will be covered in this demo:
 
    > **Note** When running on Ubuntu 20.04 LTS, 18.04 LTS or 16.04 LTS, do NOT install v4l2loopback through `sudo apt install -y v4l2loopback-dkms`, you will get an older version \(0.12.3\). 0.12.5-1 is required for gstreamer to work properly.
 
-> **Note**: If not able to install the debian package of v4l2loopback due to using a different Linux kernel, you can clone the repo, build the module, and setup the module dependencies like so:
->
-> ```bash
-> git clone https://github.com/umlaeute/v4l2loopback.git
-> cd v4l2loopback
-> make & sudo make install
-> sudo make install-utils
-> sudo depmod -a
-> ```
+   > **Note**: If not able to install the debian package of v4l2loopback due to using a different Linux kernel, you can clone the repo, build the module, and setup the module dependencies like so:
+   >
+   > ```bash
+   > git clone https://github.com/umlaeute/v4l2loopback.git
+   > cd v4l2loopback
+   > make & sudo make install
+   > sudo make install-utils
+   > sudo depmod -a
+   > ```
 
 1. "Plug-in" two cameras by inserting the kernel module. To create different number video devices modify the `video_nr` argument. 
 
@@ -53,13 +53,13 @@ The following will be covered in this demo:
     sudo modprobe v4l2loopback exclusive_caps=1 video_nr=1,2
    ```
 
-2. Confirm that two video device nodes \(video1 and video2\) have been created.
+1. Confirm that two video device nodes \(video1 and video2\) have been created.
 
    ```bash
     ls /dev/video*
    ```
 
-3. Install the necessary Gstreamer packages.
+1. Install the necessary Gstreamer packages.
 
    ```bash
     sudo apt-get install -y \
@@ -67,7 +67,7 @@ The following will be covered in this demo:
         gstreamer1.0-plugins-good gstreamer1.0-libav
    ```
 
-4. Now that our cameras are set up, lets use Gstreamer to pass fake video streams through them.
+1. Now that our cameras are set up, lets use Gstreamer to pass fake video streams through them.
 
    ```bash
     mkdir camera-logs
