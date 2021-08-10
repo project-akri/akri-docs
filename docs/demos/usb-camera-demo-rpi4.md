@@ -1,4 +1,4 @@
-# Raspberry Pi 4 Demo   
+# # Discovering and Using USB Cameras on Raspberry Pi 4
 This will demonstrate how to get Akri working on a **Raspberry Pi 4** and walk through using Akri to discover mock USB cameras attached to nodes in a Kubernetes cluster. You'll see how Akri automatically deploys workloads to pull frames from the cameras. We will then deploy a streaming application that will point to services automatically created by Akri to access the video frames from the workloads.
 
 The following will be covered in this demo:
