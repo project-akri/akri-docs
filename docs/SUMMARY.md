@@ -19,6 +19,7 @@
 ## Demos
 
 * [Discovering and Using USB Cameras](demos/usb-camera-demo.md)
+* [Discovering and Using USB Cameras on Raspberry Pi 4](demos/usb-camera-demo-rpi4.md)
 * [Discovering and Using OPC UA Thermometers](demos/opc-thermometer-demo.md)
 
 ## Architecture
