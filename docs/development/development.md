@@ -33,12 +33,12 @@ In order to cross-build containers for both ARM and x64, several tools are lever
 
 ### Local builds and tests
 
-1. Navigate to the repo's top folder (where this README is)
+1. Clone [Akri](https://github.com/deislabs/akri) and navigate to the repo's top folder
 1. Install prerequisites
     ```sh
     ./build/setup.sh
     ```
-1. Build Controller, Agent, and udev broker
+1. Build Controller, Agent, Discovery Handlers, and udev broker
     ```sh
     cargo build
     ```
