@@ -1,12 +1,14 @@
-# Building
+# Building Akri Containers
 
-Building Akri, whether locally or in the automated CI builds, leverages the same set of `make` commands.
+Building Akri containers, whether locally or in the automated CI builds, leverages the same set of `make` commands.
 
-In essence, Akri components can be thought of as: 1. Runtime components 1. Rust code: containers based on Rust code are built using `Cargo cross` and subsequent `docker build` commands include the cross-built binaries.
+In essence, Akri components can be thought of as: 
 
-{% hint style="info" %}
- For Rust code, build/Dockerfile. does NOT run cargo build, instead they simply copy cross-built binaries into the container 2. Other code: these containers can be .NET or python or whatever else ... the build/Dockerfile. must do whatever building is required. 2. Intermediate components: these containers are used as part of the build process and are not used in production explicitly
-{% endhint %}
+1. Runtime components 
+    1. Rust code: containers based on Rust code are built using `Cargo cross` and subsequent `docker build` commands include the cross-built binaries.
+        > Note: For Rust code, `build/Dockerfile.*` does NOT run `cargo build`, instead they simply copy cross-built binaries into the container 
+    2. Other code: these containers can be .NET or python or whatever else ... the `build/Dockerfile.*` must do whatever building is required. 
+2. Intermediate components: these containers are used as part of the build process and are not used in production explicitly
 
 ## Runtime components
 

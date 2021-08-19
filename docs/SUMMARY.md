@@ -31,7 +31,8 @@
 
 ## Developing for Akri <a id="development"></a>
 
-* [Building](development/building.md)
+* [Developer Guide](development/development.md)
+* [Building Containers](development/building.md)
 * [Custom Discovery Handlers](development/handler-development.md)
 * [Custom Brokers](development/broker-development.md)
 * [Mock Discovery Handler for Testing](development/debugging.md)
