@@ -7,9 +7,9 @@ The document includes [naming guidelines](#naming-guidelines) to help as you ext
 To develop, you'll need:
 
 - A Linux environment whether on amd64 or arm64v8
-- Rust - version 1.51.0 which the build system uses can be installed using: 
+- Rust - version 1.54.0 which the build system uses can be installed using: 
     ```sh
-    sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.51.0
+    sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.54.0
     cargo version
     ```
 - .NET - the ONVIF broker is written in .NET, which can be installed according to [.NET instructions](https://docs.microsoft.com/dotnet/core/install/linux-ubuntu)
@@ -118,7 +118,7 @@ By default, `Makefile` will try to create containers with tag following this for
   * `<repo>` can be overridden by setting `REGISTRY=<desired repo>`
 * `$USER` = the user executing `Makefile` (could be `root` if using sudo)
   * `<repo>/$USER` can be overridden by setting `PREFIX=<desired container path>`
-* `<label>` = the label is defined in [../build/intermediate-containers.mk](../build/intermediate-containers.mk)
+* `<label>` = the label is defined in [../build/intermediate-containers.mk](https://github.com/deislabs/akri/blob/main/build/intermediate-containers.mk)
 
 ##### Rust cross-build containers
 These containers are used by the `cross` tool to crossbuild the Akri Rust code.  There is a container built for each supported platform and they contain any required dependencies for Akri components to build.  The dockerfile can be found here: build/containers/intermediate/Dockerfile.rust-crossbuild-*
@@ -128,7 +128,7 @@ These containers are used by the `cross` tool to crossbuild the Akri Rust code. 
   # To make specific platform(s):
   PREFIX=$CONTAINER_REPOSITORY BUILD_AMD64=1 BUILD_ARM32=1 BUILD_ARM64=1 make rust-crossbuild
   ```
-After building the cross container(s), update [Cross.toml](../Cross.toml) to point to your intermediate container(s).
+After building the cross container(s), update [Cross.toml](https://github.com/deislabs/akri/blob/main/Cross.toml) to point to your intermediate container(s).
 
 ##### .NET OpenCV containers
 These containers allow the ONVIF broker to be created without rebuilding OpenCV for .NET each time.  There is a container built for AMD64 and it is used to crossbuild to each supported platform.  The dockerfile can be found here: build/containers/intermediate/Dockerfile.opencvsharp-build.
@@ -185,10 +185,10 @@ exit
 ```
 
 #### More information about Akri build
-For more detailed information about the Akri build infrastructure, review the [Akri Container building document](./building-containers.md)
+For more detailed information about the Akri build infrastructure, review the [Akri Container building document](./building.md)
 
 ## Install Akri with newly built containers
-When installing Akri using helm, you can set the `imagePullSecrets`, `image.repository` and `image.tag` [Helm values](../deployment/helm/values.yaml) to point to your newly created containers. For example, to install Akri with with custom Controller and Agent containers, run the following, specifying the `image.tag` version to reflect [version.txt](../version.txt):
+When installing Akri using helm, you can set the `imagePullSecrets`, `image.repository` and `image.tag` [Helm values](https://github.com/deislabs/akri/blob/main/deployment/helm/values.yaml) to point to your newly created containers. For example, to install Akri with with custom Controller and Agent containers, run the following, specifying the `image.tag` version to reflect [version.txt](https://github.com/deislabs/akri/blob/main/version.txt):
 ```bash
 kubectl create secret docker-registry <your-secret-name> --docker-server=ghcr.io  --docker-username=<your-github-alias> --docker-password=<your-github-token>
 helm repo add akri-helm-charts https://deislabs.github.io/akri/
@@ -200,11 +200,11 @@ helm install akri akri-helm-charts/akri-dev \
     --set controller.image.tag="v<akri-version>-amd64"
 ```
 
-More information about the Akri Helm charts can be found in the [user guide](./user-guide.md#understanding-akri-helm-charts).
+More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts).
 
 ## Other useful Helm Commands
 ### Helm Package
-If you make changes to anything in the [helm folder](../deployment/helm), you will probably need to create a new Helm chart for Akri. This can be done using the [`helm package`](https://helm.sh/docs/helm/helm_package/) command. To create a chart using the current state of the Helm templates and CRDs, run (from one level above the Akri directory) `helm package akri/deployment/helm/`. You will see a tgz file called `akri-<akri-version>.tgz` at the location where you ran the command. Now, install Akri using that chart:
+If you make changes to anything in the [helm folder](https://github.com/deislabs/akri/tree/main/deployment/helm), you will probably need to create a new Helm chart for Akri. This can be done using the [`helm package`](https://helm.sh/docs/helm/helm_package/) command. To create a chart using the current state of the Helm templates and CRDs, run (from one level above the Akri directory) `helm package akri/deployment/helm/`. You will see a tgz file called `akri-<akri-version>.tgz` at the location where you ran the command. Now, install Akri using that chart:
 ```sh
 helm install akri akri-<akri-version>.tgz \
     --set useLatestContainers=true
@@ -226,11 +226,11 @@ helm get manifest akri | less
 ```
 
 ### Helm Upgrade
-To modify an Akri installation to reflect a new state, you can use [`helm upgrade`](https://helm.sh/docs/helm/helm_upgrade/). See the [Customizing an Akri Installation document](./customizing-akri-installation.md) for further explanation. 
+To modify an Akri installation to reflect a new state, you can use [`helm upgrade`](https://helm.sh/docs/helm/helm_upgrade/). See the [Customizing an Akri Installation document](../user-guide/customizing-an-akri-installation.md) for further explanation. 
 
 ## Testing with Debug Echo Discovery Handler
 In order to kickstart using and debugging Akri, a debug echo Discovery Handler has been created. See its
-[documentation](./debug-echo-configuration.md) to start using it.
+[documentation](./debugging.md) to start using it.
 
 ## Naming Guidelines
 
