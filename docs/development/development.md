@@ -193,6 +193,7 @@ When installing Akri using helm, you can set the `imagePullSecrets`, `image.repo
 kubectl create secret docker-registry <your-secret-name> --docker-server=ghcr.io  --docker-username=<your-github-alias> --docker-password=<your-github-token>
 helm repo add akri-helm-charts https://deislabs.github.io/akri/
 helm install akri akri-helm-charts/akri-dev \
+    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set imagePullSecrets[0].name="<your-secret-name>" \
     --set agent.image.repository="ghcr.io/<your-github-alias>/agent" \
     --set agent.image.tag="v<akri-version>-amd64" \
@@ -207,6 +208,7 @@ More information about the Akri Helm charts can be found in the [user guide](../
 If you make changes to anything in the [helm folder](https://github.com/deislabs/akri/tree/main/deployment/helm), you will probably need to create a new Helm chart for Akri. This can be done using the [`helm package`](https://helm.sh/docs/helm/helm_package/) command. To create a chart using the current state of the Helm templates and CRDs, run (from one level above the Akri directory) `helm package akri/deployment/helm/`. You will see a tgz file called `akri-<akri-version>.tgz` at the location where you ran the command. Now, install Akri using that chart:
 ```sh
 helm install akri akri-<akri-version>.tgz \
+    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set useLatestContainers=true
 ```
 ### Helm Template

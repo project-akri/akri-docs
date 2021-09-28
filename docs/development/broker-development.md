@@ -37,9 +37,12 @@ A broker can expose information via REST, gRPC, etc. Akri's [sample brokers](htt
 
 Once you have created a broker, you can ask Akri to automatically deploy it to all all devices discovered by a Configuration by specifying the image in `<Discovery Handler name>.configuration.brokerPod.image.repository` and `<Discovery Handler name>.configuration.brokerPod.image.tag`. For example, say you created a broker that connects to a USB camera and advertises it as an IP camera. You want to deploy it to all USB cameras on your cluster's nodes using Akri, so you deploy Akri with a Configuration that uses the udev Discovery Handler and set the image of your broker (say `ghcr.io/brokers/camera-broker:v0.0.1`), like so:
 
+> Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+
 ```bash
 helm repo add akri-helm-charts https://deislabs.github.io/akri/
 helm install akri akri-helm-charts/akri-dev \
+    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.name=akri-udev-video \
@@ -68,6 +71,7 @@ You can request that additional environment variables are set in Pods that reque
 ```bash
   helm repo add akri-helm-charts https://deislabs.github.io/akri/
   helm install akri akri-helm-charts/akri-dev \
+  $AKRI_HELM_CRICTL_CONFIGURATION \
   --set udev.discovery.enabled=true \
   --set udev.configuration.enabled=true \
   --set udev.configuration.name=akri-udev-video \
