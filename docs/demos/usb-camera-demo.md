@@ -18,9 +18,9 @@ The following will be covered in this demo:
 
    commands. If you would like to deploy the demo to a cloud-based VM, see the
 
-   guides on Akri's HackMD for [DigitalOcean](https://hackmd.io/@akri/Hyz1GW1gY) or \[Google Compute
+   guides on Akri's HackMD for [DigitalOcean](https://hackmd.io/@akri/Hyz1GW1gY) or [Google Compute
 
-   Engine\](https://hackmd.io/@akri/rJHdQWJeF) (and you can skip the rest of the steps in
+   Engine](https://hackmd.io/@akri/rJHdQWJeF) (and you can skip the rest of the steps in
 
    this document). Note, these guides are unmaintained and may not be up to date.
 
