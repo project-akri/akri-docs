@@ -106,28 +106,17 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
 
 1. Make sure your OPC UA Servers are running
 2. Now it is time to install the Akri using Helm. When installing Akri, we can specify that we want to deploy the OPC UA
-
    Discovery Handlers by setting the helm value `opcua.discovery.enabled=true`. We also specify that we want to create
-
    an OPC UA Configuration with `--set opcua.configuration.enabled=true`. In the Configuration, any values that should
-
    be set as environment variables in brokers can be set in `opcua.configuration.brokerProperties`. In this scenario, we
-
    will specify the `Identifier` and `NamespaceIndex` of the NodeID we want the brokers to monitor. In our case that is
-
    our temperature variable we made earlier, which has an `Identifier` of `Thermometer_Temperature` and `NamespaceIndex`
-
    of `2`. Finally, since we did not set up a Local Discovery Server -- see \[Setting up and using a Local Discovery
-
    Server\](\#setting-up-and-using-a-local-discovery-server-(windows-only)) in the Extensions section at the bottom of
-
    this document to use a LDS -- we must specify the DiscoveryURLs of the OPC UA Servers we want Agent to discover.
-
-   Those are the tcp addresses that we modified in step 3 of [Creating OPC UA Servers](opc-thermometer-demo.md#creating-opc-ua-servers). Be
-
-   sure to set the appropriate IP address and port number for the DiscoveryURLs in the Helm command below. If using
-
-   security, uncomment `--set opcua.configuration.mountCertificates='true'`.   
+   Those are the tcp addresses that we modified in step 3 of [Creating OPC UA Servers](opc-thermometer-demo.md#creating-opc-ua-servers). 
+   Be sure to set the appropriate IP address and port number for the DiscoveryURLs in the Helm command below. If using security, 
+   uncomment `--set opcua.configuration.mountCertificates='true'`.   
 
    ```bash
     helm repo add akri-helm-charts https://deislabs.github.io/akri/
@@ -167,7 +156,7 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
 
 ## Deploying an anomaly detection web application as an end consumer of the brokers
 
-A sample anomaly detection web application was created for this end-to-end demo. It has a gRPC stub that calls the brokers' gRPC clients, getting the latest temperature value. It then determines whether this value is an outlier to the dataset using the Local Outlier Factor strategy. The dataset is simply a csv with the numbers between 70-80 repeated several times; therefore, any value significantly outside this range will be seen as an outlier. The web application serves as a log, displaying all the temperature values and the address of the OPC UA Server that sent the values. It shows anomaly values in red. The anomalies always have a value of 120 due to how we set up the `DoSimulation` function in the OPC UA Servers. 
+A sample anomaly detection web application was created for this end-to-end demo. It has a gRPC stub that calls the brokers' gRPC services, getting the latest temperature value. It then determines whether this value is an outlier to the dataset using the Local Outlier Factor strategy. The dataset is simply a csv with the numbers between 70-80 repeated several times; therefore, any value significantly outside this range will be seen as an outlier. The web application serves as a log, displaying all the temperature values and the address of the OPC UA Server that sent the values. It shows anomaly values in red. The anomalies always have a value of 120 due to how we set up the `DoSimulation` function in the OPC UA Servers. 
 
 1. Deploy the anomaly detection app and watch a pod spin up for the app.  
 
