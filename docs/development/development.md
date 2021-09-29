@@ -32,7 +32,7 @@ cargo version
 ``` 
 
 ## Build and test Akri's Rust components 
-1. Clone [Akri](https://github.com/deislabs/akri) and navigate to the repo's top folder
+1. Fork and clone [Akri](https://github.com/deislabs/akri). Then, navigate to the repo's top folder.
 
 1. To install Rust and Akri's component's depencies, run Akri's setup script:
     ```sh
