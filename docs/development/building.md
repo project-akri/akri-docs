@@ -171,6 +171,7 @@ There are two steps to this. For the sake of this demonstration, only the amd64 
     # Specify repository as $PREFIX/<component>
     # Specify tag as $LABEL_PREFIX-amd64
     helm install akri ./deployment/helm \
+        $AKRI_HELM_CRICTL_CONFIGURATION \
         --set agent.image.pullPolicy=Never \
         --set agent.image.repository="$PREFIX/agent" \
         --set agent.image.tag="$LABEL_PREFIX-amd64" \

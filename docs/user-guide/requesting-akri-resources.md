@@ -4,9 +4,12 @@ Akri discovers tiny devices, advertizes them as resources, and automatically dep
 
 Lets walk through how this works, using the ONVIF Discovery Handler as an example. Install Akri with the ONVIF Discovery Handler and Configuration, omitting a broker pod image.
 
+> Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+
 ```bash
 helm repo add akri-helm-charts https://deislabs.github.io/akri/
 helm install akri akri-helm-charts/akri \
+    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true
 ```

@@ -63,22 +63,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
     curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
    ```
 
-5. Akri depends on crictl to track some Pod information. If using K3s versions 1.19 or greater, install crictl locally (note: there are no known version limitations, any crictl version is expected to work). Previous K3s versions come when crictl embedded.
-
-   ```bash
-        VERSION="v1.17.0"
-        curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-${VERSION}-linux-amd64.tar.gz --output crictl-${VERSION}-linux-amd64.tar.gz
-        sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
-        rm -f crictl-$VERSION-linux-amd64.tar.gz
-   ```
-
-6. Configure Akri to use the crictl path and K3s containerd socket. This `AKRI_HELM_CRICTL_CONFIGURATION` environment variable should be added to all Akri Helm installations. 
-
-   ```bash
-    export AKRI_HELM_CRICTL_CONFIGURATION="--set agent.host.crictl=/usr/local/bin/crictl --set agent.host.dockerShimSock=/run/k3s/containerd/containerd.sock"
-   ```
-
-7. If desired, add nodes to your cluster by running the K3s installation script with the `K3S_URL` and `K3S_TOKEN` environment variables. See [K3s installation documentation](https://rancher.com/docs/k3s/latest/en/quick-start/#install-script) for more details.
+5. If desired, add nodes to your cluster by running the K3s installation script with the `K3S_URL` and `K3S_TOKEN` environment variables. See [K3s installation documentation](https://rancher.com/docs/k3s/latest/en/quick-start/#install-script) for more details.
 {% endtab %}
 
 {% tab title="MicroK8s" %}
@@ -125,19 +110,54 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
     microk8s.start
    ```
 
-7. Akri depends on crictl to track some Pod information. MicroK8s does not install crictl locally, so crictl must be installed and the Akri Helm chart needs to be configured with the crictl path and MicroK8s containerd socket.
+7. If desired, reference [MicroK8's documentation](https://microk8s.io/docs/clustering) to add additional nodes to the cluster.
+{% endtab %}
+{% endtabs %}
+
+## Configure `crictl`
+Akri depends on crictl to track some Pod information. By default, Akri assumes Docker is the container runtime with the Docker socket at `/var/run/dockershim.sock` and `crictl` installed at `/usr/bin/crictl`. These are configured via Akri's Helm chart during installation in the `agent.host.dockerShimSock` and `agent.host.crictl` values, respectively. Akri recommends setting these under an `AKRI_HELM_CRICTL_CONFIGURATION` environment variable and then adding the variable to each Akri installation like so:
+```sh
+  helm install akri akri-helm-charts/akri \
+     $AKRI_HELM_CRICTL_CONFIGURATION
+```
+The following are the recommended settings based on Kubernetes distribution.
+{% tabs %}
+{% tab title="Kubernetes" %}
+The defaults should work for standard Kubernetes. The following is therefore redundant:
+```sh
+export AKRI_HELM_CRICTL_CONFIGURATION="--set agent.host.crictl=/usr/local/bin/crictl --set agent.host.dockerShimSock=/var/run/dockershim.sock"
+```
+{% endtab %}
+
+{% tab title="K3s" %}
+
+1. If using K3s versions 1.19 or greater, install `crictl` locally (note: there are no known version limitations, any `crictl` version is expected to work). Previous K3s versions come with `crictl` embedded.
 
    ```bash
-    # Note that we aren't aware of any version restrictions
-    VERSION="v1.17.0"
-    curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-${VERSION}-linux-amd64.tar.gz --output crictl-${VERSION}-linux-amd64.tar.gz
-    sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
-    rm -f crictl-$VERSION-linux-amd64.tar.gz
-
-    export AKRI_HELM_CRICTL_CONFIGURATION="--set agent.host.crictl=/usr/local/bin/crictl --set agent.host.dockerShimSock=/var/snap/microk8s/common/run/containerd.sock"
+        VERSION="v1.17.0"
+        curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-${VERSION}-linux-amd64.tar.gz --output crictl-${VERSION}-linux-amd64.tar.gz
+        sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
+        rm -f crictl-$VERSION-linux-amd64.tar.gz
    ```
 
-8. If desired, reference [MicroK8's documentation](https://microk8s.io/docs/clustering) to add additional nodes to the cluster.
+2. Configure Akri to use the crictl path and K3s containerd socket. This `AKRI_HELM_CRICTL_CONFIGURATION` environment variable should be added to all Akri Helm installations. 
+
+   ```bash
+    export AKRI_HELM_CRICTL_CONFIGURATION="--set agent.host.crictl=/usr/local/bin/crictl --set agent.host.dockerShimSock=/run/k3s/containerd/containerd.sock"
+   ```
+{% endtab %}
+
+{% tab title="MicroK8s" %}
+MicroK8s does not install crictl locally, so crictl must be installed and the Akri Helm chart needs to be configured with the crictl path and MicroK8s containerd socket.
+```bash
+   # Note that we aren't aware of any version restrictions
+   VERSION="v1.17.0"
+   curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-${VERSION}-linux-amd64.tar.gz --output crictl-${VERSION}-linux-amd64.tar.gz
+   sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
+   rm -f crictl-$VERSION-linux-amd64.tar.gz
+
+   export AKRI_HELM_CRICTL_CONFIGURATION="--set agent.host.crictl=/usr/local/bin/crictl --set agent.host.dockerShimSock=/var/snap/microk8s/common/run/containerd.sock"
+```
 {% endtab %}
 {% endtabs %}
 

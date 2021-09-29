@@ -18,9 +18,9 @@ The following will be covered in this demo:
 
    commands. If you would like to deploy the demo to a cloud-based VM, see the
 
-   guides on Akri's HackMD for [DigitalOcean](https://hackmd.io/@akri/Hyz1GW1gY) or \[Google Compute
+   guides on Akri's HackMD for [DigitalOcean](https://hackmd.io/@akri/Hyz1GW1gY) or [Google Compute
 
-   Engine\](https://hackmd.io/@akri/rJHdQWJeF) (and you can skip the rest of the steps in
+   Engine](https://hackmd.io/@akri/rJHdQWJeF) (and you can skip the rest of the steps in
 
    this document). Note, these guides are unmaintained and may not be up to date.
 
@@ -105,6 +105,8 @@ In order for the Agent to know how to discover video devices, the udev Discovery
 
 1. Add the Akri Helm chart and run the install command, setting Helm values as described above.
 
+   > Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+   
    ```bash
     helm repo add akri-helm-charts https://deislabs.github.io/akri/
     helm install akri akri-helm-charts/akri \
@@ -260,6 +262,7 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
    ```bash
    helm repo add akri-helm-charts https://deislabs.github.io/akri/
    helm install akri akri-helm-charts/akri \
+      $AKRI_HELM_CRICTL_CONFIGURATION \
       --set udev.discovery.enabled=true \
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \
@@ -271,6 +274,7 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
    ```bash
    helm repo add akri-helm-charts https://deislabs.github.io/akri/
    helm install akri akri-helm-charts/akri \
+      $AKRI_HELM_CRICTL_CONFIGURATION \
       --set udev.discovery.enabled=true \
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \

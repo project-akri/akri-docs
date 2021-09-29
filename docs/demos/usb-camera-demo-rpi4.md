@@ -107,9 +107,13 @@ All of Akri's components can be deployed by specifying values in its Helm chart 
 In order for the Agent to know how to discover video devices, the udev Discovery Handler must exist. Akri supports an Agent image that includes all supported Discovery Handlers. This Agent will be used if `agent.full=true` is set. By default, a slim Agent without any embedded Discovery Handlers is deployed and the required Discovery Handlers can be deployed as DaemonSets. This demo will use that strategy, deploying the udev Discovery Handlers by specifying `udev.discovery.enabled=true` when installing Akri.
 
 1. Add the Akri Helm chart and run the install command, setting Helm values as described above.
+
+    > Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+    
     ```sh
     helm repo add akri-helm-charts https://deislabs.github.io/akri/
     helm install akri akri-helm-charts/akri \
+        $AKRI_HELM_CRICTL_CONFIGURATION \
         --set udev.discovery.enabled=true \
         --set udev.configuration.enabled=true \
         --set udev.configuration.name=akri-udev-video \
@@ -196,6 +200,7 @@ Look at the Configuration and Instances in more detail.
    ```bash
    helm repo add akri-helm-charts https://deislabs.github.io/akri/
    helm install akri akri-helm-charts/akri \
+      $AKRI_HELM_CRICTL_CONFIGURATION \
       --set udev.discovery.enabled=true \
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \
@@ -207,6 +212,7 @@ Look at the Configuration and Instances in more detail.
    ```bash
    helm repo add akri-helm-charts https://deislabs.github.io/akri/
    helm install akri akri-helm-charts/akri \
+      $AKRI_HELM_CRICTL_CONFIGURATION \
       --set udev.discovery.enabled=true \
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \
