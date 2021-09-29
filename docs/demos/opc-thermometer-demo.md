@@ -177,7 +177,6 @@ A sample anomaly detection web application was created for this end-to-end demo.
    ```sh
    watch kubectl get pods -o wide
    ```
-   ```
 
 2. Determine which port the service is running on.
 

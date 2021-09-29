@@ -1,5 +1,5 @@
 # Developer Guide
-This document will walk you through how to set up a local development environment, build Akri component containers, and test Akri using your newly built containers. It also includes instructions on running Akri locally, naming guidelines, and points to our documentation on extending Akri with new Discovery Handlers and brokers.
+This document will walk you through how to set up a local development environment, build Akri component containers, and test Akri using your newly built containers. It also includes instructions on running Akri locally, naming guidelines, and points to documentation on extending Akri with new Discovery Handlers and brokers.
 
 > Note: different tools are needed depending on what parts of Akri you are developing. This document aims to make that clear.
 
@@ -13,14 +13,14 @@ This document will walk you through how to set up a local development environmen
 - [Testing with Debug Echo Discovery Handler](#Testing-with-Debug-Echo-Discovery-Handler)
 - [Discovery Handler and Broker Development](#Discovery-Handler-and-Broker-Development)
 - [Developing Akri's non-Rust components](#developing-akri's-non-rust-components)
-- [Naming Guidelines](Naming-Guidelines)
+- [Naming Guidelines](#Naming-Guidelines)
 
 ## Requirements
 ### Linux Environment
 To develop, you'll **need a Linux environment** whether on amd64 or arm64v8. We recommend using an Ubuntu VM; however, WSL2 should work for building and testing (but has not been extensively tested).
 
 ### Tools for developing Akri's Rust components
-The majority of Akri is written in Rust. To install Rust and Akri's component's depencies, run Akri's setup script:
+The majority of Akri is written in Rust. To install Rust and Akri's component's dependencies, run Akri's setup script:
 ```sh
 ./build/setup.sh
 ```
@@ -51,14 +51,14 @@ cargo version
     cargo build
     ```
 
-    > Note: To build a specific component, use the `-p` paramenter along with the [workspace member](https://github.com/deislabs/akri/blob/main/Cargo.toml). For example, to only build the Agent, run `cargo build -p agent`
+    > Note: To build a specific component, use the `-p` parameter along with the [workspace member](https://github.com/deislabs/akri/blob/main/Cargo.toml). For example, to only build the Agent, run `cargo build -p agent`
 
 1. To run all unit tests:
     ```sh
     cargo test
     ```
 
-    > Note: To test a specific component, use the `-p` paramenter along with the [workspace member](https://github.com/deislabs/akri/blob/main/Cargo.toml). For example, to only test the Agent, run `cargo test -p agent`
+    > Note: To test a specific component, use the `-p` parameter along with the [workspace member](https://github.com/deislabs/akri/blob/main/Cargo.toml). For example, to only test the Agent, run `cargo test -p agent`
 
 ## Running Akri's components locally
 To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kubernetes cluster, follow these steps:
@@ -133,7 +133,7 @@ In order to cross-build Akri's Rust code for both ARM and x64 containers, severa
   ```
 
 ### Establish a container repository
-Containers for Akri are currently hosted in `ghcr.io/deislabs/akri` using the new [GitHub container registry](https://github.blog/2020-09-01-introducing-github-container-registry/). Any container repository can be used for private containers. If you want to enable GHCR, you can follow the [getting started guide](https://docs.github.com/en/free-pro-team@latest/packages/getting-started-with-github-container-registry).
+Containers for Akri are currently hosted in `ghcr.io/deislabs/akri` using the new [GitHub container registry](https://github.blog/2020-09-01-introducing-github-container-registry/). Any container repository can be used for private containers. If you want to enable GHCR, you can follow the [getting started guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
 
 To build containers, log into the desired repository:
 ```sh
@@ -268,7 +268,7 @@ In order to kickstart using and debugging Akri, a debug echo Discovery Handler h
 [documentation](./debugging.md) to start using it.
 
 ## Discovery Handler and Broker Development
-Akri was made to be easily extensible as Discovery Handlers and brokers can be implemented in any language and deployed in their own Pods. Reference the [Discovery Handler development](handler-development.md) and [broker Pod development](broker-development.md) documents to get started, or if you prefer to learn by example, reference the [extending Akri walkthrough](./development-walkthrough).
+Akri was made to be easily extensible as Discovery Handlers and brokers can be implemented in any language and deployed in their own Pods. Reference the [Discovery Handler development](handler-development.md) and [broker Pod development](broker-development.md) documents to get started, or if you prefer to learn by example, reference the [extending Akri walk-through](./development-walkthrough).
 
 ## Developing Akri's non-Rust components
 This document focuses on developing Akri's Rust components; however, Akri has several non-Rust components. Reference their respective READMEs in [Akri's source code](https://github.com/deislabs/akri) for instructions on developing.
@@ -321,7 +321,7 @@ Guidance:
 
 + Kubernetes Convention is that resources (e.g. `DaemonSet`) and CRDs use (upper) CamelCase
 + Akri Convention is that Akri Kubernetes resources be prefixed `akri-`, e.g. `akri-agent-daemonset`
-+ Names combining words should use hypens (`-`) to separate the words e.g. `akri-debug-echo`
++ Names combining words should use hyphens (`-`) to separate the words e.g. `akri-debug-echo`
 
 > **NOTE** `akri-agent-daemonset` contradicts the general principle of not including types, if it had been named after these guidelines were drafted, it would be named `akri-agent`.
 >
