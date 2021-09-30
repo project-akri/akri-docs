@@ -5,15 +5,15 @@ This document will walk you through how to set up a local development environmen
 
 ## Table of Contents
 - [Requirements](#requirements)
-- [Build and Test Akri's Components](#Build-and-test-Akris-Rust-components)
-- [Running Akri's Components Locally](#Running-Akris-Components-Locally)
-- [Building Akri Containers](#building-akri-containers)
-- [Installing Akri with newly built containers](#Installing-Akri-with-newly-built-containers)
-- [Useful Helm commands](#useful-Helm-commands)
-- [Testing with Debug Echo Discovery Handler](#Testing-with-Debug-Echo-Discovery-Handler)
-- [Discovery Handler and Broker Development](#Discovery-Handler-and-Broker-Development)
-- [Developing Akri's non-Rust components](#developing-akris-non-rust-components)
-- [Naming Guidelines](#Naming-Guidelines)
+- [Build and Test Akri's Components](#build-and-test-rust-components)
+- [Running Akri's Components Locally](#running-locally)
+- [Building Akri Containers](#building-bontainers)
+- [Installing Akri with newly built containers](#installing-akri-with-newly-built-containers)
+- [Useful Helm commands](#useful-helm-commands)
+- [Testing with Debug Echo Discovery Handler](#testing-with-debug-echo-discovery-handler)
+- [Discovery Handler and Broker Development](#discovery-handler-and-broker-bevelopment)
+- [Developing Akri's non-Rust components](#developing-non-rust-components)
+- [Naming Guidelines](#naming-guidelines)
 
 ## Requirements
 ### Linux Environment
@@ -31,7 +31,7 @@ rustup default 1.54.0
 cargo version
 ``` 
 
-## Build and test Akri's Rust components 
+## Build and test Rust components 
 1. Fork and clone [Akri](https://github.com/deislabs/akri). Then, navigate to the repo's top folder.
 
 1. To install Rust and Akri's component's depencies, run Akri's setup script:
@@ -60,7 +60,7 @@ cargo version
 
     > Note: To test a specific component, use the `-p` parameter along with the [workspace member](https://github.com/deislabs/akri/blob/main/Cargo.toml). For example, to only test the Agent, run `cargo test -p agent`
 
-## Running Akri's components locally
+## Running locally
 To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kubernetes cluster, follow these steps:
 
 1.  Create or provide access to a valid cluster configuration by setting `KUBECONFIG` (can be done in the command line) ...
@@ -113,7 +113,7 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
     RUST_LOG=info DEBUG_ECHO_INSTANCES_SHARED=false DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode $HOME/.cargo/bin/cargo run
     ```
 
-## Building Akri's Containers
+## Building Containers
 `Makefile` has been created to help with the more complicated task of building the Akri components and containers for the various supported platforms.
 
 ### Tools for building Akri's Rust containers
@@ -268,9 +268,9 @@ In order to kickstart using and debugging Akri, a debug echo Discovery Handler h
 [documentation](./debugging.md) to start using it.
 
 ## Discovery Handler and Broker Development
-Akri was made to be easily extensible as Discovery Handlers and brokers can be implemented in any language and deployed in their own Pods. Reference the [Discovery Handler development](handler-development.md) and [broker Pod development](broker-development.md) documents to get started, or if you prefer to learn by example, reference the [extending Akri walk-through](./development-walkthrough).
+Akri was made to be easily extensible as Discovery Handlers and brokers can be implemented in any language and deployed in their own Pods. Reference the [Discovery Handler development](handler-development.md) and [broker Pod development](broker-development.md) documents to get started, or if you prefer to learn by example, reference the [extending Akri walk-through](./development-walkthrough.md).
 
-## Developing Akri's non-Rust components
+## Developing non-Rust components
 This document focuses on developing Akri's Rust components; however, Akri has several non-Rust components. Reference their respective READMEs in [Akri's source code](https://github.com/deislabs/akri) for instructions on developing.
 - Several [sample brokers](https://github.com/deislabs/akri/tree/main/samples/brokers) and [applications](https://github.com/deislabs/akri/tree/main/samples/apps) for demo purposes.
 - A [certificate generator](https://github.com/deislabs/akri/tree/main/samples/opcua-certificate-generator) for testing and using Akri's OPC UA Discovery Handler

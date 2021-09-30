@@ -2,7 +2,7 @@
 
 Akri has [implemented discovery via several protocols](../community/roadmap.md#implement-additional-discovery-handlers) with sample brokers and applications to demonstrate usage. However, there may be protocols you would like to use to discover resources that have not been implemented as Discovery Handlers yet. To enable the discovery of resources via a new protocol, you will implement a Discovery Handler (DH), which does discovery on behalf of the Agent. A Discovery Handler is anything that implements the `DiscoveryHandler` service and `Registration` client defined in the [Akri's discovery gRPC proto file](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto). These DHs run as their own Pods and are expected to register with the Agent, which hosts the `Registration` service defined in the gRPC interface.
 
-This document will walk you through the development steps to implement a Discovery Handler. If you would rather walk through an example, see Akri's [extensibility demo](development-walkthrough.md), which walks through creating a Discovery Handler that discovers HTTP based devices. This document will also cover the steps to get your Discovery Handler added to Akri, should you wish to [contribute it back](../community/contributing.md).
+This document will walk you through the development steps to implement a Discovery Handler. If you would rather walk through an example, see Akri's [extensibility demo](./development-walkthrough.md), which walks through creating a Discovery Handler that discovers HTTP based devices. This document will also cover the steps to get your Discovery Handler added to Akri, should you wish to [contribute it back](../community/contributing.md).
 
 Before continuing, you may wish to reference the [Akri architecture](../architecture/architecture-overview.md) and [Akri agent](../architecture/agent-in-depth.md) documentation. They will provide a good understanding of Akri, how it works, and what components it is composed of.
 
@@ -191,7 +191,7 @@ Also set the name the Discovery Handler will register under (`custom.configurati
 {% hint style="info" %}
 Note: if your Discovery Handler's `discoveryDetails` cannot be easily set using Helm, generate a Configuration file and modify it as needed. configuration.enabled\`.)
 
-> Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
   helm install akri akri-helm-charts/akri \
