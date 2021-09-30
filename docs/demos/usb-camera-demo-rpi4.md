@@ -108,7 +108,7 @@ In order for the Agent to know how to discover video devices, the udev Discovery
 
 1. Add the Akri Helm chart and run the install command, setting Helm values as described above.
 
-    > Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+    > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
     
     ```sh
     helm repo add akri-helm-charts https://deislabs.github.io/akri/

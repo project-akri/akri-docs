@@ -118,7 +118,7 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
    Be sure to set the appropriate IP address and port number for the DiscoveryURLs in the Helm command below. If using security, 
    uncomment `--set opcua.configuration.mountCertificates='true'`.   
 
-   > Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+   > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
     
    ```bash
     helm repo add akri-helm-charts https://deislabs.github.io/akri/
@@ -359,7 +359,7 @@ helm install akri akri-helm-charts/akri \
     # --set opcua.configuration.mountCertificates='true'
 ```
 
-> Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 Alternatively, to only discover the server named "SomeServer0", do the following:
 

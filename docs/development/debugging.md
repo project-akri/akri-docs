@@ -16,7 +16,7 @@ Since the Debug Echo Discovery Handler is for debugging, its use must be explici
 
 To install Akri with **external** Debug Echo Discovery Handlers and a Configuration to discover unshared Debug Echo devices, run:
 
-> Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
 helm repo add akri-helm-charts https://deislabs.github.io/akri/

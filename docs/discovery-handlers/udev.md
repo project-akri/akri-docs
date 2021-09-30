@@ -128,7 +128,7 @@ To test which devices Akri will discover with a udev rule, you can run the rule 
 
 Leveraging the above settings, Akri can be installed with the udev Discovery Handler and a udev Configuration with our udev rule specified.
 
-> Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
 helm repo add akri-helm-charts https://deislabs.github.io/akri/
