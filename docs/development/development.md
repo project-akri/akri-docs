@@ -5,14 +5,14 @@ This document will walk you through how to set up a local development environmen
 
 ## Table of Contents
 - [Requirements](#requirements)
-- [Build and Test Akri's Components](#Build-and-test-Akri's-Rust-components)
-- [Running Akri's Components Locally](#Running-Akri's-Components-Locally)
+- [Build and Test Akri's Components](#Build-and-test-Akris-Rust-components)
+- [Running Akri's Components Locally](#Running-Akris-Components-Locally)
 - [Building Akri Containers](#building-akri-containers)
 - [Installing Akri with newly built containers](#Installing-Akri-with-newly-built-containers)
 - [Useful Helm commands](#useful-Helm-commands)
 - [Testing with Debug Echo Discovery Handler](#Testing-with-Debug-Echo-Discovery-Handler)
 - [Discovery Handler and Broker Development](#Discovery-Handler-and-Broker-Development)
-- [Developing Akri's non-Rust components](#developing-akri's-non-rust-components)
+- [Developing Akri's non-Rust components](#developing-akris-non-rust-components)
 - [Naming Guidelines](#Naming-Guidelines)
 
 ## Requirements

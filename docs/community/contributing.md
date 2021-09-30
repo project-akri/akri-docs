@@ -23,7 +23,7 @@ Contributions can be made by forking the repository and creating a pull request.
 * the Akri tests all pass (`cargo test`)
 * the inline documentation builds (`cargo doc`)
 
-See the [Development](../development/development.md) documentation for more information on how to set up your environment and build Akri components locally.
+See the [**developer guide**](../development/development.md) for more information on how to set up your environment and build Akri components locally.
 
 ## Versioning
 
@@ -55,7 +55,7 @@ Akri's workflows check for three flags in the titles of PRs in order to decide w
 
 The [version check workflow](https://github.com/deislabs/akri/blob/main/.github/workflows/check-versioning.yml) will run, ensuring you have increased the version number, unless you (A) only change a a file that is on an ignored path of the workflow, such as all `*.md` files OR (B) specify the `[SAME VERSION]` flag. Use this flag if your change will trigger the workflow and the version should not be changed by your PR. The flag will cause the check to automatically succeed.
 
-Akri has some intermediate containers that decrease the build time of the more frequently built final containers. These intermediate builds are long running and should only be run when absolutely needed. If your PR triggers a workflow to build them, you will see the workflow fail and get a message that requests that you add a tag to your PR to either allow them to build (`[ALLOW INTERMEDIATE BUILDS]`) or (`[IGNORE INTERMEDIATE BUILDS]`).
+Akri has some intermediate containers that decrease the build time of the more frequently built final containers. These intermediate builds are long running and should only be run when absolutely needed. If your PR triggers a workflow to build them, you will see the workflow fail and get a message that requests that you add a tag to your PR to either allow them to build (`[ALLOW INTERMEDIATE BUILDS]`) or (`[IGNORE INTERMEDIATE BUILDS`).
 
 Please add any appropriate flags to the end of your PR title.
 

@@ -135,9 +135,7 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
         # --set opcua.configuration.mountCertificates='true'
    ```
 
-    Akri Agent will discover the two Servers and create an Instance for each Server. Watch two broker pods spin up, one
-
-    for each Server. For MicroK8s
+    Akri Agent will discover the two Servers and create an Instance for each Server. Watch two broker pods spin up, one for each Server. For MicroK8s
 
    ```bash
     watch microk8s kubectl get pods -o wide
@@ -197,13 +195,7 @@ A sample anomaly detection web application was created for this end-to-end demo.
     akri-opcua-monitoring-svc          ClusterIP   10.XXX.XXX.XXX   <none>        80/TCP         3m38s
    ```
 
-3. Navigate in your browser to [http://ip-address:32624/](http://ip-address:32624/) where ip-address is the IP address of your Ubuntu VM (not the
-
-   cluster-IP) and the port number is from the output of `kubectl get services`. It takes 3 seconds for the site to
-
-   load, after which, you should see a log of the temperature values, which updates every few seconds. Note how the
-
-   values are coming from two different DiscoveryURLs, namely the ones for each of the two OPC UA Servers.
+3. Navigate in your browser to [http://ip-address:32624/](http://ip-address:32624/) where ip-address is the IP address of your Ubuntu VM (not the cluster-IP) and the port number is from the output of `kubectl get services`. It takes 3 seconds for the site to load, after which, you should see a log of the temperature values, which updates every few seconds. Note how the values are coming from two different DiscoveryURLs, namely the ones for each of the two OPC UA Servers.
 
 ## Clean up
 
@@ -260,21 +252,13 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
       kubectl get no
    ```
 
-2. You can see that another Agent pod has been deployed to the new node; however, no new OPC UA Monitoring brokers have
-
-   been deployed. This is because the default `capacity` for OPC UA is 1, so by default only one Node is allowed to
-
-   utilize a device via a broker.
+2. You can see that another Agent pod has been deployed to the new node; however, no new OPC UA Monitoring brokers have been deployed. This is because the default `capacity` for OPC UA is 1, so by default only one Node is allowed to utilize a device via a broker.
 
    ```bash
    kubectl get pods -o wide
    ```
 
-3. Let's play around with the capacity value and use the `helm upgrade` command to modify our OPC UA Monitoring
-
-   Configuration such that the capacity is 2. On the control plane node, run the following, once again uncommenting
-
-   `--set opcua.configuration.mountCertificates='true'` if using security. Watch as the broker terminates and then four
+3. Let's play around with the capacity value and use the `helm upgrade` command to modify our OPC UA Monitoring Configuration such that the capacity is 2. On the control plane node, run the following, once again uncommenting `--set opcua.configuration.mountCertificates='true'` if using security. Watch as the broker terminates and then four
 
    come online in a Running state.
 
