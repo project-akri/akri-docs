@@ -23,7 +23,7 @@ Contributions can be made by forking the repository and creating a pull request.
 * the Akri tests all pass (`cargo test`)
 * the inline documentation builds (`cargo doc`)
 
-See the [Development](../development/development-walkthrough.md) documentation for more information on how to set up your environment and build Akri components locally.
+See the [Development](../development/development.md) documentation for more information on how to set up your environment and build Akri components locally.
 
 ## Versioning
 

@@ -9,7 +9,7 @@ File:
 A GitHub workflow that:
 
 + runs Python-based end-to-end [tests](#Tests);
-+ through 5 different Kubernetes [versions](#Versions): 1.16, 1.17, 1.18, 1.19, 1.20;
++ through 6 different Kubernetes [versions](#Versions): 1.16, 1.17, 1.18, 1.19, 1.20, 1.21;
 + on 3 different Kubernetes distros: [K3s](https://k3s.io), [Kubernetes (Kubeadm)](https://kubernetes.io/docs/reference/setup-tools/kubeadm/), [MicroK8s](https://microk8s.io).
 
 ## Tests
