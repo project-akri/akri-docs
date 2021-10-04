@@ -24,27 +24,31 @@ The majority of Akri is written in Rust. To install Rust and Akri's component's 
 ```sh
 ./build/setup.sh
 ```
-If you previously installed Rust ensure you are using the v1.54.0 toolchain that Akri's build system uses:
+If you previously installed Rust ensure you are using the v1.55.0 toolchain that Akri's build system uses:
 ```sh
-sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.54.0
-rustup default 1.54.0
+sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.55.0
+rustup default 1.55.0
 cargo version
 ``` 
 
 ## Build and test Rust components 
 1. Fork and clone [Akri](https://github.com/deislabs/akri). Then, navigate to the repo's top folder.
 
-1. To install Rust and Akri's component's depencies, run Akri's setup script:
+1. To install Rust and Akri's component's dependencies, run Akri's setup script:
     ```sh
     ./build/setup.sh
     ```
 
-    If you previously installed Rust ensure you are using the v1.54.0 toolchain that Akri's build system uses:
+    If you previously installed Rust, ensure you are using the v1.55.0 toolchain that Akri's build system uses:
     ```sh
-    sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.54.0
-    rustup default 1.54.0
-    cargo version
+    sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.55.0
     ``` 
+    Then, configure your current shell to see Cargo and set `v1.55.0` as default toolchain.
+    ```sh
+    source $HOME/.cargo/env
+    rustup default 1.55.0
+    cargo version
+    ```
 
 1. Build Controller, Agent, Discovery Handlers, and udev broker
     ```sh
