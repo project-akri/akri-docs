@@ -1,5 +1,7 @@
 # Getting Started
 
+> :warning: **Akri is undergoing a migration** to a new GitHub repository until 10/28 and it's Helm charts are currently not accessible.
+
 To best understand the benefits of Akri and jump into using it, we recommend you start off by completing the [end to end demo](../demos/usb-camera-demo.md). In the demo, you will see Akri discover mock video cameras and a streaming app display the footage from those cameras. It includes instructions on K8s cluster setup.
 
 ## The Journey Begins
