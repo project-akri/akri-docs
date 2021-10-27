@@ -102,7 +102,7 @@ You tell Akri what you want to find with an Akri Configuration, which is one of 
 
 For this demo, we will specify (1) Akri's udev Discovery Handler, which is used to discover devices in the Linux device file system. Akri's udev Discovery Handler supports (2) filtering by udev rules. We want to find all video devices in the Linux device file system, which can be specified with the udev rule `KERNEL=="video[0-9]*"`. Say we wanted to be more specific and only discover devices made by Great Vendor, we could adjust our rule to be `KERNEL=="video[0-9]*"\, ENV{ID_VENDOR}=="Great Vendor"`. For (3) a broker Pod image, we will use a sample container that Akri has provided that pulls frames from the cameras and serves them over gRPC. 
 
-All of Akri's components can be deployed by specifying values in its Helm chart during an installation. Instead of having to build a Configuration from scratch, Akri has provided [Helm templates](https://github.com/deislabs/akri/blob/main/deployment/helm/templates for Configurations for each supported Discovery Handler. Lets customize the generic [udev Configuration Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/udev-configuration.yaml) with our three specifications above. We can also set the name for the Configuration to be `akri-udev-video`.
+All of Akri's components can be deployed by specifying values in its Helm chart during an installation. Instead of having to build a Configuration from scratch, Akri has provided [Helm templates](https://github.com/project-akri/akri/blob/main/deployment/helm/templates for Configurations for each supported Discovery Handler. Lets customize the generic [udev Configuration Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/udev-configuration.yaml) with our three specifications above. We can also set the name for the Configuration to be `akri-udev-video`.
 
 In order for the Agent to know how to discover video devices, the udev Discovery Handler must exist. Akri supports an Agent image that includes all supported Discovery Handlers. This Agent will be used if `agent.full=true` is set. By default, a slim Agent without any embedded Discovery Handlers is deployed and the required Discovery Handlers can be deployed as DaemonSets. This demo will use that strategy, deploying the udev Discovery Handlers by specifying `udev.discovery.enabled=true` when installing Akri.
 
@@ -111,7 +111,7 @@ In order for the Agent to know how to discover video devices, the udev Discovery
     > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
     
     ```sh
-    helm repo add akri-helm-charts https://deislabs.github.io/akri/
+    helm repo add akri-helm-charts https://project-akri.github.io/akri/
     helm install akri akri-helm-charts/akri \
         $AKRI_HELM_CRICTL_CONFIGURATION \
         --set udev.discovery.enabled=true \
@@ -142,7 +142,7 @@ Look at the Configuration and Instances in more detail.
 
 1. Deploy a video streaming web application that points to both the Configuration and Instance level services that were automatically created by Akri.
     ```sh
-    kubectl apply -f https://raw.githubusercontent.com/deislabs/akri/main/deployment/samples/akri-video-streaming-app.yaml
+    kubectl apply -f https://raw.githubusercontent.com/project-akri/akri/main/deployment/samples/akri-video-streaming-app.yaml
     watch kubectl get pods
     ```
 1. Determine which port the service is running on. Be sure to save this port number for the next step.
@@ -193,12 +193,12 @@ Look at the Configuration and Instances in more detail.
 ## Going beyond the demo
 
 1. Plug in real cameras! You can [pass environment variables](../development/broker-development.md#Specifying-additional-broker-environment-variables-in-a-Configuration) to the frame server broker to specify the format, resolution width/height, and frames per second of your cameras.
-2. Apply the [ONVIF Configuration](../discovery-handlers/onvif.md) and make the streaming app display footage from both the local video devices and onvif cameras. To do this, modify the [video streaming yaml](https://github.com/deislabs/akri/blob/main/deployment/samples/akri-video-streaming-app.yaml) as described in the inline comments in order to create a larger service that aggregates the output from both the `udev-camera-svc` service and `onvif-camera-svc` service.
+2. Apply the [ONVIF Configuration](../discovery-handlers/onvif.md) and make the streaming app display footage from both the local video devices and onvif cameras. To do this, modify the [video streaming yaml](https://github.com/project-akri/akri/blob/main/deployment/samples/akri-video-streaming-app.yaml) as described in the inline comments in order to create a larger service that aggregates the output from both the `udev-camera-svc` service and `onvif-camera-svc` service.
 3. Add more nodes to the cluster.
 4. Modify the udev rule to find a more specific subset of cameras
    Instead of finding all video4linux device nodes, the udev rule can be modified to exclude certain device nodes, find devices only made by a certain manufacturer, and more. For example, the rule can be narrowed by matching cameras with specific properties. To see the properties of a camera on a node, do `udevadm info --query=property --name /dev/video0`, passing in the proper devnode name. In this example, `ID_VENDOR=Microsoft` was one of the outputted properties. To only find cameras made by Microsoft, the rule can be modified like the following:
    ```bash
-   helm repo add akri-helm-charts https://deislabs.github.io/akri/
+   helm repo add akri-helm-charts https://project-akri.github.io/akri/
    helm install akri akri-helm-charts/akri \
       $AKRI_HELM_CRICTL_CONFIGURATION \
       --set udev.discovery.enabled=true \
@@ -210,7 +210,7 @@ Look at the Configuration and Instances in more detail.
 
    As another example, to make sure that the camera has a capture capability rather than just being a video output device, modify the udev rule as follows: 
    ```bash
-   helm repo add akri-helm-charts https://deislabs.github.io/akri/
+   helm repo add akri-helm-charts https://project-akri.github.io/akri/
    helm install akri akri-helm-charts/akri \
       $AKRI_HELM_CRICTL_CONFIGURATION \
       --set udev.discovery.enabled=true \

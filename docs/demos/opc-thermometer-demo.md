@@ -47,7 +47,7 @@ padding-top: 10px; margin-right: auto; display: block; margin-left: auto;"/>
 
 ### Running the certificate creation application
 
-A .NET Console [OPC UA Certificate Generator application](https://github.com/deislabs/akri/tree/main/samples/opcua-certificate-generator) has been created to simplify the process of creating a Certificate Authority (CA) and X.509 v3 certificates issued by that CA for the OPC UA Client and Servers in this demo. Clone the Akri repository, navigate to the `opcua-certificate-generator` and follow the instructions of the [README](https://github.com/deislabs/akri/blob/main/samples/opcua-certificate-generator/README.md) to generate the necessary certificates.
+A .NET Console [OPC UA Certificate Generator application](https://github.com/project-akri/akri/tree/main/samples/opcua-certificate-generator) has been created to simplify the process of creating a Certificate Authority (CA) and X.509 v3 certificates issued by that CA for the OPC UA Client and Servers in this demo. Clone the Akri repository, navigate to the `opcua-certificate-generator` and follow the instructions of the [README](https://github.com/project-akri/akri/blob/main/samples/opcua-certificate-generator/README.md) to generate the necessary certificates.
 
 ### Creating an opcua-broker-credentials Kubernetes Secret
 
@@ -61,7 +61,7 @@ kubectl create secret generic opcua-broker-credentials \
 --from-file=ca_crl=/path/to/ca/crl/SomeCA\ \[<hash>\].crl
 ```
 
-When mounting certificates is enabled later in the [Running Akri section](opc-thermometer-demo.md#running-akri) with Helm via `--set opcua.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA monitoring brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Configuration Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). This is the path where the brokers expect to find the certificates.
+When mounting certificates is enabled later in the [Running Akri section](opc-thermometer-demo.md#running-akri) with Helm via `--set opcua.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA monitoring brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Configuration Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). This is the path where the brokers expect to find the certificates.
 
 ## Creating OPC UA Servers
 
@@ -121,7 +121,7 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
    > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
     
    ```bash
-    helm repo add akri-helm-charts https://deislabs.github.io/akri/
+    helm repo add akri-helm-charts https://project-akri.github.io/akri/
     helm install akri akri-helm-charts/akri \
         $AKRI_HELM_CRICTL_CONFIGURATION \
         --set opcua.discovery.enabled=true \
@@ -163,7 +163,7 @@ A sample anomaly detection web application was created for this end-to-end demo.
 
 
    ```bash
-   kubectl apply -f https://raw.githubusercontent.com/deislabs/akri/main/deployment/samples/akri-anomaly-detection-app.yaml
+   kubectl apply -f https://raw.githubusercontent.com/project-akri/akri/main/deployment/samples/akri-anomaly-detection-app.yaml
    ```
 
    ```text
@@ -383,7 +383,7 @@ helm install akri akri-helm-charts/akri \
 The OPC UA Monitoring broker and anomaly detection application support a very specific scenario: monitoring an OPC UA Variable for anomalies. The workload or broker you want to deploy to discovered OPC UA Servers may be different. OPC UA Servers' address spaces are widely varied, so the options for broker implementations are endless. Passing the NodeID `Identifier` and `NamespaceIndex` as environment variables may still suit your needs; however, if targeting one NodeID is too limiting or irrelevant, instead of passing a specific NodeID to your broker Pods, you could specify any other environment variables via `--set opcua.configuration.brokerProperties.KEY='VALUE'`. Or, your broker may not need additional information passed to it at all. Decide whether to pass environment variables, what servers to discover, and set the broker pod image to be your container image, say `ghcr.io/<USERNAME>/opcua-broker`.
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
@@ -396,7 +396,7 @@ helm install akri akri-helm-charts/akri \
 
 > Note: set `opcua.configuration.brokerPod.image.tag` to specify an image tag (defaults to `latest`).
 
-Now, your broker will be deployed to all discovered OPC UA servers. Next, you can create a Kubernetes deployment for your own end application like [anomaly-detection-app.yaml](https://github.com/deislabs/akri/blob/main/deployment/samples/akri-anomaly-detection-app.yaml) and apply it to your Kubernetes cluster.
+Now, your broker will be deployed to all discovered OPC UA servers. Next, you can create a Kubernetes deployment for your own end application like [anomaly-detection-app.yaml](https://github.com/project-akri/akri/blob/main/deployment/samples/akri-anomaly-detection-app.yaml) and apply it to your Kubernetes cluster.
 
 ### Creating a new OPC UA Configuration
 

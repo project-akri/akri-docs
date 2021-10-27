@@ -32,7 +32,7 @@ cargo version
 ``` 
 
 ## Build and test Rust components 
-1. Fork and clone [Akri](https://github.com/deislabs/akri). Then, navigate to the repo's top folder.
+1. Fork and clone [Akri](https://github.com/project-akri/akri). Then, navigate to the repo's top folder.
 
 1. To install Rust and Akri's component's dependencies, run Akri's setup script:
     ```sh
@@ -55,14 +55,14 @@ cargo version
     cargo build
     ```
 
-    > Note: To build a specific component, use the `-p` parameter along with the [workspace member](https://github.com/deislabs/akri/blob/main/Cargo.toml). For example, to only build the Agent, run `cargo build -p agent`
+    > Note: To build a specific component, use the `-p` parameter along with the [workspace member](https://github.com/project-akri/akri/blob/main/Cargo.toml). For example, to only build the Agent, run `cargo build -p agent`
 
 1. To run all unit tests:
     ```sh
     cargo test
     ```
 
-    > Note: To test a specific component, use the `-p` parameter along with the [workspace member](https://github.com/deislabs/akri/blob/main/Cargo.toml). For example, to only test the Agent, run `cargo test -p agent`
+    > Note: To test a specific component, use the `-p` parameter along with the [workspace member](https://github.com/project-akri/akri/blob/main/Cargo.toml). For example, to only test the Agent, run `cargo test -p agent`
 
 ## Running locally
 To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kubernetes cluster, follow these steps:
@@ -137,7 +137,7 @@ In order to cross-build Akri's Rust code for both ARM and x64 containers, severa
   ```
 
 ### Establish a container repository
-Containers for Akri are currently hosted in `ghcr.io/deislabs/akri` using the new [GitHub container registry](https://github.blog/2020-09-01-introducing-github-container-registry/). Any container repository can be used for private containers. If you want to enable GHCR, you can follow the [getting started guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
+Containers for Akri are currently hosted in `ghcr.io/project-akri/akri` using the new [GitHub container registry](https://github.blog/2020-09-01-introducing-github-container-registry/). Any container repository can be used for private containers. If you want to enable GHCR, you can follow the [getting started guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
 
 To build containers, log into the desired repository:
 ```sh
@@ -155,7 +155,7 @@ By default, `Makefile` will try to create containers with tag following this for
   * `<repo>` can be overridden by setting `REGISTRY=<desired repo>`
 * `$USER` = the user executing `Makefile` (could be `root` if using sudo)
   * `<repo>/$USER` can be overridden by setting `PREFIX=<desired container path>`
-* `<label>` = the label is defined in [../build/intermediate-containers.mk](https://github.com/deislabs/akri/blob/main/build/intermediate-containers.mk)
+* `<label>` = the label is defined in [../build/intermediate-containers.mk](https://github.com/project-akri/akri/blob/main/build/intermediate-containers.mk)
 
 #### Rust cross-build containers
 These containers are used by the `cross` tool to crossbuild the Akri Rust code.  There is a container built for each supported platform and they contain any required dependencies for Akri components to build.  The dockerfile can be found here: build/containers/intermediate/Dockerfile.rust-crossbuild-*
@@ -165,7 +165,7 @@ These containers are used by the `cross` tool to crossbuild the Akri Rust code. 
   # To make specific platform(s):
   PREFIX=$CONTAINER_REPOSITORY BUILD_AMD64=1 BUILD_ARM32=1 BUILD_ARM64=1 make rust-crossbuild
   ```
-After building the cross container(s), update [Cross.toml](https://github.com/deislabs/akri/blob/main/Cross.toml) to point to your intermediate container(s).
+After building the cross container(s), update [Cross.toml](https://github.com/project-akri/akri/blob/main/Cross.toml) to point to your intermediate container(s).
 
 #### .NET OpenCV containers
 These containers allow the ONVIF broker to be created without rebuilding OpenCV for .NET each time.  There is a container built for AMD64 and it is used to crossbuild to each supported platform.  The dockerfile can be found here: build/containers/intermediate/Dockerfile.opencvsharp-build.
@@ -225,10 +225,10 @@ exit
 For more detailed information about the Akri build infrastructure, review the [Akri Container building document](./building.md)
 
 ## Installing Akri with newly built containers
-When installing Akri using helm, you can set the `imagePullSecrets`, `image.repository` and `image.tag` [Helm values](https://github.com/deislabs/akri/blob/main/deployment/helm/values.yaml) to point to your newly created containers. For example, to install Akri with with custom Controller and Agent containers, run the following, specifying the `image.tag` version to reflect [version.txt](https://github.com/deislabs/akri/blob/main/version.txt):
+When installing Akri using helm, you can set the `imagePullSecrets`, `image.repository` and `image.tag` [Helm values](https://github.com/project-akri/akri/blob/main/deployment/helm/values.yaml) to point to your newly created containers. For example, to install Akri with with custom Controller and Agent containers, run the following, specifying the `image.tag` version to reflect [version.txt](https://github.com/project-akri/akri/blob/main/version.txt):
 ```bash
 kubectl create secret docker-registry <your-secret-name> --docker-server=ghcr.io  --docker-username=<your-github-alias> --docker-password=<your-github-token>
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri-dev \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set imagePullSecrets[0].name="<your-secret-name>" \
@@ -242,7 +242,7 @@ More information about the Akri Helm charts can be found in the [user guide](../
 
 ## Useful Helm Commands
 ### Helm Package
-If you make changes to anything in the [helm folder](https://github.com/deislabs/akri/tree/main/deployment/helm), you will probably need to create a new Helm chart for Akri. This can be done using the [`helm package`](https://helm.sh/docs/helm/helm_package/) command. To create a chart using the current state of the Helm templates and CRDs, run (from one level above the Akri directory) `helm package akri/deployment/helm/`. You will see a tgz file called `akri-<akri-version>.tgz` at the location where you ran the command. Now, install Akri using that chart:
+If you make changes to anything in the [helm folder](https://github.com/project-akri/akri/tree/main/deployment/helm), you will probably need to create a new Helm chart for Akri. This can be done using the [`helm package`](https://helm.sh/docs/helm/helm_package/) command. To create a chart using the current state of the Helm templates and CRDs, run (from one level above the Akri directory) `helm package akri/deployment/helm/`. You will see a tgz file called `akri-<akri-version>.tgz` at the location where you ran the command. Now, install Akri using that chart:
 ```sh
 helm install akri akri-<akri-version>.tgz \
     $AKRI_HELM_CRICTL_CONFIGURATION \
@@ -275,11 +275,11 @@ In order to kickstart using and debugging Akri, a debug echo Discovery Handler h
 Akri was made to be easily extensible as Discovery Handlers and brokers can be implemented in any language and deployed in their own Pods. Reference the [Discovery Handler development](handler-development.md) and [broker Pod development](broker-development.md) documents to get started, or if you prefer to learn by example, reference the [extending Akri walk-through](./development-walkthrough.md).
 
 ## Developing non-Rust components
-This document focuses on developing Akri's Rust components; however, Akri has several non-Rust components. Reference their respective READMEs in [Akri's source code](https://github.com/deislabs/akri) for instructions on developing.
-- Several [sample brokers](https://github.com/deislabs/akri/tree/main/samples/brokers) and [applications](https://github.com/deislabs/akri/tree/main/samples/apps) for demo purposes.
-- A [certificate generator](https://github.com/deislabs/akri/tree/main/samples/opcua-certificate-generator) for testing and using Akri's OPC UA Discovery Handler
-- Python script for running [end-to-end integration tests](https://github.com/deislabs/akri/blob/main/test/run-end-to-end.py).
-- Python script for [testing Akri's Configuration validation webhook](https://github.com/deislabs/akri/blob/main/test/run-webhook.py).
+This document focuses on developing Akri's Rust components; however, Akri has several non-Rust components. Reference their respective READMEs in [Akri's source code](https://github.com/project-akri/akri) for instructions on developing.
+- Several [sample brokers](https://github.com/project-akri/akri/tree/main/samples/brokers) and [applications](https://github.com/project-akri/akri/tree/main/samples/apps) for demo purposes.
+- A [certificate generator](https://github.com/project-akri/akri/tree/main/samples/opcua-certificate-generator) for testing and using Akri's OPC UA Discovery Handler
+- Python script for running [end-to-end integration tests](https://github.com/project-akri/akri/blob/main/test/run-end-to-end.py).
+- Python script for [testing Akri's Configuration validation webhook](https://github.com/project-akri/akri/blob/main/test/run-webhook.py).
 
 ## Naming Guidelines
 

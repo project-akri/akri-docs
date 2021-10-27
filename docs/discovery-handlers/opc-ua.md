@@ -12,7 +12,7 @@ In order for the Agent to know how to discover OPC UA servers an OPC UA Discover
 
 ## OPC UA Configuration Settings
 
-Instead of having to assemble your own OPC UA Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for OPC UA (to see them, run `helm inspect values akri-helm-charts/akri`). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the OPC UA Configuration to your cluster, simply set `opcua.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
+Instead of having to assemble your own OPC UA Configuration yaml, we have provided a [Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for OPC UA (to see them, run `helm inspect values akri-helm-charts/akri`). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the OPC UA Configuration to your cluster, simply set `opcua.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
 
 ### Discovery Handler Discovery Details Settings
 
@@ -67,7 +67,7 @@ Leveraging the above settings, Akri can be installed with the OPC UA Discovery H
 > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
@@ -77,7 +77,7 @@ helm install akri akri-helm-charts/akri \
 If you have a workload that you would like to automatically be deployed to each discovered server, specify the workload image when installing Akri. As an example, the installation below will deploy an empty nginx pod for each server. Instead, you should point to your image, say `ghcr.io/<USERNAME>/opcua-broker`.
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
@@ -100,7 +100,7 @@ The following installation examples have been given to show how to the OPC UA Co
 If no DiscoveryURLs are passed as Helm values, the default DiscoveryURL for LocalDiscoveryServers is used. Instead of using the default `opc.tcp://localhost:4840/` LDS DiscoveryURL, an operator can specify the addresses of one or more Local Discovery Servers, like in the following example:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
@@ -114,7 +114,7 @@ helm install akri akri-helm-charts/akri \
 If you know the DiscoveryURLs for the OPC UA Servers you want Akri to discover, manually list them when deploying Akri, like in the following:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
@@ -127,7 +127,7 @@ helm install akri akri-helm-charts/akri \
 OPC UA discovery can also receive a list of both OPC UA LDS DiscoveryURLs and specific Server urls, as in the following.
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
@@ -144,7 +144,7 @@ helm install akri akri-helm-charts/akri \
 Instead of discovering all servers registered with specified Local Discovery Servers, you can choose to include or exclude a list of application names (the `applicationName` property of a server's `ApplicationDescription` as specified by [OPC UA Specification](https://reference.opcfoundation.org/v104/Core/DataTypes/ApplicationDescription/)). For example, to discover all servers registered with the default LDS except for the server named "Duke", do the following.
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
@@ -156,7 +156,7 @@ helm install akri akri-helm-charts/akri \
 Alternatively, to only discover the server named "Go Tar Heels!", do the following:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
@@ -179,12 +179,12 @@ kubectl create secret generic opcua-broker-credentials \
 --from-file=ca_crl=/path/to/SomeCA.crl
 ```
 
-Certificates can be created and signed with a CA manually using openssl, by using the OPC Foundation [certificate generator tool](https://github.com/OPCFoundation/Misc-Tools), or Akri's [certificate generator](https://github.com/deislabs/akri/blob/main/samples/opcua-certificate-generator/README.md). Be sure that the certificates are in the format expected by your OPC UA Client.
+Certificates can be created and signed with a CA manually using openssl, by using the OPC Foundation [certificate generator tool](https://github.com/OPCFoundation/Misc-Tools), or Akri's [certificate generator](https://github.com/project-akri/akri/blob/main/samples/opcua-certificate-generator/README.md). Be sure that the certificates are in the format expected by your OPC UA Client.
 
-Finally, when mounting certificates is enabled with Helm via `--set opcua.configuration.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). This is the path where the broker expects to find the certificates. The following is an example how to enable security:
+Finally, when mounting certificates is enabled with Helm via `--set opcua.configuration.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). This is the path where the broker expects to find the certificates. The following is an example how to enable security:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
@@ -202,7 +202,7 @@ Akri has provided further documentation on [modifying the broker PodSpec](../use
 
 The OPC UA implementation can be understood by looking at several things:
  
-1. [OpcuaDiscoveryDetails](https://github.com/deislabs/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines the required properties. 
-1. [OpcuaDiscoveryHandler](https://github.com/deislabs/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines OPC UA Server discovery. 
-1. [sample-brokers/opcua-monitoring-broker](https://github.com/deislabs/akri/tree/main/samples/brokers/opcua-monitoring-broker) defines a sample OPC UA protocol broker that monitors an OPC UA Variable with a specific NodeID.
+1. [OpcuaDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines the required properties. 
+1. [OpcuaDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines OPC UA Server discovery. 
+1. [sample-brokers/opcua-monitoring-broker](https://github.com/project-akri/akri/tree/main/samples/brokers/opcua-monitoring-broker) defines a sample OPC UA protocol broker that monitors an OPC UA Variable with a specific NodeID.
 

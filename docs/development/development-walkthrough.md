@@ -12,7 +12,7 @@ Any Docker-compatible container registry will work for hosting the containers be
 
 ## Background on Discovery Handlers
 
-Akri has [implemented discovery via several protocols](../community/roadmap.md#currently-supported-discovery-handlers) with sample brokers and applications to demonstrate usage. However, there may be protocols you would like to use to discover resources that have not been implemented as Discovery Handlers yet. To enable the discovery of resources via a new protocol, you will implement a Discovery Handler (DH), which does discovery on behalf of the Agent. A Discovery Handler is anything that implements the `Discovery` service and `Registration` client defined in the [Akri's discovery gRPC proto file](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto). These DHs run as their own Pods and are expected to register with the Agent, which hosts the `Registration` service defined in the gRPC interface.
+Akri has [implemented discovery via several protocols](../community/roadmap.md#currently-supported-discovery-handlers) with sample brokers and applications to demonstrate usage. However, there may be protocols you would like to use to discover resources that have not been implemented as Discovery Handlers yet. To enable the discovery of resources via a new protocol, you will implement a Discovery Handler (DH), which does discovery on behalf of the Agent. A Discovery Handler is anything that implements the `Discovery` service and `Registration` client defined in the [Akri's discovery gRPC proto file](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto). These DHs run as their own Pods and are expected to register with the Agent, which hosts the `Registration` service defined in the gRPC interface.
 
 ## New DiscoveryHandler implementation
 
@@ -21,7 +21,7 @@ Akri has [implemented discovery via several protocols](../community/roadmap.md#c
 Install [`cargo-generate`](https://github.com/cargo-generate/cargo-generate#installation) and use the tool to pull down Akri's template, specifying the name of the project with the `--name` parameter.
 
 ```sh
-cargo generate --git https://github.com/deislabs/akri-discovery-handler-template.git --name akri-http-discovery-handler
+cargo generate --git https://github.com/project-akri/akri-discovery-handler-template.git --name akri-http-discovery-handler
 ```
 
 ### Specify the DiscoveryHandler name and whether discovered devices are sharable
@@ -30,7 +30,7 @@ Inside the newly created `akri-http-discovery-handler` project, navigate to `mai
 
 ### Decide what information is passed via an Akri Configuration
 
-Akri's Configuration CRD takes in a [`DiscoveryHandlerInfo`](https://github.com/deislabs/akri/blob/main/shared/src/akri/configuration.rs), which is defined structurally as follows:
+Akri's Configuration CRD takes in a [`DiscoveryHandlerInfo`](https://github.com/project-akri/akri/blob/main/shared/src/akri/configuration.rs), which is defined structurally as follows:
 
 ```rust
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -249,7 +249,7 @@ func main() {
 To ensure that our GoLang project builds, we need to create `samples/apps/http-apps/go.mod`:
 
 ```text
-module github.com/deislabs/akri/http-extensibility
+module github.com/project-akri/akri/http-extensibility
 
 go 1.15
 ```
@@ -267,7 +267,7 @@ COPY . .
 RUN GOOS=linux \
     go build -a -installsuffix cgo \
     -o /bin/device \
-    github.com/deislabs/akri/http-extensibility/cmd/device
+    github.com/project-akri/akri/http-extensibility/cmd/device
 FROM gcr.io/distroless/base-debian10
 COPY --from=build /bin/device /
 USER 999
@@ -415,7 +415,7 @@ Akri has provided helm templates for custom Discovery Handlers and their Configu
 > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
-  helm repo add akri-helm-charts https://deislabs.github.io/akri/
+  helm repo add akri-helm-charts https://project-akri.github.io/akri/
   helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set imagePullSecrets[0].name="crPullSecret" \
@@ -459,7 +459,7 @@ Our empty nginx brokers do not do anything with the devices they've requested, s
 
 We have successfully created our Discovery Handler. If you want Akri to also automatically deploy Pods (called brokers) to each discovered device, this section will show you how to create a custom broker that will make the HTTP-based Device data available to the cluster. The broker can be written in any language as it will be deployed as an individual pod.
 
-3 different broker implementations have been created for the HTTP Discovery Handler in the [http-extensibility branch](https://github.com/deislabs/akri/tree/http-extensibility), 2 in Rust and 1 in Go:
+3 different broker implementations have been created for the HTTP Discovery Handler in the [http-extensibility branch](https://github.com/project-akri/akri/tree/http-extensibility), 2 in Rust and 1 in Go:
 
 * The standalone broker is a self-contained scenario that demonstrates the ability to interact with HTTP-based devices
 
@@ -485,9 +485,9 @@ We have successfully created our Discovery Handler. If you want Akri to also aut
 
   broker and client with the Golang broker and client arbitrarily. The Golang broker is described in the
 
-  [`http-apps`](https://github.com/deislabs/akri/blob/http-extensibility/samples/apps/http-apps/README.md) directory.
+  [`http-apps`](https://github.com/project-akri/akri/blob/http-extensibility/samples/apps/http-apps/README.md) directory.
 
-For this, we will describe the first option, a standalone broker. For a more detailed look at the other gRPC options, please look at [extensibility-http-grpc.md in the http-extensibility branch](https://github.com/deislabs/akri/blob/http-extensibility/docs/extensibility-http-grpc.md).
+For this, we will describe the first option, a standalone broker. For a more detailed look at the other gRPC options, please look at [extensibility-http-grpc.md in the http-extensibility branch](https://github.com/project-akri/akri/blob/http-extensibility/docs/extensibility-http-grpc.md).
 
 First, let's create a new Rust project for our sample broker. We can use cargo to create our project by navigating to `samples/brokers` and running:
 
@@ -590,7 +590,7 @@ RUN apt-get update && \
     apt-get clean
 
 COPY --from=build /http/target/release/standalone /standalone
-LABEL org.opencontainers.image.source https://github.com/deislabs/akri
+LABEL org.opencontainers.image.source https://github.com/project-akri/akri
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV SSL_CERT_DIR=/etc/ssl/certs
 ENV RUST_LOG standalone

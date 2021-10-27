@@ -1,6 +1,6 @@
 # Custom Discovery Handlers
 
-Akri has [implemented discovery via several protocols](../community/roadmap.md#implement-additional-discovery-handlers) with sample brokers and applications to demonstrate usage. However, there may be protocols you would like to use to discover resources that have not been implemented as Discovery Handlers yet. To enable the discovery of resources via a new protocol, you will implement a Discovery Handler (DH), which does discovery on behalf of the Agent. A Discovery Handler is anything that implements the `DiscoveryHandler` service and `Registration` client defined in the [Akri's discovery gRPC proto file](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto). These DHs run as their own Pods and are expected to register with the Agent, which hosts the `Registration` service defined in the gRPC interface.
+Akri has [implemented discovery via several protocols](../community/roadmap.md#implement-additional-discovery-handlers) with sample brokers and applications to demonstrate usage. However, there may be protocols you would like to use to discover resources that have not been implemented as Discovery Handlers yet. To enable the discovery of resources via a new protocol, you will implement a Discovery Handler (DH), which does discovery on behalf of the Agent. A Discovery Handler is anything that implements the `DiscoveryHandler` service and `Registration` client defined in the [Akri's discovery gRPC proto file](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto). These DHs run as their own Pods and are expected to register with the Agent, which hosts the `Registration` service defined in the gRPC interface.
 
 This document will walk you through the development steps to implement a Discovery Handler. If you would rather walk through an example, see Akri's [extensibility demo](./development-walkthrough.md), which walks through creating a Discovery Handler that discovers HTTP based devices. This document will also cover the steps to get your Discovery Handler added to Akri, should you wish to [contribute it back](../community/contributing.md).
 
@@ -10,7 +10,7 @@ A Discovery Handler can be written in any language using protobuf; however, Akri
 
 ## Creating a Discovery Handler using Akri's Discovery Handler proto file
 
-This section covers how to use [Akri's discovery gRPC proto file](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto) to create a Discovery Handler in the language of your choosing. It consists of three steps: 
+This section covers how to use [Akri's discovery gRPC proto file](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto) to create a Discovery Handler in the language of your choosing. It consists of three steps: 
 
 1. Registering your Discovery Handler with the Akri Agent
 2. Specifying device filtering in a Configuration
@@ -18,7 +18,7 @@ This section covers how to use [Akri's discovery gRPC proto file](https://github
 
 ### Registering with the Akri Agent
 
-Discovery Handlers and Agents run on each worker Node in a cluster. A Discovery Handler should register with the Agent running on its Node at the Agent's registration socket, which defaults to `/var/lib/akri/agent-registration.sock`. The directory can be changed when installing Akri by setting `agent.host.discoveryHandlers`. For example, to request that the Agent's `Registration` service live at `~/akri/sockets/agent-registration.sock` set `agent.host.discoveryHandlers=~/akri/sockets` when installing Akri. The Agent hosts the `Registration` service defined in [Akri's discovery interface](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto) on this socket.
+Discovery Handlers and Agents run on each worker Node in a cluster. A Discovery Handler should register with the Agent running on its Node at the Agent's registration socket, which defaults to `/var/lib/akri/agent-registration.sock`. The directory can be changed when installing Akri by setting `agent.host.discoveryHandlers`. For example, to request that the Agent's `Registration` service live at `~/akri/sockets/agent-registration.sock` set `agent.host.discoveryHandlers=~/akri/sockets` when installing Akri. The Agent hosts the `Registration` service defined in [Akri's discovery interface](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto) on this socket.
 
 When registering with the Agent, a Discovery Handler specifies its name (the one that will later be specified in Configurations), the endpoint of its Discovery Handler service, and whether the devices it discovers are shared (visible to multiple nodes).
 
@@ -45,7 +45,7 @@ Also note, that a Discovery Handler must also specify an `EndpointType` of eithe
 
 ### Specifying device filtering in a Configuration
 
-Discovery Handlers are passed information about what subset of devices to discover from a Configuration's `discoveryDetails`. Akri's Configuration CRD takes in [`DiscoveryHandlerInfo`](https://github.com/deislabs/akri/blob/main/shared/src/akri/configuration.rs), which is defined structurally in Rust as follows:
+Discovery Handlers are passed information about what subset of devices to discover from a Configuration's `discoveryDetails`. Akri's Configuration CRD takes in [`DiscoveryHandlerInfo`](https://github.com/project-akri/akri/blob/main/shared/src/akri/configuration.rs), which is defined structurally in Rust as follows:
 
 ```rust
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -90,7 +90,7 @@ The `discoveryHandler.name` must match `RegisterDiscoveryHandlerRequest.name` th
 
 ### Implementing the `DiscoveryHandler` service
 
-The service should have all the functionality desired for discovering devices via your protocol and filtering for only the desired set. Each device a Discovery Handler discovers is represented by the `Device` type, as shown in a subset of the [discovery proto file](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto) below. A Discovery Handler sets a unique `id` for the device, device connection information that needs to be set as environment variables in Pods that request the device in `properties`, and any mounts or devices that should be available to requesting Pods.
+The service should have all the functionality desired for discovering devices via your protocol and filtering for only the desired set. Each device a Discovery Handler discovers is represented by the `Device` type, as shown in a subset of the [discovery proto file](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto) below. A Discovery Handler sets a unique `id` for the device, device connection information that needs to be set as environment variables in Pods that request the device in `properties`, and any mounts or devices that should be available to requesting Pods.
 
 ```text
 message DiscoverResponse {
@@ -116,19 +116,19 @@ Note, `discover` creates a streamed connection with the Agent, where the Agent g
 
 ## Creating a Discovery Handler in Rust using a template
 
-Rust Discovery Handler development can be kick-started using Akri's [Discovery Handler template](https://github.com/deislabs/akri-discovery-handler-template) and [`cargo-generate`](https://github.com/cargo-generate/cargo-generate).
+Rust Discovery Handler development can be kick-started using Akri's [Discovery Handler template](https://github.com/project-akri/akri-discovery-handler-template) and [`cargo-generate`](https://github.com/cargo-generate/cargo-generate).
 
 Install [`cargo-generate`](https://github.com/cargo-generate/cargo-generate#installation) and use the tool to pull down Akri's template, specifying the name of the project with the `--name` parameter.
 
 ```bash
-cargo generate --git https://github.com/deislabs/akri-discovery-handler-template.git --name akri-discovery-handler
+cargo generate --git https://github.com/project-akri/akri-discovery-handler-template.git --name akri-discovery-handler
 ```
 
 This template abstracts away the work of registering with the Agent and creating the Discovery Handler service. All you need to do is specify the Discovery Handler name, whether discovered devices are sharable, implement discovery, and build the Discovery Handler.
 
 1. Specifying the Discovery Handler name and whether devices are sharable
 
-   Inside the newly created `akri-discovery-handler` project, navigate to `main.rs`. It contains all the logic to register our `DiscoveryHandler` with the Akri Agent. We only need to specify the `DiscoveryHandler` name and whether the devices discovered by our `DiscoveryHandler` can be shared. This is the name the Discovery Handler uses when registering with the Agent. It is later specified in a Configuration to tell the Agent which Discovery Handler to use. For example, in Akri's [udev Discovery Handler](https://github.com/deislabs/akri/blob/main/discovery-handler-modules/udev-discovery-handler/src/main.rs), `name` is set to `udev` and `shared` to `false` as all devices are locally attached to nodes. The Discovery Handler name also resolves to the name of the socket the template serves the Discovery Handler on.
+   Inside the newly created `akri-discovery-handler` project, navigate to `main.rs`. It contains all the logic to register our `DiscoveryHandler` with the Akri Agent. We only need to specify the `DiscoveryHandler` name and whether the devices discovered by our `DiscoveryHandler` can be shared. This is the name the Discovery Handler uses when registering with the Agent. It is later specified in a Configuration to tell the Agent which Discovery Handler to use. For example, in Akri's [udev Discovery Handler](https://github.com/project-akri/akri/blob/main/discovery-handler-modules/udev-discovery-handler/src/main.rs), `name` is set to `udev` and `shared` to `false` as all devices are locally attached to nodes. The Discovery Handler name also resolves to the name of the socket the template serves the Discovery Handler on.
 
 2. Implementing discovery
 
@@ -174,7 +174,7 @@ Also set the name the Discovery Handler will register under (`custom.configurati
 > Note: Be sure to consult the [user guide](../user-guide/getting-started.md) to see whether your Kubernetes distribution needs any additional configuration.
 
 ```bash
-  helm repo add akri-helm-charts https://deislabs.github.io/akri/
+  helm repo add akri-helm-charts https://project-akri.github.io/akri/
   helm install akri akri-helm-charts/akri \
   $AKRI_HELM_CRICTL_CONFIGURATION \
   --set imagePullSecrets[0].name="crPullSecret" \
@@ -263,15 +263,15 @@ Now that you have a working Discovery Handler and broker, we'd love for you to c
 1. Create an Issue with a feature request for this Discovery Handler.
 2. Create a proposal and put in PR for it to be added to the [proposals folder](../../proposals). 
 3. Implement your Discovery Handler and a document named `/akri/docs/<name>-configuration.md` on how to create a Configuration that uses your Discovery Handler.
-4. Create a pull request, that includes Discovery Handler and Dockerfile in the [Discovery Handler modules](https://github.com/deislabs/akri/tree/main/discovery-handler-modules) and [build](https://github.com/deislabs/akri/tree/main/build/containers) directories, respectively. Be sure to also update the minor version of Akri. See [contributing](../community/contributing.md#versioning) to learn more about our versioning strategy.
+4. Create a pull request, that includes Discovery Handler and Dockerfile in the [Discovery Handler modules](https://github.com/project-akri/akri/tree/main/discovery-handler-modules) and [build](https://github.com/project-akri/akri/tree/main/build/containers) directories, respectively. Be sure to also update the minor version of Akri. See [contributing](../community/contributing.md#versioning) to learn more about our versioning strategy.
 
 For a Discovery Handler to be considered fully implemented the following must be included in the PR. 
 
-1. A new [`DiscoveryHandler`](https://github.com/deislabs/akri/blob/main/discovery-utils/proto/discovery.proto) implementation
+1. A new [`DiscoveryHandler`](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto) implementation
 2. A [sample broker](broker-development.md) for the new resource.
 3. A sample Configuration that uses the new protocol in the form of a Helm template and values. 
 4. (Optional) A sample end application that utilizes the services exposed by the Configuration 
-5. Dockerfile\[s\] for broker \[and sample app\] and associated update to the [makefile](https://github.com/deislabs/akri/blob/main/build/akri-containers.mk)
+5. Dockerfile\[s\] for broker \[and sample app\] and associated update to the [makefile](https://github.com/project-akri/akri/blob/main/build/akri-containers.mk)
 6. Github workflow\[s\] for broker \[and sample app\] to build containers and push to Akri container repository.
 7. Documentation on how to use the new sample Configuration, like the [udev Configuration document](../discovery-handlers/udev.md)
 

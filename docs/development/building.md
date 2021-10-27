@@ -78,8 +78,8 @@ To add a new Rust-based component, follow these steps (substituting the new comp
 
 These are the intermediate components:
 
-* [rust-crossbuild](https://github.com/orgs/deislabs/packages/container/package/akri%2Frust-crossbuild)
-* [opencvsharp-build](https://github.com/orgs/deislabs/packages/container/package/akri%2Fopencvsharp-build)
+* [rust-crossbuild](https://github.com/orgs/project-akri/packages/container/package/akri%2Frust-crossbuild)
+* [opencvsharp-build](https://github.com/orgs/project-akri/packages/container/package/akri%2Fopencvsharp-build)
 
 ### rust-crossbuild
 
@@ -96,7 +96,7 @@ If a change needs to be made to this container, 2 pull requests are needed.
 
 ### opencvsharp-build
 
-This container is used by the [onvif-video-broker](https://github.com/orgs/deislabs/packages/container/package/akri%2Fonvif-video-broker) as part of its build process. The main purpose of this container is to prevent each build from needing to build the OpenCV C\# platform. This container can be built locally for all platforms using this command:
+This container is used by the [onvif-video-broker](https://github.com/orgs/project-akri/packages/container/package/akri%2Fonvif-video-broker) as part of its build process. The main purpose of this container is to prevent each build from needing to build the OpenCV C\# platform. This container can be built locally for all platforms using this command:
 
 ```bash
 BUILD_AMD64=1 BUILD_ARM32=1 BUILD_AMD64=1 make opencv-base
@@ -123,14 +123,14 @@ LABEL_PREFIX="v$(cat version.txt)-dev" make <component>-build-<platform>
 # Create container for specified component and platform using latest label
 LABEL_PREFIX=`latest-dev` make <component>-build-<platform>
 
-PREFIX=`ghcr.io/deislabs`
+PREFIX=`ghcr.io/project-akri`
 # Push container for specified component and platform with versioned label to container registry
 LABEL_PREFIX="v$(cat version.txt)-dev" make <component>-docker-per-arch-<platform>
 # Push container for specified component and platform with latest label to container registry
 LABEL_PREFIX=`latest-dev` make <component>-docker-per-arch-<platform>
 
 DOCKER_CLI_EXPERIMENTAL=`enabled`
-PREFIX=`ghcr.io/deislabs`
+PREFIX=`ghcr.io/project-akri`
 # Create manifest for multi-arch versioned container
 LABEL_PREFIX="v$(cat version.txt)-dev" make <component>-docker-multi-arch-create
 # Push manifest for multi-arch versioned container

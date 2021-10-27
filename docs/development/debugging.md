@@ -19,7 +19,7 @@ To install Akri with **external** Debug Echo Discovery Handlers and a Configurat
 > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set agent.allowDebugEcho=true \
@@ -32,7 +32,7 @@ helm install akri akri-helm-charts/akri \
 To instead install Akri with Debug Echo Discovery Handlers embedded in the Agent, set `agent.full=true` and remove `debugEcho.discovery.enabled=true` like in the following installation:
 
 ```text
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
   $AKRI_HELM_CRICTL_CONFIGURATION \
   --set agent.allowDebugEcho=true \
@@ -146,5 +146,5 @@ Akri provides further documentation on [modifying the broker PodSpec](../user-gu
 
 ## Implementation details
 
-The DebugEcho implementation can be understood by looking at its [Discovery Handler](https://github.com/deislabs/akri/blob/main/discovery-handlers/debug-echo/src/discovery_handler.rs), which contains the `DebugEchoDiscoveryDetails` struct, which describes the expected format of a Configuration's `DiscoveryDetails`.
+The DebugEcho implementation can be understood by looking at its [Discovery Handler](https://github.com/project-akri/akri/blob/main/discovery-handlers/debug-echo/src/discovery_handler.rs), which contains the `DebugEchoDiscoveryDetails` struct, which describes the expected format of a Configuration's `DiscoveryDetails`.
 

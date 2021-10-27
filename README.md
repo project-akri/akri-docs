@@ -1,5 +1,5 @@
 # Akri Docs
-This repo contains documentation for [Akri](https://github.com/deislabs/akri), including:
+This repo contains documentation for [Akri](https://github.com/project-akri/akri), including:
 1. [Akri's user and developer docs](./docs), which are hosted Akri's docs site [docs.akri.sh](https://docs.akri.sh/) by
    GitBook
 1. [Proposals](./proposals) for new Akri features

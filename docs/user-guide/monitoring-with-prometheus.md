@@ -42,7 +42,7 @@ Install Akri and expose the Controller and Agent's metrics to Prometheus by runn
 > Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set prometheus.enabled=true
@@ -89,14 +89,14 @@ Metrics can also be published by Broker Pods and exposed to Prometheus. This wor
 
 ### Example: Exposing metrics from the udev video sample Broker
 
-As an example, an `akri_frame_count` metric has been created in the sample [udev-video-broker](https://github.com/deislabs/akri/tree/main/samples/brokers/udev-video-broker). Like the Agent and Controller, it publishes both the default process metrics and the custom `akri_frame_count` metric to port 8080 at a `/metrics` endpoint.
+As an example, an `akri_frame_count` metric has been created in the sample [udev-video-broker](https://github.com/project-akri/akri/tree/main/samples/brokers/udev-video-broker). Like the Agent and Controller, it publishes both the default process metrics and the custom `akri_frame_count` metric to port 8080 at a `/metrics` endpoint.
 
 1. Akri can be installed with the udev Configuration, filtering for only usb video cameras and specifying a
 
    Configuration name of `akri-udev-video`, by running:
 
    ```bash
-    helm repo add akri-helm-charts https://deislabs.github.io/akri/
+    helm repo add akri-helm-charts https://project-akri.github.io/akri/
     helm install akri akri-helm-charts/akri \
         $AKRI_HELM_CRICTL_CONFIGURATION \
         --set udev.enabled=true \
@@ -172,7 +172,7 @@ As an example, an `akri_frame_count` metric has been created in the sample [udev
 6. The frame count metric reports the number of video frames that have been requested by some application. It will remain at zero unless an application is deployed that utilizes the video Brokers. Deploy the Akri sample streaming application by running the following:
 
    ```text
-   kubectl apply -f https://raw.githubusercontent.com/deislabs/akri/main/deployment/samples/akri-video-streaming-app.yaml
+   kubectl apply -f https://raw.githubusercontent.com/project-akri/akri/main/deployment/samples/akri-video-streaming-app.yaml
    watch kubectl get pods
    ```
 

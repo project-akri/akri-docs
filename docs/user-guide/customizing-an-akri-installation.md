@@ -17,7 +17,7 @@ To install Akri without any protocol Configurations, run this:
 > Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
   $AKRI_HELM_CRICTL_CONFIGURATION \
 ```
@@ -50,7 +50,7 @@ kubectl apply -f configuration.yaml
 If you want your end application to consume frames from both IP cameras and locally attached cameras, Akri can be installed from the start with both the ONVIF and udev Configurations like so:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.configuration.enabled=true \
@@ -119,7 +119,7 @@ spec:
   brokerPodSpec:
     containers:
     - name: akri-onvif-video-broker
-      image: "ghcr.io/deislabs/akri/onvif-video-broker:latest-dev"
+      image: "ghcr.io/project-akri/akri/onvif-video-broker:latest-dev"
       resources:
         limits:
           "{{PLACEHOLDER}}" : "1"
@@ -135,7 +135,7 @@ spec:
   brokerPodSpec:
     containers:
     - name: akri-onvif-video-broker
-      image: "ghcr.io/deislabs/akri/onvif-video-broker:latest-dev"
+      image: "ghcr.io/project-akri/akri/onvif-video-broker:latest-dev"
       resources:
         requests:
           memory: 30Mi

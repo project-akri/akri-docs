@@ -4,7 +4,7 @@ This documentation covers the details of Akri's testing workflow, which runs Akr
 and versions each time a commit is pushed to a PR or a PR is merged. 
 
 File:
-[`akri/.github/workflows/run-test-cases.yml`](https://github.com/deislabs/akri/blob/main/.github/workflows/run-test-cases.yml)
+[`akri/.github/workflows/run-test-cases.yml`](https://github.com/project-akri/akri/blob/main/.github/workflows/run-test-cases.yml)
 
 A GitHub workflow that:
 

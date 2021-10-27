@@ -4,7 +4,7 @@ To best understand the benefits of Akri and jump into using it, we recommend you
 
 ## The Journey Begins
 
-To get started using Akri, you must first decide what you want to discover and whether Akri currently supports a Discovery Handler that can be used to discover resources of that type. Akri discovers devices via Discovery Handlers, which are often protocol implementations that understand filter information passed via an Akri Configuration. To see the list of currently supported Discovery Handlers, see our [roadmap](https://github.com/deislabs/akri/projects/3).
+To get started using Akri, you must first decide what you want to discover and whether Akri currently supports a Discovery Handler that can be used to discover resources of that type. Akri discovers devices via Discovery Handlers, which are often protocol implementations that understand filter information passed via an Akri Configuration. To see the list of currently supported Discovery Handlers, see our [roadmap](https://github.com/project-akri/akri/projects/3).
 
 ### Understanding Akri Helm charts
 
@@ -13,17 +13,17 @@ Akri is most easily deployed with Helm charts. Helm charts provide convenient pa
 Starting in v0.0.36, an **akri-dev** Helm chart will be published for each build version. Each Akri build is verified with end-to-end tests on Kubernetes, K3s, and MicroK8s. These builds may be less stable than our Releases. You can deploy these versions of Akri with this command (note: **akri-dev**):
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri-dev \
    $AKRI_HELM_CRICTL_CONFIGURATION
 ```
 
 > Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
-Starting in Release v0.0.44, an **akri** Helm chart will be published for each [Release](https://github.com/deislabs/akri/releases). Releases will generally reflect milestones and will have more rigorous testing. You can deploy Release versions of Akri with this command (note: **akri**):
+Starting in Release v0.0.44, an **akri** Helm chart will be published for each [Release](https://github.com/project-akri/akri/releases). Releases will generally reflect milestones and will have more rigorous testing. You can deploy Release versions of Akri with this command (note: **akri**):
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
    $AKRI_HELM_CRICTL_CONFIGURATION
 ```
@@ -57,7 +57,7 @@ Let's walk through building an Akri installation command:
 1. Get Akri's Helm repo
 
    ```bash
-    helm repo add akri-helm-charts https://deislabs.github.io/akri/
+    helm repo add akri-helm-charts https://project-akri.github.io/akri/
    ```
 
 2. Install Akri's Controller and Agent, specifying the crictl configuration from [the cluster setup steps](cluster-setup.md#configure-crictl) in not using vanilla Kubernetes:
@@ -99,7 +99,7 @@ Let's walk through building an Akri installation command:
 Installation could have been done in one step rather than a series of upgrades:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION
     --set <discovery handler name>.discovery.enabled=true \
