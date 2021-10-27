@@ -2,6 +2,8 @@
 
 ![](../art/logo-horizontal/akri-logo-horizontal-light.png)
 
+> :warning: **Akri is undergoing a migration** to a new GitHub repository until 10/28 and it's Helm charts are currently not accessible.
+
 ## What is Akri?
 
 Akri is a Kubernetes Resource Interface that lets you easily expose heterogeneous leaf devices (such as IP cameras and
