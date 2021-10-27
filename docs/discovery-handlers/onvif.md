@@ -20,7 +20,7 @@ In order for the Agent to know how to discover IP cameras an ONVIF Discovery Han
 
 ## ONVIF Configuration Settings
 
-Instead of having to assemble your own ONVIF Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/onvif-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for ONVIF (to see them, run `helm inspect values akri-helm-charts/akri`). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the ONVIF Configuration to your cluster, simply set `onvif.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
+Instead of having to assemble your own ONVIF Configuration yaml, we have provided a [Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/onvif-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for ONVIF (to see them, run `helm inspect values akri-helm-charts/akri`). More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts). To apply the ONVIF Configuration to your cluster, simply set `onvif.configuration.enabled=true` along with any of the following additional Configuration settings when installing Akri.
 
 ### Discovery Handler Discovery Details Settings
 
@@ -69,7 +69,7 @@ Leveraging the above settings, Akri can be installed with the ONVIF Discovery Ha
 > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
@@ -92,7 +92,7 @@ The ONVIF Discovery Handler supports basic filter capabilities has been provided
 For example, the following enables discovery of every camera that does not have an IP address of 10.0.0.1:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
@@ -105,7 +105,7 @@ helm install akri akri-helm-charts/akri \
 You can enable cluster access for every camera with a specific name, you can modify the Configuration like so:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
@@ -121,7 +121,7 @@ helm install akri akri-helm-charts/akri \
 The ONVIF Discovery Handler will search for up to `discoveryTimeoutSeconds` for IP cameras. This timeout can be increased or decreased as desired, and defaults to 1 second if not configured. It can be set in the Configuration like this:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
@@ -138,7 +138,7 @@ Akri has provided further documentation on [modifying the broker PodSpec](../use
 
 The ONVIF implementation can be understood by looking at several things:
 
-1. [OnvifDiscoveryDetails](https://github.com/deislabs/akri/blob/main/discovery-handlers/onvif/src/discovery_handler.rs) defines the required properties
-2. [OnvifDiscoveryHandler](https://github.com/deislabs/akri/blob/main/discovery-handlers/onvif/src/discovery_handler.rs) defines ONVIF camera discovery
-3. [samples/brokers/onvif-video-broker](https://github.com/deislabs/akri/tree/main/samples/brokers/onvif-video-broker) defines the ONVIF broker
+1. [OnvifDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/onvif/src/discovery_handler.rs) defines the required properties
+2. [OnvifDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/onvif/src/discovery_handler.rs) defines ONVIF camera discovery
+3. [samples/brokers/onvif-video-broker](https://github.com/project-akri/akri/tree/main/samples/brokers/onvif-video-broker) defines the ONVIF broker
 

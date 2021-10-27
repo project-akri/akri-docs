@@ -7,7 +7,7 @@ Lets walk through how this works, using the ONVIF Discovery Handler as an exampl
 > Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \

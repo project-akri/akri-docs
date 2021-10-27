@@ -12,7 +12,7 @@ In order for the Agent to discover udev devices, a udev Discovery Handler must e
 
 ## udev Configuration Settings
 
-Instead of having to assemble your own udev Configuration yaml, we have provided a [Helm template](https://github.com/deislabs/akri/blob/main/deployment/helm/templates/udev-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for udev (to see them, run `helm inspect values akri-helm-charts/akri`). To apply the udev Configuration to your cluster, simply set `udev.configuration.enabled=true` when installing Akri. Be sure to also **specify one or more udev rules** for the Configuration, as explained [below](#discovery-handler-discovery-details-settings).
+Instead of having to assemble your own udev Configuration yaml, we have provided a [Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/udev-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for udev (to see them, run `helm inspect values akri-helm-charts/akri`). To apply the udev Configuration to your cluster, simply set `udev.configuration.enabled=true` when installing Akri. Be sure to also **specify one or more udev rules** for the Configuration, as explained [below](#discovery-handler-discovery-details-settings).
 
 ### Discovery Handler Discovery Details Settings
 
@@ -22,11 +22,11 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 | :--- | :--- | :--- | :--- |
 | udev.configuration.discoveryDetails.udevRules | array of udev rules | empty | udev rule [supported by the udev Discovery Handler](#udev-rule-format) |
 
-The udev Discovery Handler parses the udev rules listed in a Configuration, searches for them using udev, and returns a list of discovered device nodes (ie: /dev/video0). It parses the udev rules via a grammar [grammar](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) Akri has created. It expects the udev rules to be formatted according to the [Linux Man pages](https://linux.die.net/man/7/udev).
+The udev Discovery Handler parses the udev rules listed in a Configuration, searches for them using udev, and returns a list of discovered device nodes (ie: /dev/video0). It parses the udev rules via a grammar [grammar](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) Akri has created. It expects the udev rules to be formatted according to the [Linux Man pages](https://linux.die.net/man/7/udev).
 
 #### Udev rule format
 
-While udev rules are normally used to both find devices and perform actions on devices, the Akri udev discovery handler is only interested in finding devices. Consequently, the discovery handler will throw an error if any of the rules contain an action operation ("=" , "+=" , "-=" , ":=") or action fields such as `IMPORT` in the udev rules. You should only use match operations ("==", "!=") and the following udev fields: `ATTRIBUTE`, `ATTRIBUTE`, `DEVPATH`, `DRIVER`, `DRIVERS`, `KERNEL`, `KERNELS`, `ENV`, `SUBSYSTEM`, `SUBSYSTEMS`, `TAG`, and `TAGS`. To see some examples, reference our example [supported rules](https://github.com/deislabs/akri/blob/main/test/example.rules) and [unsupported rules](https://github.com/deislabs/akri/blob/main/test/example-unsupported.rules) that we run some tests against.
+While udev rules are normally used to both find devices and perform actions on devices, the Akri udev discovery handler is only interested in finding devices. Consequently, the discovery handler will throw an error if any of the rules contain an action operation ("=" , "+=" , "-=" , ":=") or action fields such as `IMPORT` in the udev rules. You should only use match operations ("==", "!=") and the following udev fields: `ATTRIBUTE`, `ATTRIBUTE`, `DEVPATH`, `DRIVER`, `DRIVERS`, `KERNEL`, `KERNELS`, `ENV`, `SUBSYSTEM`, `SUBSYSTEMS`, `TAG`, and `TAGS`. To see some examples, reference our example [supported rules](https://github.com/project-akri/akri/blob/main/test/example.rules) and [unsupported rules](https://github.com/project-akri/akri/blob/main/test/example-unsupported.rules) that we run some tests against.
 
 ### Broker Pod Settings
 
@@ -131,7 +131,7 @@ Leveraging the above settings, Akri can be installed with the udev Discovery Han
 > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
@@ -151,7 +151,7 @@ For more advanced Configuration changes that are not aided by our Helm chart, we
 The udev Discovery Handler will find all devices that are described by ANY of the udev rules. For example, to discover devices made by either Great Vendor or Awesome Vendor, you could add a second udev rule.
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
@@ -167,7 +167,7 @@ Akri will now discover these devices and advertize them to the cluster as resour
 Instead of manually deploying Pods to resources advertized by Akri, you can add a broker image to the udev Configuration. Then, a broker will automatically be deployed to each discovered device. The controller will inject the information the broker needs to find its device as an environment variable. Namely, it injects an environment variable named `UDEV_DEVNODE` which contains the devnode path for that device (ie: `/dev/snd/pcmC0D0c`). The broker can grab this environment variable and proceed to interact with the device. To add a broker to the udev configuration, set the `udev.configuration.brokerPod.image.repository` value to point to your image. As an example, the installation below will deploy an empty nginx pod for each instance. Instead, you can point to your image, say `ghcr.io/<USERNAME>/sound-broker`.
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
@@ -185,7 +185,7 @@ Akri will automatically create a broker for each discovered device. It will also
 By default in the generic udev Configuration, the udev broker is run in privileged security context. This container [security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) can be customized via Helm. For example, to instead run all processes in the Pod with user ID 1000 and group 1000, do the following:
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
@@ -204,8 +204,8 @@ Akri has provided further documentation on [modifying the broker PodSpec](../use
 
 The udev implementation can be understood by looking at several things: 
 
-1. [UdevDiscoveryDetails](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines the required properties 
-1. [UdevDiscoveryHandler](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines udev discovery 
-1. [samples/brokers/udev-video-broker](https://github.com/deislabs/akri/blob/main/samples/brokers/udev-video-broker) defines the udev broker 
-1. [udev\_rule\_grammar.pest](https://github.com/deislabs/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) defines the grammar for parsing udev rules and enumerate which fields are supported (such as `ATTR` and `TAG`), which are yet to be supported (`ATTRS` and `TAGS`), and which fields will never be supported, mainly due to be assignment rather than matching fields (such as `ACTION` and `GOTO`).
+1. [UdevDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines the required properties 
+1. [UdevDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines udev discovery 
+1. [samples/brokers/udev-video-broker](https://github.com/project-akri/akri/blob/main/samples/brokers/udev-video-broker) defines the udev broker 
+1. [udev\_rule\_grammar.pest](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) defines the grammar for parsing udev rules and enumerate which fields are supported (such as `ATTR` and `TAG`), which are yet to be supported (`ATTRS` and `TAGS`), and which fields will never be supported, mainly due to be assignment rather than matching fields (such as `ACTION` and `GOTO`).
 

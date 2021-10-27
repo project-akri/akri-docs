@@ -31,7 +31,7 @@ Oftentimes, it is useful for a broker to expose some information from its device
 This default creation of Instance and Configuration services can be disabled by setting `<Discovery Handler name>.configuration.createInstanceServices=false` and `<Discovery Handler name>.configuration.createConfigurationService=false` when installing Akri's Helm chart.
 {% endhint %}
 
-A broker can expose information via REST, gRPC, etc. Akri's [sample brokers](https://github.com/deislabs/akri/tree/main/samples/brokers) all use gRPC. For example, the udev video and ONVIF brokers both use the same [camera proto file](https://github.com/deislabs/akri/blob/main/samples/brokers/udev-video-broker/proto/camera.proto) for their gRPC interfaces, which contains a service that serves camera frames. This means that one end application can be deployed that implements the client side of the interface and grabs frames from all cameras, whether IP or USB based. This is exactly what our [sample streaming application](https://github.com/deislabs/akri/tree/main/samples/apps) does.
+A broker can expose information via REST, gRPC, etc. Akri's [sample brokers](https://github.com/project-akri/akri/tree/main/samples/brokers) all use gRPC. For example, the udev video and ONVIF brokers both use the same [camera proto file](https://github.com/project-akri/akri/blob/main/samples/brokers/udev-video-broker/proto/camera.proto) for their gRPC interfaces, which contains a service that serves camera frames. This means that one end application can be deployed that implements the client side of the interface and grabs frames from all cameras, whether IP or USB based. This is exactly what our [sample streaming application](https://github.com/project-akri/akri/tree/main/samples/apps) does.
 
 ## Deploying your custom broker
 
@@ -40,7 +40,7 @@ Once you have created a broker, you can ask Akri to automatically deploy it to a
 > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
-helm repo add akri-helm-charts https://deislabs.github.io/akri/
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri-dev \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
@@ -69,7 +69,7 @@ The limit and request bounds were obtained using Kubernetes' [Vertical Pod Autos
 You can request that additional environment variables are set in Pods that request devices discovered via an Akri Configuration. These are set as key/value pairs in a Configuration's `brokerProperties`. For example, take the scenario of brokers being deployed to USB cameras discovered by Akri. You may wish to give the brokers extra information about the image format and resolution the cameras support. The brokers then can look up these variables to know how to properly utilize their camera. These `brokerProperties` could be set in a Configuration during a Helm installation as follows:
 
 ```bash
-  helm repo add akri-helm-charts https://deislabs.github.io/akri/
+  helm repo add akri-helm-charts https://project-akri.github.io/akri/
   helm install akri akri-helm-charts/akri-dev \
   $AKRI_HELM_CRICTL_CONFIGURATION \
   --set udev.discovery.enabled=true \
