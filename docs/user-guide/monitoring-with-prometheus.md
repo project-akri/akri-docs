@@ -102,7 +102,7 @@ As an example, an `akri_frame_count` metric has been created in the sample [udev
         --set udev.enabled=true \
         --set udev.name=akri-udev-video \
         --set udev.udevRules[0]='KERNEL=="video[0-9]*"' \
-        --set udev.brokerPod.image.repository="ghcr.io/deislabs/akri/udev-video-broker"
+        --set udev.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker"
    ```
 
    > **Note**: This instruction assumes you are using vanilla Kubernetes. Be sure to reference the user guide to determine whether the distribution you are using requires crictl path configuration.

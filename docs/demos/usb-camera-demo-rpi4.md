@@ -118,7 +118,7 @@ In order for the Agent to know how to discover video devices, the udev Discovery
         --set udev.configuration.enabled=true \
         --set udev.configuration.name=akri-udev-video \
         --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"' \
-        --set udev.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/udev-video-broker" 
+        --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" 
     ```
 
 ## Inspecting Akri
@@ -205,7 +205,7 @@ Look at the Configuration and Instances in more detail.
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \
       --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_VENDOR}=="Microsoft"' \
-      --set udev.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/udev-video-broker" 
+      --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" 
    ```
 
    As another example, to make sure that the camera has a capture capability rather than just being a video output device, modify the udev rule as follows: 
@@ -217,6 +217,6 @@ Look at the Configuration and Instances in more detail.
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \
       --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}=="*:capture:*"' \
-      --set udev.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/udev-video-broker" 
+      --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" 
    ```
 5. Discover other udev devices by creating a new udev configuration and broker. Learn more about the udev Discovery Handler Configuration [here](../discovery-handlers/udev.md).

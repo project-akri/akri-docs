@@ -127,7 +127,7 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
         --set opcua.discovery.enabled=true \
         --set opcua.configuration.enabled=true \
         --set opcua.configuration.name=akri-opcua-monitoring \
-        --set opcua.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/opcua-monitoring-broker" \
+        --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
         --set opcua.configuration.brokerProperties.IDENTIFIER='Thermometer_Temperature' \
         --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
         --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<SomeServer0 IP address>:<SomeServer0 port>/Quickstarts/ReferenceServer/" \
@@ -268,7 +268,7 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
         --set opcua.discovery.enabled=true \
         --set opcua.configuration.enabled=true \
         --set opcua.configuration.name=akri-opcua-monitoring \
-        --set opcua.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/opcua-monitoring-broker" \
+        --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
         --set opcua.configuration.brokerProperties.IDENTIFIER='Thermometer_Temperature' \
         --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
         --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<SomeServer0 IP address>:<SomeServer0 port>/Quickstarts/ReferenceServer/" \
@@ -321,7 +321,7 @@ helm install akri akri-helm-charts/akri \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
-    --set opcua.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/opcua-monitoring-broker" \
+    --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
     --set opcua.configuration.brokerProperties.IDENTIFIER='Thermometer_Temperature' \
     --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \
@@ -350,7 +350,7 @@ helm install akri akri-helm-charts/akri \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
-    --set opcua.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/opcua-monitoring-broker" \
+    --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
     --set opcua.configuration.brokerProperties.IDENTIFIER='Thermometer_Temperature' \
     --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \
@@ -369,7 +369,7 @@ helm install akri akri-helm-charts/akri \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
-    --set opcua.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/opcua-monitoring-broker" \
+    --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
     --set opcua.configuration.brokerProperties.IDENTIFIER='Thermometer_Temperature' \
     --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \
