@@ -58,9 +58,9 @@ The default broker Pod memory and CPU resource request and limits in Akri's Helm
 | Discovery Handler | Akri Sample Broker Pod image | Description |
 | :--- | :--- | :--- |
 | debugEcho | `nginx:stable-alpine` | standard nginx image for testing |
-| ONVIF | `ghcr.io/deislabs/akri/onvif-video-broker:latest` | .NET camera frame server |
-| OPC UA | `ghcr.io/deislabs/akri/opcua-monitoring-broker:latest` | .Net App subscribes to specific NodeID and serves latest value |
-| udev | `ghcr.io/deislabs/akri/udev-video-broker:latest` | Rust camera frame server |
+| ONVIF | `ghcr.io/project-akri/akri/onvif-video-broker:latest` | .NET camera frame server |
+| OPC UA | `ghcr.io/project-akri/akri/opcua-monitoring-broker:latest` | .Net App subscribes to specific NodeID and serves latest value |
+| udev | `ghcr.io/project-akri/akri/udev-video-broker:latest` | Rust camera frame server |
 
 The limit and request bounds were obtained using Kubernetes' [Vertical Pod Autoscaler (VPA)](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler). You should choose bounds appropriate to your broker Pod. [This blog](https://pretired.dazwilkin.com/posts/210305/#vertical-pod-autoscaler-vpa) is a good starting point for learning how to use the VPA to choose bounds.
 
@@ -76,7 +76,7 @@ You can request that additional environment variables are set in Pods that reque
   --set udev.configuration.enabled=true \
   --set udev.configuration.name=akri-udev-video \
   --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"' \
-  --set udev.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/udev-video-broker" \
+  --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" \
   --set udev.configuration.brokerProperties.FORMAT='JPEG' \
   --set udev.configuration.brokerProperties.RESOLUTION_WIDTH='1000' \
   --set udev.configuration.brokerProperties.RESOLUTION_HEIGHT='800'

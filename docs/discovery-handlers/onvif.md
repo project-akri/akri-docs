@@ -38,7 +38,7 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 
 ### Broker Pod Settings
 
-If you would like workloads ("broker" Pods) to be deployed automatically to discovered cameras, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/deislabs/akri/onvif-video-broker"). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+If you would like workloads ("broker" Pods) to be deployed automatically to discovered cameras, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/akri/onvif-video-broker"). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -74,7 +74,7 @@ helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
-    --set onvif.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
     --set onvif.configuration.brokerPod.image.tag="latest"
 ```
 
@@ -97,7 +97,7 @@ helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
-    --set onvif.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.ipAddresses.action=Exclude \
     --set onvif.configuration.discoveryDetails.ipAddresses.items[0]=10.0.0.1
 ```
@@ -110,7 +110,7 @@ helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
-    --set onvif.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.scopes.action=Include \
     --set onvif.configuration.discoveryDetails.scopes.items[0]="onvif://www.onvif.configuration.org/name/GreatONVIFCamera" \
     --set onvif.configuration.discoveryDetails.scopes.items[1]="onvif://www.onvif.configuration.org/name/AwesomeONVIFCamera"
@@ -126,7 +126,7 @@ helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
-    --set onvif.configuration.brokerPod.image.repository="ghcr.io/deislabs/akri/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.discoveryTimeoutSeconds=2
 ```
 
