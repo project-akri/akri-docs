@@ -66,8 +66,11 @@ A `DiscoveryHandlerImpl` Struct has been created (in `discovery_handler.rs`) tha
 First, let's add the additional crates we are using to our `Cargo.toml` under dependencies.
 
 ```text
+tokio-stream = { version =  "0.1", features = ["net"] }
 anyhow = "1.0.38"
 reqwest = "0.10.8"
+env_logger = "0.9.0"
+log = "0.4"
 ```
 
 Now, import our dependencies and define some constants. Add the following after the other imports at the top of `discovery_handler.rs`.
@@ -94,8 +97,8 @@ impl DiscoveryHandler for DiscoveryHandlerImpl {
         // Get the discovery url from the `DiscoverRequest`
         let url = request.get_ref().discovery_details.clone();
         // Create a channel for sending and receiving device updates
-        let (mut stream_sender, stream_receiver) = mpsc::channel(4);
-        let mut register_sender = self.register_sender.clone();
+        let (stream_sender, stream_receiver) = mpsc::channel(4);
+        let register_sender = self.register_sender.clone();
         tokio::spawn(async move {
             loop {
                 let resp = get(&url).await.unwrap(); 
@@ -124,7 +127,9 @@ impl DiscoveryHandler for DiscoveryHandlerImpl {
             }
         });
         // Send the agent one end of the channel to receive device updates
-        Ok(Response::new(stream_receiver))
+        Ok(Response::new(tokio_stream::wrappers::ReceiverStream::new(
+            stream_receiver,
+        )))
     }
 }
 ```
