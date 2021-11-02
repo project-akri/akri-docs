@@ -10,7 +10,8 @@ Note: All nodes must be Linux on amd64, arm64v8, or arm32v7.
 
 {% tabs %}
 {% tab title="Kubernetes" %}
-1. Reference [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/) for instructions on how to install Kubernetes. 
+1. Reference [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/) for instructions on how to install Kubernetes. See Akri's [release notes](https://github.com/project-akri/akri/releases) to see what versions of Kubernetes Akri has been tested on.
+
 2. Install Helm for deploying Akri.
 
    ```bash
@@ -30,13 +31,13 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 {% tab title="K3s" %}
 
 
-1. Install [K3s](https://k3s.io/)
+1. Install [K3s](https://k3s.io/). The following will install the latest K3s version. Reference Akri's [release notes](https://github.com/project-akri/akri/releases) to see what versions of K3s Akri has been tested on.
 
    ```bash
       curl -sfL https://get.k3s.io | sh -
    ```
 
-   > Note: Optionally specify a version with the `INSTALL_K3S_VERSION` env var as follows: `curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.18.9+k3s1 sh -`
+   > Note: Optionally specify a version with the `INSTALL_K3S_VERSION` env var as follows: `curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.21.5+k3s1 sh -`
 
 2. Grant admin privilege to access kube config.
 
@@ -69,10 +70,10 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 {% tab title="MicroK8s" %}
 
 
-1. Install [MicroK8s](https://microk8s.io/docs).
+1. Install [MicroK8s](https://microk8s.io/docs). The following will install the latest MicroK8s version. Add `--channel=$VERSION/stable` to specify as specific Kubernetes version. Reference Akri's [release notes](https://github.com/project-akri/akri/releases) to see what versions of MicroK8s Akri has been tested on.
 
    ```bash
-    sudo snap install microk8s --classic --channel=1.19/stable
+    snap install microk8s --classic
    ```
 
 2. Grant admin privilege for running MicroK8s commands.
