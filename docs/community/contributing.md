@@ -33,7 +33,7 @@ We follow the [SymVer](https://semver.org/) versioning strategy: \[MAJOR\].\[MIN
 * For non-breaking feature changes, \[MINOR\] should be incremented.  This can be accomplished by running `./version.sh -u -n`
 * For major and/or breaking changes, \[MAJOR\] should be incremented.  This can be accomplished by running `./version.sh -u -m`
 
-To ensure that all product versioning is consistent, our CI builds will execute `./version.sh -c` to check all known instances of version in our YAML, TOML, and code. This will also check to make sure that version.txt has been changed. If a pull request is needed where the version should not be changed, add `same version` label to the pull request.
+To ensure that all product versioning is consistent, our CI builds will execute `./version.sh -c` to check all known instances of version in our YAML, TOML, and code. This will also check to make sure that version.txt has been changed. If a pull request is needed where the version should not be changed, add `same version` label to the pull request by commenting `/add-same-version-label`.
 
 > Note for MacOS users: `version.sh` uses the GNU `sed` command under-the-hood, but MacOS has built-in its own version. We recommend installing the GNU version via `brew install gnu-sed`. Then follow the brew instructions on how to use the installed GNU `sed` instead of the MacOS one.
 
@@ -57,8 +57,8 @@ The [version check workflow](https://github.com/project-akri/akri/blob/main/.git
 Akri has some intermediate containers that decrease the build time of the more frequently built final containers. These intermediate builds are long running and should only be run when absolutely needed. If your PR triggers a workflow to build them, you will see the workflow fail and get a message that requests that you add `build dependency containers` label to your PR to start the build. 
 
 You can add labels by commenting:
-  - /add-build-dependency-containers-label
-  - /add-same-version-label
+  - `/add-build-dependency-containers-label`
+  - `/add-same-version-label`
 
 ## CLA
 
