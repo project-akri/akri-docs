@@ -3,6 +3,7 @@
 ![](../art/logo-horizontal/akri-logo-horizontal-light.png)
 
 ## What is Akri?
+Akri is hosted by the Cloud Native Computing Foundation (CNCF) as a [Sandbox project](https://www.cncf.io/sandbox-projects/).
 
 Akri is a Kubernetes Resource Interface that lets you easily expose heterogeneous leaf devices (such as IP cameras and
 USB devices) as resources in a Kubernetes cluster, while also supporting the exposure of embedded hardware resources
