@@ -1,8 +1,20 @@
 # Infrastructure for Multiple Deployment Strategies
+Akri simplifies the discovery and use of devices. This proposal is focused on expanding the use
+scenarios Akri can support. In this document, the term "deployment strategy" is used to describe the
+number of Pods the Akri Controller deploys to discovered devices. Currently, the Akri Controller has
+one deployment strategy. It deploys a Pod (that Akri calls a "broker") to each Node that can see a
+device. It enables every node that can see a device to use it (can be limited by `capacity`), and it
+expects these Pods to never terminate. This strategy can support scenarios such as creating Protocol
+translation gateways (ie a broker advertises a USB camera as an IP camera) and device data brokering
+(ie a broker continually grabs the temperature from a thermometer). However, there are many
+scenarios it does not support, such as device management scenarios where a short lived broker should
+be deployed, deploying a broker to use multiple devices (say 2 IP cameras and a GPU), deploying a
+certain number of brokers (say 3 brokers for the cluster), and more. 
+
 This document discusses how to add support for multiple deployment strategies in Akri. It ultimately
 proposes a phased approach with 5 phases of building up the Configuration CRD, Instance CRD, Agent,
-and Controller to support all strategies. It assumes the support of terminating Pods via Jobs as
-explained in [this proposal](./broker-jobs.md).
+and Controller to support several strategies. It assumes the support of terminating Pods via Jobs as
+explained in [this proposal](https://github.com/project-akri/akri-docs/pull/17).
 
 [This is the original
 proposal](https://github.com/project-akri/akri-docs/blob/main/proposals/broker-deployment-strategies.md)
@@ -36,8 +48,8 @@ device at once. The broker is not allowed to ever terminate.
 
 This is a fairly specific scenario. This document proposes how the Controller, Agent, Configuration
 CRD, and Instance CRD can be redesigned to support multiple deployment strategies. Namely, it aims
-to support all strategies in the [Deployment Strategies terms](#Deployment-Strategies) and as many
-in the [strategy matrix as seems reasonable](#Pod-Deployment-Strategy-Matrix).
+to support ones from the [strategy matrix](#Pod-Deployment-Strategy-Matrix) that have the most real
+life use cases and to add support in a way that more strategies can be enabled in the future.
 
 ## Supporting More Deployment Strategies
 All deployment strategies can be broken down to the question: how many brokers should run on how
@@ -46,7 +58,8 @@ broker per Node using one specific Instance. Currently, that broker can only be 
 Pod.
 
 Akri should support more deployment strategies and deploying not only non-terminating Pods but also
-Jobs.
+Jobs. A proposal for adding support for deploying Jobs can be found in [PR
+here](https://github.com/project-akri/akri-docs/pull/17).
 
 ### Example Scenarios to Support
 The following is a list of some of the scenarios Akri currently can support:
@@ -80,16 +93,20 @@ Scheduler will place Pods on Nodes with the appropriate available resources and 
 affinity and Node affinity rules of the DaemonSet or Deployment. These Pods are never allowed to
 terminate as Deployments and DaemonSets require a `RestartPolicy` of `Always`.
 
+> Note: "Deployment" is an overloaded word. Whenever the capitalized term "Deployment" is used, it
+is referring to the creation and use of [Kubernetes
+Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) objects.
+
 Currently, instead of DaemonSets and Deployments, the Controller takes a hands-on approach,
 deploying a Pod to each Node. In a way, the Controller is replicating the work of the Kubernetes
 DaemonSet or Deployment (with Pod anti-affinity) scheduler. This document proposes **leveraging
 Kubernetes Deployment objects in order to slim down the Controller and use concepts familiar with
 Kubernetes users**. For scenarios with non-terminating Pods, this document proposes creating
-Deployments on behalf of the user to achieve all scenarios. Scenarios will be targeted by setting
-Pod anti-affinity and Node affinity. This allows scheduling work to be offloaded to the Kubernetes
-Scheduler.
+Kubernetes Deployments on behalf of the user to achieve all scenarios. Scenarios will be targeted by
+setting Pod anti-affinity and Node affinity. This allows scheduling work to be offloaded to the
+Kubernetes Scheduler.
 
-The following Strategy Matrix was made to display all permutations of decisions on how many broker
+The following Strategy Matrix displays all permutations of possible decisions on how many broker
 Pods to deploy, on which Nodes, using what resources. The first line of each entry starts with an
 entry index (such as `2B`) and then a description of the scenario. The next line contains the type
 of `Deployment` that the Controller can create to fulfil the scenario, and the final line defines
@@ -99,10 +116,10 @@ Pod anti-affinity and Node affinity.
 The columns of the matrix describe how many of a certain type of device should be targeted. For
 example, should a broker target one IP camera or D IP cameras? Currently the Controller can do the
 former but not the latter. When trying to target d of D IP cameras, what if each of the Nodes can
-see a different set of the cameras? Then, if a deployment intended to target all Nodes is created
-that targets d specific Instances, brokers will only be executed on the Nodes that can see those
-specific d Instances. This brings up the need to support Configuration-level (CL) resources in Akri.
-Akri currently only creates Instance-level resources, meaning it creates a [Kubernetes device
+see a different set of the cameras? Then, if a Deployment is created targeting d devices, brokers
+will only be executed on the Nodes that can see those specific d Instances. This brings up the need
+to support Configuration-level (CL) resources in Akri. Akri currently only creates Instance-level
+resources, meaning it creates a [Kubernetes device
 plugin](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/)
 for each Instance. With Configuration-level resources, an additional device plugin is created for
 each Configuration. This will enable requesting d of a set of D devices. For example, a resource
@@ -110,7 +127,7 @@ request of `akri.sh/akri-debug-echo: "2"` could be made instead of `akri.sh/akri
 "1"` and `akri.sh/akri-debug-echo-ha5h2": "1"`. This is elaborated upon in the [Configuration-level
 Resources](#Configuration-level-resources) section. In the Matrix, all strategies under the "Every
 Instance" column can use Instance level resource requests (`akri.sh/akri-debug-echo-ha5h2": "1"`),
-while Configuration level resources must be used for all strategies in column D.
+while Configuration-level resources must be used for all strategies in column D.
 #### Pod Deployment Strategy Matrix
 | Pods per Node \| Instance | Every | D |
 |---|---|---|
@@ -122,10 +139,11 @@ while Configuration level resources must be used for all strategies in column D.
 | P Pods on 1 Node | 6A "1 Node will receive P brokers for each device". How: Same as "P Pods and N Nodes" where N=1. Purpose: Unshared device HA | 6B "1 Node will receive P brokers that use D CL resources". How: Same as "P Pods and N Nodes" where N=1. Purpose: Unshared devices HA |
 
 > Note: all scenarios in the "D Instances" column can be modified to support using multiple types
-> (Configurations) of devices. These "resource grouping" scenarios would be fulfilled by simply
+> (Configurations) of devices. These "resource grouping" scenarios would ideally be fulfilled by
 > requesting z of type Z devices and x of type X devices in the `Deployment`.
 
-The strategies in the above matrix that seem the most likely are:
+Looking at the matrix, the strategies that Akri should focus on supporting as they seems to enable
+the most use cases are:
 - 5A (or 4A for cross-Node HA): Want to use a device with one broker (no HA). Frame server, protocol
   translation gateway
 - 5B (or 4B for cross-Node HA): Scenario where you want to use D devices with one broker (no HA).
@@ -145,14 +163,15 @@ allowed to complete and terminate such as:
 - Inventory: Adding a device to a database
 - Action: Perform an action such as taking a picture, reading the temperature, etc
 
-There is currently [a proposal](./job-brokers.md) for for deploying Pods that are allowed to
-terminate. The design enables the Controller to deploy Jobs. A
+There is currently [a proposal](https://github.com/project-akri/akri-docs/pull/17) for for deploying
+Pods that are allowed to terminate. The design enables the Controller to deploy Jobs. A
 [Job](https://kubernetes.io/docs/concepts/workloads/controllers/job/) is a higher level Kubernetes
-object that creates one or more (by increasing the `parallism` value) identical Pods and will retry
-until a set number of them successfully terminate (`completions`) or a maximum number
-(`backoffLimit`) fail. The following builds off [that proposal](./job-brokers.md) and provides a
-Strategy Matrix like the one for non-terminating Pods. It aims to show the whole array of deployment
-options for Jobs and consider the use of Configuration-level resources in Jobs.
+object that creates one or more (by increasing the `parallelism` value) identical Pods and will
+retry until a set number of them successfully terminate (`completions`) or a maximum number
+(`backoffLimit`) fail. The following builds off [that
+proposal](https://github.com/project-akri/akri-docs/pull/17) and provides a Strategy Matrix like the
+one for non-terminating Pods. It aims to show the whole array of deployment options for Jobs and
+consider the use of Configuration-level resources in Jobs.
 #### Job Deployment Strategy Matrix
 The following illustrates all permutations of Job Deployment Strategies:
 
@@ -173,12 +192,14 @@ should prioritize supporting scenarios `5` and `6` (which are identical in imple
 if requested. 
 
 ## Implementation
+To support multiple deployment strategies, the Controller will be expanded to create Jobs or
+Deployment objects that request either Instance-level or Configuration-level resources. The Agent
+will be expanded to create Configuration-level resources. 
 ### Configuration CRD 
-This section builds off of the [Job Proposal's](./job-brokers.md) recommendation clearly delineate
-the two roles of an Akri Configuration: to configure discovery and use. Currently, the discovery
-part of the Configuration sits in the `discoveryHandler` section; however, the deployment options
-are spread out among the `brokerPodSpec`, `instanceServiceSpec` and `configurationServiceSpec`.
-These will instead be lumped under one `deploymentStrategy` section that will also contain fields
+A Configuration initiates two actions: discovery and use of devices. Currently, the discovery part
+of the Configuration sits in the `discoveryHandler` section; however, the deployment options are
+spread out among the `brokerPodSpec`, `instanceServiceSpec` and `configurationServiceSpec`. These
+will instead be lumped under one `deploymentStrategy` section that will also contain fields
 pertaining to the types of deployments that should be made by the Controller. 
 
 At first, it seemed like the `deploymentStrategies` section could be an enum like Akri's original
@@ -311,11 +332,9 @@ Looking at each field of `deploymentStrategy`:
    Node by setting `PodAntiAffinity` to `true`.
 
 Note that with this design, if Configuration discovers resources X, it can use resources X and Y,
-where Y is discovered by another Configuration. However, the Controller will check for the existence
-of the Configurations of the requested `resources` before creating any deployments. A simpler
-solution to this may be to separate the Configuration CRD into two separate CRDs a
-`DiscoveryConfiguration` and `UseConfiguration`. See [Configuration CRD Split
-section](#Configuration-CRD-Split) for more discussion on this.
+where Y is discovered by another Configuration. A simpler solution to this may be to separate the
+Configuration CRD into two separate CRDs a `DiscoveryConfiguration` and `UseConfiguration`. See
+[Configuration CRD Split section](#Configuration-CRD-Split) for more discussion on this.
 
 > Consideration: Additionally, should discovery be an optional part of a Configuration with
 > `discoveryHandler` being an optional field?
@@ -351,9 +370,12 @@ Alternatives:
 - Enable specifying multiple brokers in a Configuration. This solves the last issue of deploying
   multiple brokers to the same devices; however, it does not solves the issue of simplifying the use
   of devices discovered by other Configurations. It may even complicate that.
-  ### Instance CRD
-The instance CRD needs a couple modifications to support Jobs and being used by multiple
-Configurations:
+
+### Instance CRD
+Previously, each Instance (CRD representation of the use of a device) was owned by one
+Configuration. This document proposes enabling instances to be used by multiple Configurations. This
+requires an additional field to be added to the instance to keep track of which Configurations are
+using it. Configurations:
 1. `configurationDeploymentStatuses`: while `configuration_name` string will continue to hold the
    name of the Configuration that discovered the Instance. This is a map of currently deployed
    Configurations that are using the instance, where the key is the Configuration name and the value
@@ -361,9 +383,6 @@ Configurations:
    `Failed` states are for Job related Configurations, as Pods are expected to continuously run.
    When the `brokerGeneration` of a Configuration with Jobs is modified and the Jobs are redeployed,
    it can change back to `Active` state.
-2. `brokerInfo`: After a Job completes, pertinent information can be propagated from the Job to the
-   Agent (through the filesystem) to the Instance's `brokerInfo`. This may contain non-secret
-   information such as current firmware version.
 
 > Note: Latest release version of the Instance CRD can be viewed
 > [here](https://github.com/project-akri/akri/blob/v0.7.0/deployment/helm/crds/akri-instance-crd.yaml).
@@ -406,11 +425,6 @@ spec:
                   additionalProperties:
                     type: string
                   type: object
-                brokerInfo: # map<string, string>
-                  additionalProperties:
-                    type: string
-                  type: object
-
       additionalPrinterColumns:
       - name: Config
         type: string
@@ -437,11 +451,12 @@ spec:
 ```
 
 ### Agent Extension
-The Agent will need to be extended to support Configuration level resources and crictl Pod patching.
-See [the proposal](./job-brokers.md) for extensions needed to support Jobs.
+The Agent will need to be extended to support Configuration-level resources and crictl Pod patching.
+See [the proposal](https://github.com/project-akri/akri-docs/pull/17) for extensions needed to
+support Jobs.
 
-#### Configuration level resources
-To support Configuration level resources, the Agent will create an additional device plugin for each
+#### Configuration-level resources
+To support Configuration-level resources, the Agent will create an additional device plugin for each
 Configuration (that initiates discovery). This device plugin will contain `capacity` * `number of
 instances` slots. Each slot will map to a "real" slot of an Instance device plugin. For example,
 after deploying a `onvif` Configuration with a `capacity` of `2`, the `NodeSpec` of a node that
@@ -472,14 +487,14 @@ spec:
         image: "nginx:latest"
         resources:
           requests:
-            "akri.sh/akri-onvif": "1"
+            "akri.sh/akri-onvif": "2"
           limits:
-            "akri.sh/akri-onvif": "1"
+            "akri.sh/akri-onvif": "2"
 ``` 
 The Kubernetes scheduler will deploy a Pod to each Node. Pods will only be successfully scheduled to
-a Node and run if the resource exists and is available. Otherwise it will be left in a `Pending`
+a Node and run if the resources exists and are available. Otherwise they will be left in a `Pending`
 state. See this in action by walking through the [Pending Pods tutorial in the
-appendix](#Pending-Pods). **Note: This is the main downside to Configuration level resources. Since
+appendix](#Pending-Pods). **Note: This is the main downside to Configuration-level resources. Since
 the Controller is not taking full control of the scheduling, there will be more `Pending` Pods. But
 this only equates to just more YAML it etcd.**
 
@@ -487,14 +502,14 @@ this only equates to just more YAML it etcd.**
 Currently, when deploying a Pod to a Node, the Controller adds `akri.sh/instance` and
 `akri.sh/configuration` labels to the Pod, so it knows what Instance and Configuration it is using.
 That way, if either of those resources are deleted, it knows which Pods to bring down. However, with
-Configuration level resources, the Controller is not able to add an Instance label, since it does
+Configuration-level resources, the Controller is not able to add an Instance label, since it does
 not know which instance the kubelet (and Agent) will ultimately choose for each Pod of a Deployment
 or DaemonSet. So, the Controller has no way of knowing which Pods are using which instances. This
 becomes problematic if a device goes offline. How does the container know which Pod to bring down?
 
 To solve this, the Agent will add the label to the Pod during slot reconciliation. The flow is as
 follows:
-1. Once a Pod requesting a Configuration level resource is scheduled to a node by the K8s scheduler,
+1. Once a Pod requesting a Configuration-level resource is scheduled to a node by the K8s scheduler,
    the kubelet will call allocate on the Agent, requesting an available Configuration slot. The
    Agent will reserve one of the instance slots and (as is currently done) sets an annotation in the
    Container (with the key `akri.agent.slot`) with the slot being used. However, this Container
@@ -529,30 +544,26 @@ Currently, the Controller has Instance, Pod, and Node watchers.
 ![Controller design as of v0.7.0](../media/controller-v0-7-0-flow.png)
 
 #### New design
-The new design of the Controller will have an additional Job Watcher and Configuration Watcher. It
-will also add logic to the Instance watcher.
-1. Instance Watcher: Creates Deployments and Jobs. If the `nodes` of the Instance has changed, if
-   `distributionType.everyNode` is `true`, the `replicas` field of the Deployment using that
-   instance will be modified. For Jobs, Jobs will be deployed or brought down as needed. Instance
-   deletion events lead to the deletion of Pods/Jobs with that Instance label. No services are
-   created or removed here as done in previous design.
-
+The new design of the Controller will have an additional Configuration Watcher. It will also add
+logic to the Instance watcher.
+1. Instance Watcher: Creates Deployments and Jobs. If the `nodes` of the Instance has changed and
+   `distributionType.everyNode` is `true`, the `replicas` field of the Deployment is increased or
+   decreased accordingly. For Jobs, Jobs will be deployed or brought down as needed. Instance
+   deletion events lead to the deletion of Pods/Jobs with that Instance label.
    > Consideration: To prevent Pending Pods, if a Configuration is using multiple of a resource or
    types of resources, should it check to make sure enough Instances are available before creating
    the deployment?
-
-1. Configuration Watcher: If `Configuration.brokerGeneration` has been updated, takes down and
-   restarts all brokers to reflect the new workload.
+1. Configuration Watcher: If `Configuration.brokerGeneration` has been updated, takes down all
+   brokers and services. Restarts all brokers to reflect the new workload.
 1. Pod Watcher: Creates and deletes Instance and Configuration Services. Updates associated
-   Instances' `configurationDeploymentStatuses` field with the `Active` state.
-1. Job Watcher: Creates and deletes Instance and Configuration Services for running and non-running
-   Jobs. Updates associated Instances' `configurationDeploymentStatuses` field with the appropriate
-   state (`Active`, `Completed`, `Failed`) of **the latest Job** of the Configuration.
-    > Note: It is not clear if services will ever be used with Jobs.
-1. Node Watcher: (same) Book keeps which Nodes are known and removes Nodes from Instances when they
-   disappear.
+   Instances' `configurationDeploymentStatuses` field with the appropriate state (`Active`,
+   `Completed`, `Failed`).
+1. Node Watcher: (unchanged) Book keeps which Nodes are known and removes Nodes from Instances when
+   they disappear.
 
-![Controller proposed redesign](../media/controller-new-flow.png)
+> Note: All parts of the Controller's flow that are added or modified are shaded Blue
+
+![Controller proposed redesign](../media/controller-multiple-strategies-flow.png)
 ## A Phased Approach
 Currently, supporting brokers in Akri is a priority. Therefore, the implementation of multiple
 deployment strategies can be done in a phased approach. Each phase provides new features so each
@@ -562,29 +573,16 @@ could be followed by a release of Akri.
 | ----------- | ----------- | 
 | Phase 1   | [Jobs](#Jobs)    |
 | Phase 1b | [Multiple Configurations per Instance](#Multiple-Configurations-per-Instance) |
-| Phase 2 | [Configuration level Resources](#Configuration-level-Resources) | 
+| Phase 2 | [Configuration-level Resources](#Configuration-level-Resources) | 
 | Phase 3 | [Controller Redesign](#Controller-Redesign)  |
 | Phase 4 | [Reflect](#Reflect) | 
 
 ### Phase 1: Jobs
-This will support one (and possibly the only desired) Job scenario: deploying of a Job to each
-discovered Instance. A Job will only be deployed to one of the Nodes that can see the device rather
-than all as in the current Pods approach.
-1. Configuration CRD: For Jobs, the `brokerType` and `brokerGeneration` sections of the
-   Configuration CRD are needed. To reduce the amount of breaking changes to the Configuration, this
-   phase should include the addition of the `deploymentStrategy` section of the Configuration CRD
-   and the movement of the related fields (`brokerProperties`, `instanceServiceSpec` and
-   `configurationServiceSpec`) to be subfields. `resources` and `distributionType` sections can be
-   added in subsequent phases. 
-1. Instance CRD: Make the desired Instance CRD changes to include the `brokerInfo` section. 
-1. Controller: Add a Configuration Watcher that watches for `brokerGeneration` changes and brings
-   down and redeploys Jobs as needed. Potentially expand this to Pods, too. 
-1. Controller: Add the Job Watcher
-1. Agent: Add [file watcher and logic to populate `Instance.brokerInfo`](#File-Watching-for-Jobs)
-   with file contents from brokers. 
-1. Webhook: Update it to validate the new Configuration 
-1. Expand documentation [on requesting Akri
-   resources](https://docs.akri.sh/user-guide/requesting-akri-resources).
+Just as Akri has one Pod deployment scenario. The implementation will support one (and possibly the
+only desired) Job scenario: deploying a Job to each discovered Instance. No effort will be made to
+deploy a Job to each Node that can see a device. In fact no Node selector will be specified. The
+Kubernetes Scheduler will choose one of the Nodes that can see the Instance (it's Kubernetes
+resource). See the [Jobs proposal](./job-brokers.md#implementation-steps) for steps.
 
 ### Phase 1b: Multiple Configurations per Instance
 By the end of this phase, multiple Configurations will be able to be deployed to use the same
@@ -603,14 +601,14 @@ to each one while the other may deploy a firmware update to each camera.
 1. Webhook: Update it to validate the new Configuration
 1. Documentation: add a demo to [Akri docs](https://docs.akri.sh/demos).
 
-### Phase 2: Configuration level Resources
-Support Configuration level resources but no use of them yet by the Controller. 
-1. Agent: Implement [Configuration level device plugins](#Configuration-level-resources)
+### Phase 2: Configuration-level Resources
+Support Configuration-level resources but no use of them yet by the Controller. 
+1. Agent: Implement [Configuration-level device plugins](#Configuration-level-resources)
 1. Agent: Implement [populating Instance labels into correct Pods using crictl](#crictl-Patching)
 
 ### Phase 3: Controller Redesign
 Support the creation of Deployments by the Controller.
-1. Configuration CRD: Add `` and `resources` fields. 
+1. Configuration CRD: Add `distributionType` and `resources` fields. 
 1. Controller: Implement the [new Controller design](#New-design).
 1. Webhook: Update it to validate the new Configuration.
 1. Add end to end integration tests.
