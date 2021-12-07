@@ -52,19 +52,18 @@ terminating Pods, would benefit from the enabling retries and parallelism. Imple
 parallelism in the Controller would be redundant work, as these fields are already built into [Kubernetes
 Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/). A
 [Job](https://kubernetes.io/docs/concepts/workloads/controllers/job/) is a higher level Kubernetes object that creates
-one or more (by increasing the `parallism` value) identical Pods and will retry until a set number of them successfully
-terminate (`completions`) or a maximum number (`backoffLimit`) fail. The key difference between Jobs and other managed
-Pod deployments (DaemonSets and Deployments) is that Jobs are expected to complete, while the Kubernetes Scheduler will
-continue to redeploy Pods owned by DaemonSets or Deployments. Previously, Akri has had a hands-on approach to deploying
-Pods. Using Jobs will offload scheduling decisions from the Akri Controller to the Kubernetes Scheduler for terminating
-Pods. Non-terminating Pods will Continue to be scheduled by the Controller.
+one or more (by increasing the `parallelism` value) identical Pods and will retry until a set number of them
+successfully terminate (`completions`) or a maximum number (`backoffLimit`) fail. The key difference between Jobs and
+other managed Pod deployments (DaemonSets and Deployments) is that Jobs are expected to complete, while the Kubernetes
+Scheduler will continue to redeploy Pods owned by DaemonSets or Deployments. Previously, Akri has had a hands-on
+approach to deploying Pods. Using Jobs will offload scheduling decisions from the Akri Controller to the Kubernetes
+Scheduler for terminating Pods. Non-terminating Pods will Continue to be scheduled by the Controller.
 
 To support both terminating and non-terminating Pods, changes will be made to the following parts of Akri:
 - The Configuration: The `brokerPod` section of the Configuration will be changed to a `brokerType` enum with a Pod or
-  Job option a `brokerGeneration` field will be added to the Configuration to enable communicating when Jobs or Pods
-  need to be redeployed.
+  Job option.
 - The Controller: Logic to deploy a Pod or Job depending on the `brokerType` of the Configuration.
-- The Agent: Logic to not bring down a Configuration if the `brokerGeneration` changed.
+- The Agent: Logic to not bring down a Configuration if the `brokerType` changed.
 
 ## Add on to Support More Robust Scenarios with Terminating Pods
 One of the main use cases for deploying Pods that terminate (or Jobs) to use IoT devices is device management. In these
@@ -161,17 +160,11 @@ spec:
 > [here](https://github.com/project-akri/akri/blob/v0.7.0/deployment/helm/crds/akri-configuration-crd.yaml).
 
 
-#### Proposed Configuration CRD Additions
-`brokerType` and `brokerGeneration` fields will be added to the Configuration to support Jobs. `brokerType` expands the
-definition of a broker to a Pod or Job and `brokerGeneration` enables the redeployment of Pods, Jobs, and Services
-without re-initiating discovery. Redeployment is mainly only of use in Jobs scenarios (say to do some form of management
-again).
+#### Proposed Configuration CRD Addition
+In the Configuration, the `brokerPodSpec` field will be expanded to a `brokerType` enum expands definition of a broker
+to a Pod or Job.
 - `brokerType`: optional declaration of an object Pod or Job that should be deployed. A maximum of one can be specified.
    If not specified, no Pods/Jobs or services are made. This is the expanded version of `brokerPodSpec`.
-- `brokerGeneration`: version of the `brokerType`. An operator can increment the generation to signal that the
-   deployment type has changed and all workloads should be brought down and new ones spun up. This enables a
-   Configuration to be changed without removing all instances. This also makes it so another set of Jobs can be
-   deployed.
 
 ```yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -211,12 +204,6 @@ spec:
                       x-kubernetes-preserve-unknown-fields: true
                       type: object
                       nullable: true
-                brokerGeneration: # number
-                  type: number
-                brokerPodSpec: # {{PodSpec}}
-                  x-kubernetes-preserve-unknown-fields: true
-                  type: object
-                  nullable: true
                 instanceServiceSpec: # {{ServiceSpec}}
                   x-kubernetes-preserve-unknown-fields: true
                   type: object
@@ -259,6 +246,8 @@ Currently, the Controller has Instance, Pod, and Node watchers.
 1. Pod Watcher: Ensures Instance and Configuration Services are running for Running Pods. Restarts Ended or Deleted Pods
    if their Instance still exists.
 1. Node Watcher: Book keeps which Nodes are known and removes Nodes from Instances when they disappear.
+1. Configuration Watcher: Doesn't gracefully handle Configuration modifications rather deletes and recreates a
+   Configuration upon any modified event.
 
 Current (as ov `v0.7.0`) Controller flow: ![Controller design as of v0.7.0](../media/controller-v0-7-0-flow.png)
 
@@ -266,7 +255,7 @@ Current (as ov `v0.7.0`) Controller flow: ![Controller design as of v0.7.0](../m
 The new design of the Controller will add logic to the Instance Watcher to deploy Jobs and add a Configuration Watcher. 
 1. Instance Watcher: Extended to also create and delete Jobs (not just Pods).  Instance deletion events lead to the
    deletion of Pods/Jobs with that Instance label. 
-1. Configuration Watcher: If `Configuration.brokerGeneration` has been updated, takes down all brokers and services and
+1. Configuration Watcher: If `Configuration.brokerType` has been updated, takes down all brokers and services and
    recreates them as defined in the latest Configuration. Note: could be identical to the previous Configuration.
 
 Proposed Controller flow to support Jobs:
@@ -280,16 +269,16 @@ Just as Akri has one Pod deployment scenario. The implementation will support on
 scenario: deploying a Job to each discovered Instance. No effort will be made to deploy a Job to each Node that can see
 a device. In fact no Node selector will be specified. The Kubernetes Scheduler will choose one of the Nodes that can see
 the Instance (it's Kubernetes resource).
-1. Configuration CRD: Add `brokerType` and `brokerGeneration` sections of the Configuration CRD are needed.
-1. Instance CRD: Make the desired Instance CRD changes to include the `brokerInfo` section.
+1. Configuration CRD: Add `brokerType` to the Configuration CRD.
 1. Controller: Expand instance watcher to support Jobs. When Instances are created, check the `brokerType` of the
    associated Configuration. If it is `brokerType.pod`, proceed as usual. Otherwise, deploy a Job to use the Instance
    device.
-1. Controller: Add a Configuration Watcher that watches for `brokerGeneration` changes and brings down and redeploys
-   Pods and Jobs as needed.
-1. Agent: More precisely handle Configuration updates. Rather than simply deleting and re-apply a changed Configuration,
-   it will check to see if the `brokerGeneration` has changed, indicating that the Controller will handle modifying the
-   deployment
+1. Controller: Add a Configuration Watcher that watches for `brokerType` changes and brings down and redeploys Pods and
+   Jobs as needed.
+1. Agent: More precisely handle Configuration modifications. Rather than simply deleting and re-apply a changed
+   Configuration, it will check to see if the `brokerType` has changed, indicating that the Controller will handle
+   modifying the deployment. This will enable the redeployment of Jobs and modification of Pods without recreating
+   instances and device plugins.
 1. Webhook: Update it to validate the new Configuration
 1. Expand documentation [on requesting Akri resources](https://docs.akri.sh/user-guide/requesting-akri-resources).
 
