@@ -12,9 +12,10 @@ Since the Debug Echo Discovery Handler is for debugging, its use must be explici
 
 ## Quickstart
 
-### Installation
+### Installation with Pod Brokers
+This section walks through deploying non-terminating Nginx Kubernetes Pods to discovered mock devices. Skip to the [next section](#Installation-with-Job-Brokers) for instructions on deploying terminating `busybox` [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to discovered mock devices. 
 
-To install Akri with **external** Debug Echo Discovery Handlers and a Configuration to discover unshared Debug Echo devices, run:
+To install Akri with **external** Debug Echo Discovery Handlers and a Configuration to discover unshared debug echo devices, run:
 
 > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
@@ -25,6 +26,8 @@ helm install akri akri-helm-charts/akri \
     --set agent.allowDebugEcho=true \
     --set debugEcho.discovery.enabled=true \
     --set debugEcho.configuration.enabled=true \
+    --set debugEcho.configuration.brokerPod.image.repository=nginx \
+    --set debugEcho.configuration.brokerPod.image.tag=stable-alpine \
     --set debugEcho.configuration.shared=false
 ```
 
@@ -38,6 +41,49 @@ helm install akri akri-helm-charts/akri \
   --set agent.allowDebugEcho=true \
   --set agent.full=true \
   --set debugEcho.configuration.enabled=true \
+  --set debugEcho.configuration.brokerPod.image.repository=nginx \
+  --set debugEcho.configuration.brokerPod.image.tag=stable-alpine \
+  --set debugEcho.configuration.shared=false
+```
+{% endhint %}
+
+By default, the Debug Echo Configuration discovers two devices, `foo1` and `foo2`, and automatically deploys an empty nginx broker Pod to each discovered device, so you should see two instances and two brokers created as a result of your installation. By default, it also creates an Instance service for each device and a Configuration service for all discovered devices. The Akri Agents, Controller, and (if using external Discovery Handlers) Debug Echo Discovery Handlers should also be created.
+
+```bash
+watch kubectl get pods,akric,akrii,services -o wide
+```
+
+Set `debugEcho.configuration.shared=true` to discover Debug Echo devices that are shared by all nodes. For example, when Akri is installed like above with `debugEcho.configuration.shared=false` onto a 3 node cluster. 6 Debug Echo devices will be discovered and 6 Instances will be created, 2 for each Node. However, if `debugEcho.configuration.shared=true` is set, only 2 will be discovered as it is mocking all 3 nodes "utilizing" the same two devices. Set `debugEcho.configuration.capacity=3` to allow all 3 nodes to receive brokers to utilize each of the shared devices. It defaults to `1`.
+
+### Installation with Pod Brokers
+This section walks through deploying `busybox` [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to discovered mock devices. Go to the [previous section](#Installation-with-Pod-Brokers) for instructions on deploying non-terminating `nginx` Kubernetes Pods to discovered mock devices. 
+
+To install Akri with **external** Debug Echo Discovery Handlers and a Configuration to discover unshared debug echo devices, run:
+
+> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+
+```bash
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
+helm install akri akri-helm-charts/akri \
+    $AKRI_HELM_CRICTL_CONFIGURATION \
+    --set agent.allowDebugEcho=true \
+    --set debugEcho.discovery.enabled=true \
+    --set debugEcho.configuration.enabled=true \
+    --set debugEcho.configuration.brokerJob.image.repository=busybox \
+    --set debugEcho.configuration.shared=false
+```
+
+{% hint style="info" %}
+To instead install Akri with Debug Echo Discovery Handlers embedded in the Agent, set `agent.full=true` and remove `debugEcho.discovery.enabled=true` like in the following installation:
+
+```text
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
+helm install akri akri-helm-charts/akri \
+  $AKRI_HELM_CRICTL_CONFIGURATION \
+  --set agent.allowDebugEcho=true \
+  --set agent.full=true \
+  --set debugEcho.configuration.enabled=true \
+  --set debugEcho.configuration.brokerJob.image.repository=busybox \
   --set debugEcho.configuration.shared=false
 ```
 {% endhint %}

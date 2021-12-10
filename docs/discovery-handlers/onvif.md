@@ -38,12 +38,38 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 
 ### Broker Pod Settings
 
-If you would like workloads ("broker" Pods) to be deployed automatically to discovered cameras, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/akri/onvif-video-broker"). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+If you would like non-terminating workloads ("broker" Pods) to be deployed automatically to discovered cameras, a broker image should be specified (under `brokerPod`) in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/akri/onvif-video-broker"). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+
+> Note only a `brokerJob` OR `brokerPod` should be specified.
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
 | onvif.configuration.brokerPod.image.repository | image string | "" | image of broker Pod that should be deployed to discovered devices |
 | onvif.configuration.brokerPod.image.tag | tag string | "latest" | image tag of broker Pod that should be deployed to discovered devices |
+| onvif.configuration.brokerPod.resources.memoryRequest | string | "98Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri ONVIF sample broker. Adjust to the size of your broker. |
+| onvif.configuration.brokerPod.resources.cpuRequest | string | "134m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri ONVIF sample broker. Adjust to the size of your broker. |
+| onvif.configuration.brokerPod.resources.memoryLimit | string | "400Mi" | the maximum amount of RAM this Pod can consume. Default based on the Akri ONVIF sample broker. Adjust to the size of your broker. |
+| onvif.configuration.brokerPod.resources.cpuLimit | string | "2800m" | the maximum amount of CPU this Pod can consume. Default based on the Akri ONVIF sample broker. Adjust to the size of your broker. |
+
+### Broker Job Settings
+
+If you would like terminating [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to be deployed automatically to discovered cameras, a broker image should be specified (under `brokerJob`) in the Configuration.
+
+> Note only a `brokerJob` OR `brokerPod` should be specified.
+
+| Helm Key | Value | Default | Description |
+| :--- | :--- | :--- | :--- |
+| onvif.configuration.brokerJob.image.repository | image string | "" | image of broker Pod that should be deployed to discovered devices |
+| onvif.configuration.brokerJob.image.tag | tag string | "latest" | image tag of broker Pod that should be deployed to discovered devices |
+| onvif.configuration.brokerJob.resources.memoryRequest | string | "98Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Adjust to the size of your broker. |
+| onvif.configuration.brokerJob.resources.cpuRequest | string | "134m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Adjust to the size of your broker. |
+| onvif.configuration.brokerJob.resources.memoryLimit | string | "400Mi" | the maximum amount of RAM this Pod can consume.Adjust to the size of your broker. |
+| onvif.configuration.brokerJob.resources.cpuLimit | string | "2800m" | the maximum amount of CPU this Pod can consume. Adjust to the size of your broker. |
+| onvif.configuration.brokerJob.command | string array | Empty | command to be executed in the Pod |
+| onvif.configuration.brokerJob.restartPolicy | string array | `OnFailure` | `RestartPolicy` for the Job. Can either be `OnFailure` or `Never` for Jobs.|
+| onvif.configuration.brokerJob.backoffLimit | number | 2 | defines the Kubernetes Job [backoff failure policy](https://kubernetes.io/docs/concepts/workloads/controllers/job/#pod-backoff-failure-policy) |
+| onvif.configuration.brokerJob.parallelism | number | 1 | defines the Kubernetes Job [`parallelism`](https://kubernetes.io/docs/concepts/workloads/controllers/job/#parallel-jobs) |
+| onvif.configuration.brokerJob.completions | number | 1 | defines the Kubernetes Job [`completions`](https://kubernetes.io/docs/concepts/workloads/controllers/job) |
 
 ### Disabling Automatic Service Creation
 
