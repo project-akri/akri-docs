@@ -122,8 +122,11 @@ helm install akri akri-helm-charts/akri \
 > Note: set `<discovery handler name>.brokerPod.image.tag` to specify an image tag (defaults to `latest`).
 
 A terminating BusyBox Job broker could have been specified instead by setting the image of the `brokerJob` instead of the `brokerPod`.
+
+> Note: Jobs are not released yet, so use the `akri-dev` chart to try them out.
+
 ```bash
-helm install akri akri-helm-charts/akri \
+helm install akri akri-helm-charts/akri-dev \
     $AKRI_HELM_CRICTL_CONFIGURATION
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \

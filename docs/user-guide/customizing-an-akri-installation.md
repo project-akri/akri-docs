@@ -3,12 +3,13 @@
 The [ONVIF](../discovery-handlers/onvif.md), [udev](../discovery-handlers/udev.md), and [OPC UA](../discovery-handlers/opc-ua.md) Configurations documentation explains how to deploy Akri and utilize a specific Discovery Handler using Helm (more information about the Akri Helm charts can be found in the [user guide](getting-started.md#understanding-akri-helm-charts)). This documentation elaborates upon them, covering the following: 
 
 1. Starting Akri without any Configurations 
-2. Generating, modifying and applying a Configuration
-3. Deploying multiple Configurations 
-4. Modifying a deployed Configuration
-5. Adding another Configuration to a cluster
-6. Deleting a Configuration from a cluster
-7. Applying Discovery Handlers
+1. Generating, modifying and applying a Configuration
+1. Deploying multiple Configurations 
+1. Modifying a deployed Configuration
+1. Adding another Configuration to a cluster
+1. Modifying a broker
+1. Deleting a Configuration from a cluster
+1. Applying Discovery Handlers
 
 ## Starting Akri without any Configurations
 
@@ -188,6 +189,37 @@ helm install udev-config akri-helm-charts/akri \
  --set udev.configuration.enabled=true  \
  --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"'
 ```
+## Modifying a broker
+Want to change what broker is deployed to already discovered devices or deploy a new Job to the devices? Instead of deleting and reapplying the Configuration, you can modify the `brokerSpec` of the Configuration using one of the strategies from the [section on modifying a deployed Configuration](#Modifying-a-deployed-Configuration).
+
+This can be illustrated using Akri's [mock debug echo Discovery Handler](../development/debugging.md). The following installation deploys a BusyBox Job
+to each discovered mock device. That Job simply echos "Hello World".
+```
+helm install akri akri-helm-charts/akri-dev \
+  --set agent.allowDebugEcho=true \
+  --set debugEcho.discovery.enabled=true \
+  --set debugEcho.configuration.brokerJob.image.repository=busybox \
+  --set debugEcho.configuration.brokerJob.command[0]="sh" \
+  --set debugEcho.configuration.brokerJob.command[1]="-c" \
+  --set debugEcho.configuration.brokerJob.command[2]="echo 'Hello World'"
+  --set debugEcho.configuration.enabled=true
+```
+Say you are feeling more exuberant and want the Job to echo "Hello Amazing World", you can update the `brokerSpec` like so:
+
+```
+helm upgrade akri akri-helm-charts/akri-dev \
+  --set agent.allowDebugEcho=true \
+  --set debugEcho.discovery.enabled=true \
+  --set debugEcho.configuration.brokerJob.image.repository=busybox \
+  --set debugEcho.configuration.brokerJob.command[0]="sh" \
+  --set debugEcho.configuration.brokerJob.command[1]="-c" \
+  --set debugEcho.configuration.brokerJob.command[2]="echo 'Hello World'"
+  --set debugEcho.configuration.enabled=true
+```
+
+New Jobs will be spun up. 
+
+> Note: The Agent and Controller can only gracefully handle changes to the `brokerSpec`. If any other parts of the Configuration are modified, the Agent will restart discovery, deleting and recreating the Instances.
 
 ## Deleting a Configuration from a cluster
 

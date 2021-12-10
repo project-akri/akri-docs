@@ -64,7 +64,7 @@ To install Akri with **external** Debug Echo Discovery Handlers and a Configurat
 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
-helm install akri akri-helm-charts/akri \
+helm install akri akri-helm-charts/akri-dev \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set agent.allowDebugEcho=true \
     --set debugEcho.discovery.enabled=true \
@@ -78,7 +78,7 @@ To instead install Akri with Debug Echo Discovery Handlers embedded in the Agent
 
 ```text
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
-helm install akri akri-helm-charts/akri \
+helm install akri akri-helm-charts/akri-dev \
   $AKRI_HELM_CRICTL_CONFIGURATION \
   --set agent.allowDebugEcho=true \
   --set agent.full=true \
