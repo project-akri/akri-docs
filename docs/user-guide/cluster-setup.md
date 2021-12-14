@@ -141,7 +141,7 @@ export AKRI_HELM_CRICTL_CONFIGURATION="--set kubernetesDistro=k3s"
 {% endtab %}
 
 {% tab title="MicroK8s" %}
-To use the default MicroK8s container runtime socket `/var/snap/microk8s/common/run/containerd.sock`, set microk8s` as the distribution. 
+To use the default MicroK8s container runtime socket `/var/snap/microk8s/common/run/containerd.sock`, set `microk8s` as the distribution. 
 
 ```bash
 export AKRI_HELM_CRICTL_CONFIGURATION="--set kubernetesDistro=microk8s"
