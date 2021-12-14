@@ -116,7 +116,9 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 {% endtabs %}
 
 ## Configure `crictl`
-Akri depends on `crictl` to track some Pod information. In order to use it, the Agent must know where the container runtime socket lives. This can be configured with Akri's Helm chart either directly by setting `agent.host.containerRuntimeSocket` or by specifying the Kubernetes distribution ("k3s", "microk8s", or "k8s" for standard Kubernetes) that is being used in `kubernetesDistro`. If a distribution is specified, then the appropriate default will be used. Akri recommends setting this choice sd an `AKRI_HELM_CRICTL_CONFIGURATION` environment variable and then adding the variable to each Akri installation like so:
+Akri depends on `crictl` to track some Pod information. In order to use it, the Agent must know where the container runtime socket lives. This can be configured with Akri's Helm chart either directly by setting `agent.host.containerRuntimeSocket` or indirectly by specifying the Kubernetes distribution that is being used (`kubernetesDistro=k3s|microk8s|k8s`). If a distribution is specified, then the appropriate default will be used. If no distribution or runtime is specified, the `k8s` default is used.
+
+Akri recommends setting this choice as an `AKRI_HELM_CRICTL_CONFIGURATION` environment variable and then adding the variable to each Akri installation like so:
 ```sh
   helm install akri akri-helm-charts/akri \
      $AKRI_HELM_CRICTL_CONFIGURATION
