@@ -116,7 +116,9 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 {% endtabs %}
 
 ## Configure `crictl`
-Akri depends on crictl to track some Pod information. By default, Akri assumes Docker is the container runtime with the Docker socket at `/var/run/dockershim.sock` and `crictl` installed at `/usr/bin/crictl`. These are configured via Akri's Helm chart during installation in the `agent.host.dockerShimSock` and `agent.host.crictl` values, respectively. Akri recommends setting these under an `AKRI_HELM_CRICTL_CONFIGURATION` environment variable and then adding the variable to each Akri installation like so:
+Akri depends on `crictl` to track some Pod information. In order to use it, the Agent must know where the container runtime socket lives. This can be configured with Akri's Helm chart either directly by setting `agent.host.containerRuntimeSocket` or indirectly by specifying the Kubernetes distribution that is being used (`kubernetesDistro=k3s|microk8s|k8s`). If a distribution is specified, then the appropriate default will be used. If no distribution or runtime is specified, the `k8s` default is used.
+
+Akri recommends setting this choice as an `AKRI_HELM_CRICTL_CONFIGURATION` environment variable and then adding the variable to each Akri installation like so:
 ```sh
   helm install akri akri-helm-charts/akri \
      $AKRI_HELM_CRICTL_CONFIGURATION
@@ -124,40 +126,32 @@ Akri depends on crictl to track some Pod information. By default, Akri assumes D
 The following are the recommended settings based on Kubernetes distribution.
 {% tabs %}
 {% tab title="Kubernetes" %}
-The defaults should work for standard Kubernetes. The following is therefore redundant:
+To use the default standard Kubernetes container runtime socket `/var/run/dockershim.sock`, set `k8s` as the distribution.
 ```sh
-export AKRI_HELM_CRICTL_CONFIGURATION="--set agent.host.crictl=/usr/local/bin/crictl --set agent.host.dockerShimSock=/var/run/dockershim.sock"
+export AKRI_HELM_CRICTL_CONFIGURATION="--set kubernetesDistro=k8s"
 ```
 {% endtab %}
 
 {% tab title="K3s" %}
+To use the default K3s container runtime socket `/run/k3s/containerd/containerd.sock`, set `k3s` as the distribution. 
 
-1. If using K3s versions 1.19 or greater, install `crictl` locally (note: there are no known version limitations, any `crictl` version is expected to work). Previous K3s versions come with `crictl` embedded.
-
-   ```bash
-        VERSION="v1.17.0"
-        curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-${VERSION}-linux-amd64.tar.gz --output crictl-${VERSION}-linux-amd64.tar.gz
-        sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
-        rm -f crictl-$VERSION-linux-amd64.tar.gz
-   ```
-
-2. Configure Akri to use the crictl path and K3s containerd socket. This `AKRI_HELM_CRICTL_CONFIGURATION` environment variable should be added to all Akri Helm installations. 
-
-   ```bash
-    export AKRI_HELM_CRICTL_CONFIGURATION="--set agent.host.crictl=/usr/local/bin/crictl --set agent.host.dockerShimSock=/run/k3s/containerd/containerd.sock"
-   ```
+```bash
+export AKRI_HELM_CRICTL_CONFIGURATION="--set kubernetesDistro=k3s"
+```
 {% endtab %}
 
 {% tab title="MicroK8s" %}
-MicroK8s does not install crictl locally, so crictl must be installed and the Akri Helm chart needs to be configured with the crictl path and MicroK8s containerd socket.
-```bash
-   # Note that we aren't aware of any version restrictions
-   VERSION="v1.17.0"
-   curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-${VERSION}-linux-amd64.tar.gz --output crictl-${VERSION}-linux-amd64.tar.gz
-   sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
-   rm -f crictl-$VERSION-linux-amd64.tar.gz
+To use the default MicroK8s container runtime socket `/var/snap/microk8s/common/run/containerd.sock`, set microk8s` as the distribution. 
 
-   export AKRI_HELM_CRICTL_CONFIGURATION="--set agent.host.crictl=/usr/local/bin/crictl --set agent.host.dockerShimSock=/var/snap/microk8s/common/run/containerd.sock"
+```bash
+export AKRI_HELM_CRICTL_CONFIGURATION="--set kubernetesDistro=microk8s"
+```
+{% endtab %}
+{% tab title="Other" %}
+A specific container runtime socket can be set in the `agent.host.containerRuntimeSocket` value. 
+
+```bash
+export AKRI_HELM_CRICTL_CONFIGURATION="--set agent.host.containerRuntimeSocket=/container/runtime.sock"
 ```
 {% endtab %}
 {% endtabs %}
