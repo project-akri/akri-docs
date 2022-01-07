@@ -252,11 +252,9 @@ Currently, the Controller has Instance, Pod, and Node watchers.
 Current (as ov `v0.7.0`) Controller flow: ![Controller design as of v0.7.0](../media/controller-v0-7-0-flow.png)
 
 #### New design
-The new design of the Controller will add logic to the Instance Watcher to deploy Jobs and add a Configuration Watcher. 
+The new design of the Controller will add logic to the Instance Watcher to deploy Jobs. 
 1. Instance Watcher: Extended to also create and delete Jobs (not just Pods).  Instance deletion events lead to the
    deletion of Pods/Jobs with that Instance label. 
-1. Configuration Watcher: If `Configuration.brokerType` has been updated, takes down all brokers and services and
-   recreates them as defined in the latest Configuration. Note: could be identical to the previous Configuration.
 
 Proposed Controller flow to support Jobs:
 
@@ -273,12 +271,6 @@ the Instance (it's Kubernetes resource).
 1. Controller: Expand instance watcher to support Jobs. When Instances are created, check the `brokerType` of the
    associated Configuration. If it is `brokerType.pod`, proceed as usual. Otherwise, deploy a Job to use the Instance
    device.
-1. Controller: Add a Configuration Watcher that watches for `brokerType` changes and brings down and redeploys Pods and
-   Jobs as needed.
-1. Agent: More precisely handle Configuration modifications. Rather than simply deleting and re-apply a changed
-   Configuration, it will check to see if the `brokerType` has changed, indicating that the Controller will handle
-   modifying the deployment. This will enable the redeployment of Jobs and modification of Pods without recreating
-   instances and device plugins.
 1. Webhook: Update it to validate the new Configuration
 1. Expand documentation [on requesting Akri resources](https://docs.akri.sh/user-guide/requesting-akri-resources).
 
@@ -298,3 +290,16 @@ for this information (say a `Instance.brokerInfo` map, where the key would be th
 contents). 
 
 The Agent could also expose an interface for communicating with brokers like it does for Discovery Handlers.
+
+### Note: Supporting Gracefully Handling Configuration Changes
+Currently, Akri does not gracefully handle changes to Configurations; rather, it deletes the old and adds the new Configuration.
+However, gracefully handling Configuration changes requires the Agent to track the state of the Configuration and could lead to 
+the Configuration not accurately being represented in the cluster. For example, say Akri wanted to gracefully handle changes
+to brokerSpecs so that an operator could request a different broker be deployed without instances being deleted and re-created.
+In this case, the Controller would need to somehow know to re-deloy the brokers without being signaled by an instant state change as usual.
+This would mean the Controller would need a Configuration watcher just like the Agent. Then, the Agent would need to be able to detect
+that only the brokerSpec changed and choose to take no further action, trusting that the Controller will also notice the change in the
+Configuration and deploy the new brokers. This is complex -- possibly unnecessarily so. One way to avoid this "trusting" between the 
+Controller and Agent would be to separate the Configuration into two separate CRDs, one for deployment and the other for discovery.
+Then, the Agent could watch the discovery CRD and the Controller would watch the deployment CRD. They would be two separate Operators
+in Kubernetes terms.
