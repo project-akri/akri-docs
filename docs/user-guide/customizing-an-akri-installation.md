@@ -3,12 +3,13 @@
 The [ONVIF](../discovery-handlers/onvif.md), [udev](../discovery-handlers/udev.md), and [OPC UA](../discovery-handlers/opc-ua.md) Configurations documentation explains how to deploy Akri and utilize a specific Discovery Handler using Helm (more information about the Akri Helm charts can be found in the [user guide](getting-started.md#understanding-akri-helm-charts)). This documentation elaborates upon them, covering the following: 
 
 1. Starting Akri without any Configurations 
-2. Generating, modifying and applying a Configuration
-3. Deploying multiple Configurations 
-4. Modifying a deployed Configuration
-5. Adding another Configuration to a cluster
-6. Deleting a Configuration from a cluster
-7. Applying Discovery Handlers
+1. Generating, modifying and applying a Configuration
+1. Deploying multiple Configurations 
+1. Modifying a deployed Configuration
+1. Adding another Configuration to a cluster
+1. Modifying a broker
+1. Deleting a Configuration from a cluster
+1. Applying Discovery Handlers
 
 ## Starting Akri without any Configurations
 
@@ -44,6 +45,56 @@ Note, that for the broker pod image, nginx was specified. Insert your broker ima
 ```bash
 kubectl apply -f configuration.yaml
 ```
+
+{% hint style="info" %}
+When modifying the Configuration, do not remove the resource request and limit `{{PLACEHOLDER}}`. The Controller inserts the request for the discovered device/Instance here.
+{% endhint %}
+
+The following sections explain some of the ways the configuration.yaml could be modified to customize settings/fields that cannot be set with Akri's Helm Chart.
+
+#### Modifying the brokerPodSpec
+
+The `brokerPodSpec` property is a full [PodSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#podspec-v1-core) and can be modified as such. For example, to allow the master Node to have a protocol broker Pod scheduled to it, modify the Configuration, ONVIF in this case, like so:
+
+```yaml
+spec:
+  brokerPodSpec:
+    containers:
+    - name: akri-onvif-video-broker
+      image: "ghcr.io/project-akri/akri/onvif-video-broker:latest-dev"
+      resources:
+        limits:
+          "{{PLACEHOLDER}}" : "1"
+    tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+```
+
+#### Modifying the brokerJobSpec
+
+The `brokerJobSpec` property is a full [JobSpec](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#jobspec-v1-batch) and can be modified as such. Akri's Helm chart enables modifying the `capacity`, `parallelism`, and `backoffLimit` fields of the JobSpec. Other fields of the JobSpec and the PodSpec within the JobSpec can be specified in a similar manner as described in the [modifying the PodSpec section](#Modifying-the-brokerPodSpec).
+
+#### Modifying instanceServiceSpec or configurationServiceSpec
+
+The `instanceServiceSpec` and `configurationServiceSpec` properties are full [ServiceSpecs](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#servicespec-v1-core) and can be modified as such. The simplest reason to modify either might be to specify different ports (perhaps 8085 and 8086):
+
+```yaml
+spec:
+  instanceServiceSpec:
+    ports:
+    - name: grpc
+      port: 8085
+      targetPort: 8083
+  configurationServiceSpec:
+    ports:
+    - name: grpc
+      port: 8086
+      targetPort: 8083
+```
+
+{% hint style="info" %}
+The simple properties of `instanceServiceSpec` and `configurationServiceSpec` (like name, port, targetPort, and protocol) can be set using Helm's `--set` command, e.g.`--set onvif.instanceService.targetPort=90`.
+{% endhint %}
 
 ## Deploying multiple Configurations using `helm install`
 
@@ -110,68 +161,6 @@ Note that the command is not simply `helm upgrade --set onvif.configuration.disc
 
 Helm will create a new ONVIF Configuration and apply it to the cluster. When the Agent sees that a Configuration has been updated, it deletes all Instances associated with that Configuration and the controller brings down all associated broker pods. Then, new Instances and broker pods are created. Therefore, the command above will bring down all ONVIF broker pods and then bring them all back up except for the ones servicing the IP camera at IP address 10.0.0.1.
 
-#### Modifying the brokerPodSpec
-
-The `brokerPodSpec` property is a full [PodSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#podspec-v1-core) and can be modified as such. For example, if you wanted to allow the master Node to potentially have a protocol broker Pod scheduled to it, you could modify the Configuration, ONVIF in this case, like so:
-
-```yaml
-spec:
-  brokerPodSpec:
-    containers:
-    - name: akri-onvif-video-broker
-      image: "ghcr.io/project-akri/akri/onvif-video-broker:latest-dev"
-      resources:
-        limits:
-          "{{PLACEHOLDER}}" : "1"
-    tolerations:
-      - key: node-role.kubernetes.io/master
-        effect: NoSchedule
-```
-
-Another reason one might modify the brokerPodSpec would be to add some resource limits. To do this, you can modify the Configuration like this:
-
-```yaml
-spec:
-  brokerPodSpec:
-    containers:
-    - name: akri-onvif-video-broker
-      image: "ghcr.io/project-akri/akri/onvif-video-broker:latest-dev"
-      resources:
-        requests:
-          memory: 30Mi
-          cpu: 100m
-        limits:
-          memory: 50Mi
-          cpu: 200m
-          "{{PLACEHOLDER}}" : "1"
-```
-
-{% hint style="info" %}
-The`{{PLACEHOLDER}}` imit will be used by Akri to utilize this Configuration's Instances' capacity.
-{% endhint %}
-
-#### Modifying instanceServiceSpec or configurationServiceSpec
-
-The `instanceServiceSpec` and `configurationServiceSpec` properties are full [ServiceSpecs](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#servicespec-v1-core) and can be modified as such. The simplest reason to modify either might be to specify different ports (perhaps 8085 and 8086):
-
-```yaml
-spec:
-  instanceServiceSpec:
-    ports:
-    - name: grpc
-      port: 8085
-      targetPort: 8083
-  configurationServiceSpec:
-    ports:
-    - name: grpc
-      port: 8086
-      targetPort: 8083
-```
-
-{% hint style="info" %}
-The simple properties of `instanceServiceSpec` and `configurationServiceSpec` (like name, port, targetPort, and protocol) can be set using Helm's `--set` command, e.g.`--set onvif.instanceService.targetPort=90`.
-{% endhint %}
-
 ## Adding another Configuration to a cluster
 
 Another Configuration can be added to an existing Akri installation using `helm upgrade` or via a new Helm installation.
@@ -200,6 +189,37 @@ helm install udev-config akri-helm-charts/akri \
  --set udev.configuration.enabled=true  \
  --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"'
 ```
+## Modifying a broker
+Want to change what broker is deployed to already discovered devices or deploy a new Job to the devices? Instead of deleting and reapplying the Configuration, you can modify the `brokerSpec` of the Configuration using one of the strategies from the [section on modifying a deployed Configuration](#Modifying-a-deployed-Configuration).
+
+This can be illustrated using Akri's [mock debug echo Discovery Handler](../development/debugging.md). The following installation deploys a BusyBox Job
+to each discovered mock device. That Job simply echos "Hello World".
+```
+helm install akri akri-helm-charts/akri-dev \
+  --set agent.allowDebugEcho=true \
+  --set debugEcho.discovery.enabled=true \
+  --set debugEcho.configuration.brokerJob.image.repository=busybox \
+  --set debugEcho.configuration.brokerJob.command[0]="sh" \
+  --set debugEcho.configuration.brokerJob.command[1]="-c" \
+  --set debugEcho.configuration.brokerJob.command[2]="echo 'Hello World'"
+  --set debugEcho.configuration.enabled=true
+```
+Say you are feeling more exuberant and want the Job to echo "Hello Amazing World", you can update the `brokerSpec` like so:
+
+```
+helm upgrade akri akri-helm-charts/akri-dev \
+  --set agent.allowDebugEcho=true \
+  --set debugEcho.discovery.enabled=true \
+  --set debugEcho.configuration.brokerJob.image.repository=busybox \
+  --set debugEcho.configuration.brokerJob.command[0]="sh" \
+  --set debugEcho.configuration.brokerJob.command[1]="-c" \
+  --set debugEcho.configuration.brokerJob.command[2]="echo 'Hello World'"
+  --set debugEcho.configuration.enabled=true
+```
+
+New Jobs will be spun up. 
+
+> Note: The Agent and Controller can only gracefully handle changes to the `brokerSpec`. If any other parts of the Configuration are modified, the Agent will restart discovery, deleting and recreating the Instances.
 
 ## Deleting a Configuration from a cluster
 

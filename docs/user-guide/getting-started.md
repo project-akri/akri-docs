@@ -44,7 +44,7 @@ To grab the latest Akri Helm charts, run `helm repo update`.
 
 ### Setting up your cluster
 
-Before deploying Akri, you must have a Kubernetes cluster (v1.16 or higher) running with `kubectl` and `Helm` installed. Reference our [cluster setup docu](cluster-setup.md)[entation](cluster-setup.md) to set up a cluster or adapt your currently existing cluster. Akri currently supports Linux Nodes on amd64, arm64v8, or arm32v7.
+Before deploying Akri, you must have a Kubernetes cluster (v1.16 or higher) running with `kubectl` and `Helm` installed. Reference our [cluster setup documentation](cluster-setup.md) to set up a cluster or adapt your currently existing cluster. Akri currently supports Linux Nodes on amd64, arm64v8, or arm32v7.
 
 ### Installing Akri Flow
 
@@ -108,7 +108,7 @@ helm install akri akri-helm-charts/akri \
     # specify any broker images in the Configuration
 ```
 
-As a real example, Akri's Controller, Agents, udev Discovery Handlers, and a udev Configuration that specifies the discovery of only USB video devices and an nginx broker image are installed like so:
+As a real example, Akri's Controller, Agents, udev Discovery Handlers, and a udev Configuration that specifies the discovery of only USB video devices and an Nginx broker Pod image are installed like so:
 
 ```bash
 helm install akri akri-helm-charts/akri \
@@ -120,6 +120,19 @@ helm install akri akri-helm-charts/akri \
 ```
 
 > Note: set `<discovery handler name>.brokerPod.image.tag` to specify an image tag (defaults to `latest`).
+
+A terminating BusyBox Job broker could have been specified instead by setting the image of the `brokerJob` instead of the `brokerPod`.
+
+> Note: Jobs are not released yet, so use the `akri-dev` chart to try them out.
+
+```bash
+helm install akri akri-helm-charts/akri-dev \
+    $AKRI_HELM_CRICTL_CONFIGURATION
+    --set udev.discovery.enabled=true \
+    --set udev.configuration.enabled=true \
+    --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"' \
+    --set udev.configuration.brokerJob.image.repository=busybox
+```
 
 This installation can be expanded to install multiple Discovery Handlers and/or Configurations. See the documentation on [udev](../discovery-handlers/udev.md), [OPC UA](../discovery-handlers/opc-ua.md), and [ONVIF](../discovery-handlers/onvif.md) Configurations to learn more about setting the discovery details passed to their Discovery Handlers and more.
 

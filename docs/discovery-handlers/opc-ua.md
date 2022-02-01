@@ -28,12 +28,38 @@ The generic OPC UA Configuration takes in a list of DiscoveryURLs, whether for L
 
 ### Broker Pod Settings
 
-If you would like workloads ("broker" Pods) to be deployed automatically to discovered devices, a broker image should be specified in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/akri/opcua-video-broker"). If you would rather manually deploy pods to utilize the devices advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+If you would like non-terminating workloads ("broker" Pods) to be deployed automatically to discovered devices, a broker image should be specified (under `brokerPod`) in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/akri/opcua-video-broker"). If you would rather manually deploy pods to utilize the devices advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+
+> Note only a `brokerJob` OR `brokerPod` should be specified.
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
 | opcua.configuration.brokerPod.image.repository | image string | "" | image of broker Pod that should be deployed to discovered devices |
 | opcua.configuration.brokerPod.image.tag | tag string | "latest" | image tag of broker Pod that should be deployed to discovered devices |
+| opcua.configuration.brokerPod.resources.memoryRequest | string | "76Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerPod.resources.cpuRequest | string | "9m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerPod.resources.memoryLimit | string | "200Mi" | the maximum amount of RAM this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerPod.resources.cpuLimit | string | "30m" | the maximum amount of CPU this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+
+### Broker Job Settings
+
+If you would like terminating [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to be deployed automatically to discovered servers, a broker image should be specified (under `brokerJob`) in the Configuration. A Kubernetes Job deploys a set number of terminating Pods.
+
+> Note only a `brokerJob` OR `brokerPod` should be specified.
+
+| Helm Key | Value | Default | Description |
+| :--- | :--- | :--- | :--- |
+| opcua.configuration.brokerJob.image.repository | image string | "" | image of broker Job that should be deployed to discovered devices |
+| opcua.configuration.brokerJob.image.tag | tag string | "latest" | image tag of broker Job that should be deployed to discovered devices |
+| opcua.configuration.brokerJob.resources.memoryRequest | string | "76Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerJob.resources.cpuRequest | string | "9m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerJob.resources.memoryLimit | string | "200Mi" | the maximum amount of RAM this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerJob.resources.cpuLimit | string | "30m" | the maximum amount of CPU this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerJob.command | string array | Empty | command to be executed in the Pod |
+| opcua.configuration.brokerJob.restartPolicy | string array | `OnFailure` | `RestartPolicy` for the Job. Can either be `OnFailure` or `Never` for Jobs.|
+| opcua.configuration.brokerJob.backoffLimit | number | 2 | defines the Kubernetes Job [backoff failure policy](https://kubernetes.io/docs/concepts/workloads/controllers/job/#pod-backoff-failure-policy) |
+| opcua.configuration.brokerJob.parallelism | number | 1 | defines the Kubernetes Job [`parallelism`](https://kubernetes.io/docs/concepts/workloads/controllers/job/#parallel-jobs) |
+| opcua.configuration.brokerJob.completions | number | 1 | defines the Kubernetes Job [`completions`](https://kubernetes.io/docs/concepts/workloads/controllers/job) |
 
 ### Mounting Credentials Settings
 
