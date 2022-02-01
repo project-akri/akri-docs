@@ -53,14 +53,14 @@ If you would like non-terminating workloads ("broker" Pods) to be deployed autom
 
 ### Broker Job Settings
 
-If you would like terminating [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to be deployed automatically to discovered cameras, a broker image should be specified (under `brokerJob`) in the Configuration.
+If you would like terminating [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to be deployed automatically to discovered cameras, a broker image should be specified (under `brokerJob`) in the Configuration. A Kubernetes Job deploys a set number of terminating Pods.
 
 > Note only a `brokerJob` OR `brokerPod` should be specified.
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
-| onvif.configuration.brokerJob.image.repository | image string | "" | image of broker Pod that should be deployed to discovered devices |
-| onvif.configuration.brokerJob.image.tag | tag string | "latest" | image tag of broker Pod that should be deployed to discovered devices |
+| onvif.configuration.brokerJob.image.repository | image string | "" | image of broker Job that should be deployed to discovered devices |
+| onvif.configuration.brokerJob.image.tag | tag string | "latest" | image tag of broker Job that should be deployed to discovered devices |
 | onvif.configuration.brokerJob.resources.memoryRequest | string | "98Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Adjust to the size of your broker. |
 | onvif.configuration.brokerJob.resources.cpuRequest | string | "134m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Adjust to the size of your broker. |
 | onvif.configuration.brokerJob.resources.memoryLimit | string | "400Mi" | the maximum amount of RAM this Pod can consume.Adjust to the size of your broker. |

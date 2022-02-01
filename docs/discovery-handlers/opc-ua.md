@@ -43,12 +43,14 @@ If you would like non-terminating workloads ("broker" Pods) to be deployed autom
 
 ### Broker Job Settings
 
-If you would like terminating [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to be deployed automatically to discovered servers, a broker image should be specified (under `brokerJob`) in the Configuration.
+If you would like terminating [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to be deployed automatically to discovered servers, a broker image should be specified (under `brokerJob`) in the Configuration. A Kubernetes Job deploys a set number of terminating Pods.
 
 > Note only a `brokerJob` OR `brokerPod` should be specified.
 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
+| opcua.configuration.brokerJob.image.repository | image string | "" | image of broker Job that should be deployed to discovered devices |
+| opcua.configuration.brokerJob.image.tag | tag string | "latest" | image tag of broker Job that should be deployed to discovered devices |
 | opcua.configuration.brokerJob.resources.memoryRequest | string | "76Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
 | opcua.configuration.brokerJob.resources.cpuRequest | string | "9m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
 | opcua.configuration.brokerJob.resources.memoryLimit | string | "200Mi" | the maximum amount of RAM this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |

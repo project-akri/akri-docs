@@ -55,7 +55,7 @@ watch kubectl get pods,akric,akrii,services -o wide
 
 Set `debugEcho.configuration.shared=true` to discover Debug Echo devices that are shared by all nodes. For example, when Akri is installed like above with `debugEcho.configuration.shared=false` onto a 3 node cluster. 6 Debug Echo devices will be discovered and 6 Instances will be created, 2 for each Node. However, if `debugEcho.configuration.shared=true` is set, only 2 will be discovered as it is mocking all 3 nodes "utilizing" the same two devices. Set `debugEcho.configuration.capacity=3` to allow all 3 nodes to receive brokers to utilize each of the shared devices. It defaults to `1`.
 
-### Installation with Pod Brokers
+### Installation with Job Brokers
 This section walks through deploying `busybox` [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to discovered mock devices. Go to the [previous section](#Installation-with-Pod-Brokers) for instructions on deploying non-terminating `nginx` Kubernetes Pods to discovered mock devices. 
 
 To install Akri with **external** Debug Echo Discovery Handlers and a Configuration to discover unshared debug echo devices, run:
