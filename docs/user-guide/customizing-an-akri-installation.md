@@ -194,8 +194,8 @@ Want to change what broker is deployed to already discovered devices or deploy a
 
 This can be illustrated using Akri's [mock debug echo Discovery Handler](../development/debugging.md). The following installation deploys a BusyBox Job
 to each discovered mock device. That Job simply echos "Hello World".
-```
-helm install akri akri-helm-charts/akri-dev \
+```sh
+helm install akri akri-helm-charts/akri \
   --set agent.allowDebugEcho=true \
   --set debugEcho.discovery.enabled=true \
   --set debugEcho.configuration.brokerJob.image.repository=busybox \
@@ -204,10 +204,11 @@ helm install akri akri-helm-charts/akri-dev \
   --set debugEcho.configuration.brokerJob.command[2]="echo 'Hello World'"
   --set debugEcho.configuration.enabled=true
 ```
+
 Say you are feeling more exuberant and want the Job to echo "Hello Amazing World", you can update the `brokerSpec` like so:
 
-```
-helm upgrade akri akri-helm-charts/akri-dev \
+```sh
+helm upgrade akri akri-helm-charts/akri \
   --set agent.allowDebugEcho=true \
   --set debugEcho.discovery.enabled=true \
   --set debugEcho.configuration.brokerJob.image.repository=busybox \
@@ -217,7 +218,7 @@ helm upgrade akri akri-helm-charts/akri-dev \
   --set debugEcho.configuration.enabled=true
 ```
 
-New Jobs will be spun up. 
+New Jobs will be spun up.
 
 > Note: The Agent and Controller can only gracefully handle changes to the `brokerSpec`. If any other parts of the Configuration are modified, the Agent will restart discovery, deleting and recreating the Instances.
 

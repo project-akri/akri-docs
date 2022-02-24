@@ -123,10 +123,8 @@ helm install akri akri-helm-charts/akri \
 
 A terminating BusyBox Job broker could have been specified instead by setting the image of the `brokerJob` instead of the `brokerPod`.
 
-> Note: Jobs are not released yet, so use the `akri-dev` chart to try them out.
-
 ```bash
-helm install akri akri-helm-charts/akri-dev \
+helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
