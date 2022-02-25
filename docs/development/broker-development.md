@@ -41,7 +41,7 @@ Once you have created a broker, you can ask Akri to automatically deploy it to a
 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
-helm install akri akri-helm-charts/akri-dev \
+helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
@@ -70,7 +70,7 @@ You can request that additional environment variables are set in Pods that reque
 
 ```bash
   helm repo add akri-helm-charts https://project-akri.github.io/akri/
-  helm install akri akri-helm-charts/akri-dev \
+  helm install akri akri-helm-charts/akri \
   $AKRI_HELM_CRICTL_CONFIGURATION \
   --set udev.discovery.enabled=true \
   --set udev.configuration.enabled=true \
