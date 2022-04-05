@@ -14,15 +14,19 @@ The following will be covered in this demo:
 
 ## Setting up mock udev video devices
 
-1. Acquire an Ubuntu 20.04 LTS, 18.04 LTS or 16.04 LTS environment to run the
+1. Acquire an Ubuntu 20.04 LTS, 18.04 LTS or 16.04 LTS environment to run the commands. This demo assumes that the VM
+   being used supports the proper kernel modules, which may not be the case if using a cloud-based VM which sometimes
+   have been slimmed down to remove unnecessary modules such as for USB devices. For example, on an Ubuntu 20.04 VM in
+   Azure, the following prerequisite step is needed to add the necessary kernel modules:
 
-   commands. If you would like to deploy the demo to a cloud-based VM, see the
+   ```sh
+   sudo apt update
+   sudo apt -y install linux-modules-extra-azure
+   ```
 
-   guides on Akri's HackMD for [DigitalOcean](https://hackmd.io/@akri/Hyz1GW1gY) or [Google Compute
-
-   Engine](https://hackmd.io/@akri/rJHdQWJeF) (and you can skip the rest of the steps in
-
-   this document). Note, these guides are unmaintained and may not be up to date.
+   > Note: There are also guides Akri's HackMD for running the demo on [DigitalOcean](https://hackmd.io/@akri/Hyz1GW1gY)
+   > and [Google Compute Engine](https://hackmd.io/@akri/rJHdQWJeF) (and you can skip the rest of the steps in this
+   > document). Note, these guides are unmaintained and may not be up to date.
 
 1. To setup fake usb video devices, install the v4l2loopback kernel module and its prerequisites. Learn more about v4l2 loopback [here](https://github.com/umlaeute/v4l2loopback)
 
