@@ -72,8 +72,7 @@ spec:
 
 The Kubernetes scheduler will deploy a Pod to each Node. Pods will only be successfully scheduled to
 a Node and run if the resources exists and are available. Otherwise they will be left in a `Pending`
-state. See this in action by walking through the [Pending Pods tutorial in the
-appendix](#Note-on-Pending-Pods).
+state. See this in action by walking through the [note on `Pending` Pods](#Note-on-Pending-Pods).
 
 **Note: More `Pending` Pods is a downside to Configuration-level resources, whether the Deployments are deployed by the Akri Controller or the user. Since
 However, `Pending` Pods only only equates to just more YAML it etcd.**
