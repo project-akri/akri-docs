@@ -67,9 +67,14 @@ When mounting certificates is enabled later in the [Running Akri section](opc-th
 
 Now, we must create some OPC UA Servers to discover. Instead of starting from scratch, we make some small modifications to the OPC Foundation's .NET Console Reference Server.
 
-1. Clone the [repository](https://github.com/OPCFoundation/UA-.NETStandard).
+1. Clone the [repository](https://github.com/OPCFoundation/UA-.NETStandard) at the tag at which this demo was made:
+
+   ```sh
+      git clone -b "1.4.363.49" https://github.com/OPCFoundation/UA-.NETStandard.git --single-branch
+   ```
+
 2. Open the UA Reference solution file and navigate to NetCoreReferenceServer project.
-3. Open `Quickstarts.Reference.Config.xml`. This application configuration file is where many features can be configured, such as the application description (application name, uri, etc), security configuration, and base address. Only the latter needs to be modified if using no security. On lines 76 and 77, modify the address of the server, by replacing `localhost` with the IP address of the machine the server is running on. If left as `localhost` the application will automatically replace it with the hostname of the machine which will be unreachable to the broker pod. On the same lines, modify the ports if they are already taken. Akri will preference using the tcp endpoint, since according to the [OPC UA Security Specification](https://reference.opcfoundation.org/v104/Core/docs/Part2/4.10/), secure channels over HTTPS do not provide application authentication.
+3. Open `Quickstarts.ReferenceServer.Config.xml`. This application configuration file is where many features can be configured, such as the application description (application name, uri, etc), security configuration, and base address. Only the latter needs to be modified if using no security. On lines 76 and 77, modify the address of the server, by replacing `localhost` with the IP address of the machine the server is running on. If left as `localhost` the application will automatically replace it with the hostname of the machine which will be unreachable to the broker pod. On the same lines, modify the ports if they are already taken. Akri will preference using the tcp endpoint, since according to the [OPC UA Security Specification](https://reference.opcfoundation.org/v104/Core/docs/Part2/4.10/), secure channels over HTTPS do not provide application authentication.
 4. (Optional) If using security, and you have already created certificates in the previous section, now you can modify the security configuration inside `Quickstarts.Reference.Config.xml` to point to those certificates. After using the OPC UA certificate generator application, your first Server's certificate store folder should be named SomeServer0. In line 17, change the `StorePath` to be `/path/to/SomeServer0/own`. Do the same in lines 24, 30, and 36, replacing `%LocalApplicationData%/OPC Foundation/pki/` with `/path/to/SomeServer0`. Finally, change the subject name in line 18 to be `CN=SomeServer0`.
 5. Now it is time to create our temperature OPC UA Variable. Navigate to the function `CreateAddressSpace` on line 174 of `ReferenceNodeManager.cs` that creates the AddressSpace of the OPC UA Server. To review some terms, [OPC UA specification](https://reference.opcfoundation.org/v104/Core/docs/Part1/3.2/) defines AddressSpace as the "collection of information that a Server makes visible to its Clients", a Node as "a fundamental component of an AddressSpace", and a Variable as a "Node that contains a value". Let create a thermometer Node which has a temperature variable. On line 195, insert the following:
 
@@ -111,12 +116,12 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
    be set as environment variables in brokers can be set in `opcua.configuration.brokerProperties`. In this scenario, we
    will specify the `Identifier` and `NamespaceIndex` of the NodeID we want the brokers to monitor. In our case that is
    our temperature variable we made earlier, which has an `Identifier` of `Thermometer_Temperature` and `NamespaceIndex`
-   of `2`. Finally, since we did not set up a Local Discovery Server -- see \[Setting up and using a Local Discovery
-   Server\](\#setting-up-and-using-a-local-discovery-server-(windows-only)) in the Extensions section at the bottom of
+   of `2`. Finally, since we did not set up a Local Discovery Server -- see [Setting up and using a Local Discovery
+   Server](#setting-up-and-using-a-local-discovery-server-(windows-only)) in the Extensions section at the bottom of
    this document to use a LDS -- we must specify the DiscoveryURLs of the OPC UA Servers we want Agent to discover.
    Those are the tcp addresses that we modified in step 3 of [Creating OPC UA Servers](opc-thermometer-demo.md#creating-opc-ua-servers). 
    Be sure to set the appropriate IP address and port number for the DiscoveryURLs in the Helm command below. If using security, 
-   uncomment `--set opcua.configuration.mountCertificates='true'`.   
+   uncomment `--set opcua.configuration.mountCertificates='true'`.
 
    > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
     
@@ -135,16 +140,10 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
         # --set opcua.configuration.mountCertificates='true'
    ```
 
-    Akri Agent will discover the two Servers and create an Instance for each Server. Watch two broker pods spin up, one for each Server. For MicroK8s
+    Akri Agent will discover the two Servers and create an Instance for each Server. Watch two broker pods spin up, one for each Server.
 
    ```bash
-    watch microk8s kubectl get pods -o wide
-   ```
-
-    For K3s and vanilla Kubernetes
-
-   ```bash
-    watch kubectl get pods -o wide
+      kubectl get pods -o wide --watch
    ```
 
     To inspect more of the elements of Akri:
@@ -166,36 +165,25 @@ A sample anomaly detection web application was created for this end-to-end demo.
    kubectl apply -f https://raw.githubusercontent.com/project-akri/akri/main/deployment/samples/akri-anomaly-detection-app.yaml
    ```
 
-   ```text
-   For MicroK8s
    ```sh
-   watch microk8s kubectl get pods -o wide
-   ```
-   For K3s and vanilla Kubernetes
-   ```sh
-   watch kubectl get pods -o wide
+   kubectl get pods -o wide --watch
    ```
 
-2. Determine which port the service is running on.
+2. Determine which port the service is running on. Be sure to save this port number for the next step.
 
    ```bash
-    kubectl get services
+   kubectl get service/akri-anomaly-detection-app--output=jsonpath='{.spec.ports[?(@.name=="http")].nodePort}' && echo
    ```
 
-    Something like the following will be displayed. The ids of the broker services (`akri-opcua-monitoring-<id>-svc`)
+3. SSH port forwarding can be used to access the streaming application. In a new terminal, enter your ssh command to to access your VM followed by the port forwarding request. The following command will use port 50000 on the host. Feel free to change it if it is not available. Be sure to replace `<anomaly-app-port>` with the port number outputted in the previous step.
 
-    will likely be different as they are determined by hostname.
-
-   ```text
-    NAME                                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
-    akri-anomaly-detection-app               NodePort    10.XXX.XXX.XXX   <none>        80:32624/TCP   66s
-    kubernetes                          ClusterIP   10.XXX.XXX.X     <none>        443/TCP        15d
-    akri-opcua-monitoring-7dd1e7-svc   ClusterIP   10.XXX.XXX.XXX   <none>        80/TCP         3m38s
-    akri-opcua-monitoring-5fc2e6-svc   ClusterIP   10.XXX.XXX.XXX   <none>        80/TCP         3m38s
-    akri-opcua-monitoring-svc          ClusterIP   10.XXX.XXX.XXX   <none>        80/TCP         3m38s
+   ```bash
+   ssh someuser@<Ubuntu VM IP address> -L 50000:localhost:<anomaly-app-port>
    ```
 
-3. Navigate in your browser to [http://ip-address:32624/](http://ip-address:32624/) where ip-address is the IP address of your Ubuntu VM (not the cluster-IP) and the port number is from the output of `kubectl get services`. It takes 3 seconds for the site to load, after which, you should see a log of the temperature values, which updates every few seconds. Note how the values are coming from two different DiscoveryURLs, namely the ones for each of the two OPC UA Servers.
+   > **Note** we've noticed issues with port forwarding with WSL 2. Please use a different terminal.
+
+4. Navigate to `http://localhost:50000/`. It takes 3 seconds for the site to load, after which, you should see a log of the temperature values, which updates every few seconds. Note how the values are coming from two different DiscoveryURLs, namely the ones for each of the two OPC UA Servers.
 
 ## Clean up
 
@@ -210,18 +198,7 @@ A sample anomaly detection web application was created for this end-to-end demo.
 
    ```bash
     kubectl delete akric akri-opcua-monitoring
-   ```
-
-    For MicroK8s
-
-   ```bash
-    watch microk8s kubectl get pods,services,akric,akrii -o wide
-   ```
-
-    For K3s and vanilla Kubernetes
-
-   ```bash
-    watch kubectl get pods,services,akric,akrii -o wide
+    kubectl get pods,services,akric,akrii -o wide --watch
    ```
 
 3. Bring down the Akri Agent, Controller, and CRDs.
@@ -275,18 +252,8 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
         --set opcua.configuration.discoveryDetails.discoveryUrls[1]="opc.tcp://<SomeServer1 IP address>:<SomeServer1 port>/Quickstarts/ReferenceServer/" \
         --set opcua.capacity=2 \
       # --set opcua.configuration.mountCertificates='true'
-   ```
 
-   For MicroK8s
-
-   ```bash
-   watch microk8s kubectl get pods,akrii -o wide
-   ```
-
-   For K3s and vanilla Kubernetes
-
-   ```bash
-   watch kubectl get pods,akrii -o wide
+   kubectl get pods,akrii -o wide --watch
    ```
 
 4. Once you are done using Akri, you can remove your worker node from the cluster. For MicroK8s this is done by running
@@ -328,16 +295,10 @@ helm install akri akri-helm-charts/akri \
     # --set opcua.configuration.mountCertificates='true'
 ```
 
-You can watch as an Instance is created for each Server and two broker pods are spun up. For MicroK8s
+You can watch as an Instance is created for each Server and two broker pods are spun up.
 
 ```bash
-watch microk8s kubectl get pods,akrii -o wide
-```
-
-For K3s and vanilla Kubernetes
-
-```bash
-watch kubectl get pods,akrii -o wide
+kubectl get pods,akrii -o wide --watch
 ```
 
 ### Modifying the OPC UA Configuration to filter out an OPC UA Server
