@@ -2,7 +2,7 @@
 
 This document discusses the motivation and potential implementation for supporting "Configuration-level resources" in Akri. Currently, Akri only supports creating a Kubernetes resource (i.e. device plugin) for each individual device. Since each device in Akri is represented as an Instance custom resource, these are called Instance-level resources. A Configuration-level resource is a resource that represents all of the devices discovered via a Configuration, i.e. all IP cameras.
 
-Currently, with only Instance-level resources, specific devices must be requested as resources. For example, a Pod could be deployed that uses both `ip-camera-UNIQUE_ID1` and `ip-camera-UNIQUE_ID2` by adding the following resource request to the `PodSpec`:
+Currently, with only Instance-level resources, specific devices must be [requested as resources](../docs/user-guide/requesting-akri-resources.md). For example, a Pod could be deployed that uses both `ip-camera-UNIQUE_ID1` and `ip-camera-UNIQUE_ID2` by adding the following resource request to the `PodSpec`:
 
 ```yaml
   resources:
@@ -19,13 +19,15 @@ With Configuration-level resources, instead of needing to know the specific Inst
       akri.sh/onvif-camera: "2"
 ```
 
+Furthermore, with Configuration-level resources, users could develop their own deployment strategies rather than relying on the Akri Controller to deploy Pods to discovered devices. Higher level Kubernetes objects (Deployments, ReplicaSets, DaemonSets, etc.) can be deployed requesting resources, and Pods will only be run on Nodes that have those resources available.
+
 ## Terms
 
 | Term | Definition |
 | --- | --- |
 | `capacity`  | Maximum amount of containers that can use a device. Defines the number of usage slots a device's device plugin advertises to the kubelet |
 | Configuration-level (CL) resource | An extended resource that is created by the Agent for each Configuration. This equates to the creation of a Kubernetes device plugin for each Configuration. It enables requesting any of a set of (Configuration) resources, such as any IP camera, thermometer, etc. Resources are given the Configuration name. A request to use a CL resource is mapped to an IL resource by the Agent. |
-| Instance-level (IL) resource | An extended resource that is created by the Agent for each discovered device (i.e. Instance), such as a specific IP camera, thermometer, etc. This equates to the creation of a Kubernetes device plugin for each Instance. Resources are named in the format <Configuration Name>-<HASH>, where the input to the one-way hash is a descriptor of the Instance (and node name for local non-shared devices). each Configuration |
+| Instance-level (IL) resource | An extended resource that is created by the Agent for each discovered device (i.e. Instance), such as a specific IP camera, thermometer, etc. This equates to the creation of a Kubernetes device plugin for each Instance. Resources are named in the format <Configuration Name>-<HASH>, where the input to the one-way hash is a descriptor of the Instance (and node name for local non-shared devices). |
 
 ## Implementation
 
@@ -44,14 +46,44 @@ Capacity:
   akri.sh/akri-onvif-a19705:  2
 ```
 
-Now, an operator or the Controller can create a DaemonSet like the following:
+Now, a Pod could be deployed that requests 2 cameras by requesting 2 `akri.sh/akri-onvif` resources.
 
 ```yaml
 apiVersion: "apps/v1"
-kind: DaemonSet
+kind: Pod
 metadata:
-  name: onvif-broker-daemonset
+  name: onvif-broker
 spec:
+  containers:
+  - name: nginx
+    image: "nginx:latest"
+    resources:
+      requests:
+        "akri.sh/akri-onvif": "2"
+      limits:
+        "akri.sh/akri-onvif": "2"
+```
+
+The Kubernetes scheduler will schedule the Pod to the Node since the resources is available.
+The kubelet on that Node will make an `allocate` call to the `akri.sh/akri-onvif` device plugin in the Akri Agent.
+The Agent will then reserve slots in the associated Instance device plugins (`akri.sh/akri-onvif-8120fe` and `akri.sh/akri-onvif-a19705`).
+When selecting the slots from Instances, the Agent will preference unique Instances; for example, in the above Pod, the Agent will make sure 1 slot of each `akri-onvif-8120fe` and `akri-onvif-a19705` is reserved for each Pod.
+
+There are two implementation options in the case where there are not enough unique Instances to meet the requested number of Configuration-level resources. One scenario where the could happen is if a Pod requests 3 cameras when only 2 exist with a capacity of 2 each. In this case, the Configuration-level camera resource shows as having a quantity of 4, despite there being two cameras. In this case, the kubelet will try to schedule the Pod, thinking there are enough resources. The Agent could either allocate 2 spots on one camera and one on the other or deny the allocation request. The latter is the preferred approach as it is more consistent and ensures the workload is getting the number of unique devices it expects. After failing an `allocateRequest` from the kubelet, the Pod will be in an `UnexpectedAdmissionError` state until another camera comes online and it can be successfully scheduled.
+
+## Deployment Strategies with Configuration-level resources
+
+The Akri Agent and Discovery Handlers enable device discovery and Kubernetes resource creation: they discovers devices, createsKubernetes resources to represent the devices, and ensure only `capacity` containers are using a device at once via the device plugin framework. The Akri Controller eases device use. If a broker is specified in a Configuration, the Controller will automatically deploy Kubernetes Pods or Jobs to discovered devices. Currently the Controller only supports two deployment strategies: either deploying a non-terminating Pod (that Akri calls a "broker") to each Node that can see a device or deploying a single Job to the cluster for each discovered device. There are plenty of scenarios that do not fit these two strategies such as a ReplicaSet like deployment of n number of Pods to the cluster. With Configuration-level resources, users could easily achieve their own scenarios without the Akri Controller, as selecting resources is more declarative. A user specifies in a resource request how many OPC UA servers are needed rather than needing to delineate the exact ones already discovered by Akri, as explained in Akri's current documentation on [requesting Akri resources](../docs/user-guide/requesting-akri-resources.md).
+
+For example, with Configuration-level resources, the following Deployment could be applied to a cluster:
+
+```yaml
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: onvif-broker-deployment
+spec:
+  replicas: 2
   selector:
     matchLabels:
       name: onvif-broker
@@ -70,81 +102,15 @@ spec:
             "akri.sh/akri-onvif": "2"
 ```
 
-The Kubernetes scheduler will deploy a Pod to each Node. Pods will only be successfully scheduled to
-a Node and run if the resources exists and are available. Otherwise they will be left in a `Pending`
-state. See this in action by walking through the [note on `Pending` Pods](#Note-on-Pending-Pods).
 
-**Note: More `Pending` Pods is a downside to Configuration-level resources, whether the Deployments are deployed by the Akri Controller or the user. Since
-However, `Pending` Pods only only equates to just more YAML it etcd.**
+Pods will only be successfully scheduled to a Node and run if the resources exists and are available. In the case of the
+above scenario, if there were two cameras on the network like in the [implementation scenario](#implementation), two
+Pods would be deployed to the cluster. If there are not enough resources, say there is only one camera on the network,
+the two Pods will be left in a `Pending` state until another is discovered. This is the case with any deployment on
+Kubernetes where there are not enough resources. However, `Pending` Pods do not use up cluster resources.
 
-When selecting the slots from Instances, the Agent should preference unique instances; for example, in the above Daemonset, the Agent will make sure 1 slot of each `akri-onvif-8120fe` and `akri-onvif-a19705` is reserved for each Pod.
-
-> Note: If the number of CL resources request exceeds the number of IL resource -- say 3 were requested in the above DaemonSet -- either the Agent can forbid the Pod from running and the brokers Pods will be in an `UnexpectedAdmissionError` state or the use of 2 slots from one device and 1 from another could be permitted. More thought can go here, and this should maybe be configurable.
-
-### Note on Pending Pods
-
-See how deploying a DaemonSet causes the Kubernetes Scheduler to try to deploy a Pod to each Node,
-regardless of whether the resources exist. If they don't exist, the Pod will not be successfully
-scheduled to any node and will be left in a pending state. This can be demonstrated with Akri today.
-
-1. Install Akri on a multi-node cluster, using the debugEcho discovery handler to discover one fake
-   `foo0` device and selecting that the discovery handler only run on one node.
-
-    ```sh
-    helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
-    --set agent.allowDebugEcho=true \
-    --set debugEcho.discovery.enabled=true \
-    --set debugEcho.configuration.enabled=true \
-    --set debugEcho.configuration.shared=true \
-    --set debugEcho.configuration.discoveryDetails.descriptions[0]="foo0" \
-    --set debugEcho.discovery.nodeSelectors.'kubernetes\.io\/hostname'=$HOSTNAME
-    ```
-
-1. Get the instance's name: `kubectl get akrii | grep akri-debug-echo | awk '{ print $1 }'` Deploy a
-   DaemonSet that uses it, inserting the instance name in the resource request and limit:
-
-    ```yaml
-    apiVersion: "apps/v1"
-    kind: DaemonSet
-    metadata:
-    name: nginx-daemonset
-    spec:
-    selector:
-        matchLabels:
-        name: nginx
-    template:
-        metadata:
-        labels:
-            name: nginx
-        spec:
-        containers:
-        - name: nginx
-            image: "nginx:latest"
-            resources:
-            requests:
-                "akri.sh/INSTANCE_NAME_HERE": "1"
-            limits:
-                "akri.sh/INSTANCE_NAME_HERE": "1"
-    ```
-
-1. Look at the Pods and Akri components that have been created. Notice that one pod is left
-   `Pending` and has been assigned to no node. For a two node cluster, the output of `kubectl get
-   pods,akrii,akric -o wide` should look similar to the following:
-
-    ```sh
-    NAME                                              READY   STATUS    RESTARTS   AGE     IP            NODE          NOMINATED NODE   READINESS GATES
-    pod/akri-agent-daemonset-7vls5                    1/1     Running   0          14m     10.42.1.118   nuc-ubtunu1   <none>           <none>
-    pod/akri-debug-echo-discovery-daemonset-qpwpf     1/1     Running   0          14m     10.42.0.104   nuc-ubuntu2   <none>           <none>
-    pod/akri-agent-daemonset-fn2fv                    1/1     Running   0          14m     10.42.0.103   nuc-ubuntu2   <none>           <none>
-    pod/akri-controller-deployment-776897c88f-8z6st   1/1     Running   0          14m     10.42.1.119   nuc-ubtunu1   <none>           <none>
-    pod/nginx-daemonset-n9dpk                         1/1     Running   0          13m     10.42.0.107   nuc-ubuntu2   <none>           <none>
-    pod/nginx-daemonset-smm2k                         0/1     Pending   0          13m     <none>        <none>        <none>           <none>
-    pod/nuc-ubuntu2-akri-debug-echo-8120fe-pod        1/1     Running   0          8m23s   10.42.0.108   nuc-ubuntu2   <none>           <none>
-
-    NAME                                      CONFIG            SHARED   NODES             AGE
-    instance.akri.sh/akri-debug-echo-8120fe   akri-debug-echo   true     ["nuc-ubuntu2"]   8m25s
-
-    NAME                                    CAPACITY   AGE
-    configuration.akri.sh/akri-debug-echo   2          14m
-    ```
+Currently, the Akri Controller handles deployment of Pods to avoid Pods being scheduled to Nodes without resources. This
+is another advantage of using the Akri Controller rather than applying Deployments, DaemonSets, etc. In conjunction with
+this work on supporting Configuration level resources, the Akri's Controller could support a new deployment strategy for
+using these CL resources. The Controller also takes care of bringing down Pods when resources are no longer available,
+while Pods from manually created Deployments would continue to run even if the resources are no longer there.
