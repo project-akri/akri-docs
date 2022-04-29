@@ -50,7 +50,7 @@ padding-top: 10px; margin-right: auto; display: block; margin-left: auto;"/>
 Create three (one for the broker and each server) OPC UA compliant X.509v3 certificates, ensuring that the certificate
 contains the [necessary
 components](http://opclabs.doc-that.com/files/onlinedocs/QuickOpc/Latest/User%27s%20Guide%20and%20Reference-QuickOPC/Providing%20Client%20Instance%20Certificate.html)
-such as an application URI. They should all be signed with a common Certificate Authority (CA). There are many tools for
+such as an application URI. They should all be signed by a common Certificate Authority (CA). There are many tools for
 generating proper certificates for OPC UA, such as the [OPC Foundation's Certificate
 Generator](https://github.com/OPCFoundation/Misc-Tools) or openssl (as in this [walk
 through](https://github.com/OPCFoundation/Misc-Tools)).
