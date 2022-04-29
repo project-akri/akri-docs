@@ -2,7 +2,7 @@
 
 ## Background
 
-OPC UA (Object Linking and Embedding for Process Control Unified Architecture) is a communication protocol for industrial automation. Akri has implemented a Discovery Handler for discovering OPC UA Servers that live at specified endpoints or are registered with specified Local Discovery Servers. Background on the OPC UA Discovery Handler implementation can be found in the [proposal](../../proposals/opcua.md). To try out using Akri to discover and utilize OPC UA servers, see the [OPC UA end-to-end demo](../demos/opc-thermometer-demo.md).
+OPC UA (Open Platform Communications Unified Architecture) is a communication protocol for industrial automation. Akri has implemented a Discovery Handler for discovering OPC UA Servers that live at specified endpoints or are registered with specified Local Discovery Servers. Background on the OPC UA Discovery Handler implementation can be found in the [proposal](../../proposals/opcua.md). To try out using Akri to discover and utilize OPC UA servers, see the [OPC UA end-to-end demo](../demos/opc-thermometer-demo.md).
 
 All of Akri's components can be deployed by specifying values in its Helm chart during an installation. This section will cover the values that should be set to (1) deploy the OPC UA Discovery Handlers and (2) apply a Configuration that tells Akri to discover devices using that Discovery Handler.
 
