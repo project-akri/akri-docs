@@ -5,7 +5,7 @@ Agent should have the ability to discover instances via OPC UA and brokers shoul
 via OPC UA over a secure connection. In this scenario, instances are OPC UA servers.
 
 ## OPC UA Background
-OPC UA (Object Linking and Embedding for Process Control Unified Architecture) is a communication protocol for
+OPC UA (Open Platform Communications Unified Architecture) is a communication protocol for
 industrial automation. It expands beyond and is backwards-compatible with OPC Common which was largely limited to
 Windows hosts. To learn more about OPC UA, see the [OPC UA Specifications](https://reference.opcfoundation.org/v104/).
 
