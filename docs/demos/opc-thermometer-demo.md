@@ -7,7 +7,7 @@ The demo consists of the following components:
 1. Two .NET OPC UA Servers with a temperature variable
 2. (Optional) Certificates for the Servers and Akri brokers
 3. An OPC UA Monitoring broker that contains an OPC UA Client that subscribes to a specific NodeID (for that temperature variable)
-4.  A Akri installation
+4. Akri installation
 5. An anomaly detection web application
 
 ## Demo Flow
@@ -36,18 +36,25 @@ Reference our [cluster setup documentation](../user-guide/cluster-setup.md) to s
 
 Akri will deploy an OPC UA Monitoring broker for each OPC UA Server a node in the cluster can see. This broker contains an OPC UA Client that will need the proper credentials in order to communicate with the OPC UA Server in a secure fashion. Specifically, before establishing a session, an OPC UA Client and Server must create a secure channel over the communication layer to ensure message integrity, confidentiality, and application authentication. Proper application credentials in the form of X.509 v3 certificates are needed for application authentication.
 
-Every OPC UA Application, whether Client, Server, or DiscoveryServer, has a certificate store, which includes the application's own credentials along with a list of trusted and rejected application instance certificates. According to OPC UA specification, there are three ways to configure OPC UA Server and Clients' certificate stores so that they trust each other's certificates, which are explained in the [OPC UA proposal](../../proposals/opcua.md). This demo will walk through the third method of creating Client and Server certificates that are issued by a common Certificate Authority (CA). Then, that CA's certificate simply needs to be added to the trusted folder of Client and Servers' certificate stores, and they will automatically trust each other on the basis of having a common CA. The following image walks through how to configure the Client and Server certificate stores for Akri.
+Every OPC UA Application, whether Client, Server, or DiscoveryServer, has a certificate store, which includes the application's own credentials along with a list of trusted and rejected application instance certificates. According to OPC UA specification, there are three ways to configure OPC UA Server and Clients' certificate stores so that they trust each other's certificates, which are explained in the [OPC UA proposal](../../proposals/opcua.md). This demo will walk through the third method of creating Client and Server certificates that are issued by a common Certificate Authority (CA). Then, that root CA certificate simply needs to be added to the trusted folder of Client and Servers' certificate stores, and they will automatically trust each other on the basis of having a common root certificate. The following image walks through how to configure the Client and Server certificate stores for Akri.
 
 <img src="../../media/opcua-certificates-diagram.svg" alt="OPC UA Certificate Creation Diagram" style="padding-bottom: 10px
 padding-top: 10px; margin-right: auto; display: block; margin-left: auto;"/>
 
 1. Generate an X.509 v3 Certificate for Akri OPC UA Monitoring brokers and sign it with the same CA that has signed the certificates of all the OPC UA Servers that will be discovered.
-2. Create a Kubernetes Secret named opcua-broker-credentials that contains four items with the following key names: client\_certificate, client\_key, ca\_certificate, and ca\_crl.
+2. Create a Kubernetes Secret named opcua-broker-credentials that contains four items with the following key names: client_certificate, client_key, ca_certificate, and ca_crl.
 3. The credentials will be mounted in the broker at the path /etc/opcua-certs/client-pki.
 
-### Running the certificate creation application
+### Generating certificates
 
-A .NET Console [OPC UA Certificate Generator application](https://github.com/project-akri/akri/tree/main/samples/opcua-certificate-generator) has been created to simplify the process of creating a Certificate Authority (CA) and X.509 v3 certificates issued by that CA for the OPC UA Client and Servers in this demo. Clone the Akri repository, navigate to the `opcua-certificate-generator` and follow the instructions of the [README](https://github.com/project-akri/akri/blob/main/samples/opcua-certificate-generator/README.md) to generate the necessary certificates.
+Create three (one for the broker and each server) OPC UA compliant X.509v3 certificates, ensuring that the certificate
+contains the [necessary
+components](http://opclabs.doc-that.com/files/onlinedocs/QuickOpc/Latest/User%27s%20Guide%20and%20Reference-QuickOPC/Providing%20Client%20Instance%20Certificate.html)
+such as an application URI. They should all be signed by a common Certificate Authority (CA). There are many tools for
+generating proper certificates for OPC UA, such as the [OPC Foundation's Certificate
+Generator](https://github.com/OPCFoundation/Misc-Tools) or openssl (as in this [walk
+through](https://github.com/OPCFoundation/Misc-Tools)).
+
 
 ### Creating an opcua-broker-credentials Kubernetes Secret
 
@@ -61,7 +68,7 @@ kubectl create secret generic opcua-broker-credentials \
 --from-file=ca_crl=/path/to/ca/crl/SomeCA\ \[<hash>\].crl
 ```
 
-When mounting certificates is enabled later in the [Running Akri section](opc-thermometer-demo.md#running-akri) with Helm via `--set opcua.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA monitoring brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Configuration Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). This is the path where the brokers expect to find the certificates.
+When mounting certificates is enabled later in the [Running Akri section](opc-thermometer-demo.md#running-akri) with Helm via `--set opcua.configuration.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA monitoring brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Configuration Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). This is the path where the brokers expect to find the certificates.
 
 ## Creating OPC UA Servers
 
@@ -198,7 +205,7 @@ A sample anomaly detection web application was created for this end-to-end demo.
 
    ```bash
     kubectl delete akric akri-opcua-monitoring
-    kubectl get pods,services,akric,akrii -o wide --watch
+    watch kubectl get pods,services,akric,akrii -o wide
    ```
 
 3. Bring down the Akri Agent, Controller, and CRDs.
@@ -253,7 +260,7 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
         --set opcua.capacity=2 \
       # --set opcua.configuration.mountCertificates='true'
 
-   kubectl get pods,akrii -o wide --watch
+   watch kubectl get pods,akrii -o wide
    ```
 
 4. Once you are done using Akri, you can remove your worker node from the cluster. For MicroK8s this is done by running
@@ -298,7 +305,7 @@ helm install akri akri-helm-charts/akri \
 You can watch as an Instance is created for each Server and two broker pods are spun up.
 
 ```bash
-kubectl get pods,akrii -o wide --watch
+watch kubectl get pods,akrii -o wide
 ```
 
 ### Modifying the OPC UA Configuration to filter out an OPC UA Server
@@ -336,7 +343,7 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \
     --set opcua.configuration.discoveryDetails.applicationNames.action=Include \
     --set opcua.configuration.discoveryDetails.applicationNames.items[0]="SomeServer0" \
-    # --set opcua.mountCertificates='true'
+    # --set opcua.configuration.mountCertificates='true'
 ```
 
 ### Creating a different broker and end application

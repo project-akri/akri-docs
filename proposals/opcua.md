@@ -78,10 +78,7 @@ configure OPC UA Server and Clients' certificate stores so that they trust each 
 3. The Client and Server certificates are issued by a common root Certificate Authority (CA) and that CA's certificate
    is added to each of their trusted folders.
 
-The following image shows what the certificate store of a Client should look like for strategies 2 and 3 described
-above. <img src="https://documentation.unified-automation.com/uasdkhp/1.0.0/html/certificate_store_clientx.png"
-alt="Certificate Store Configuration" style="padding-bottom: 10px; padding-top: 10px; margin-right: auto; display:
-block; margin-left: auto; width: 60%; height: 60%;"/>
+For more information on CA signed certificate management, see the [OPC UA reference documentation](https://reference.opcfoundation.org/v104/Core/docs/Part2/8.1.3/).
 
 If an operator wishes the OPC UA brokers to establish secure connections with their discovered OPC UA Servers, they must
 configure a certificate store for the brokers and pass it to the brokers as a Kubernetes Secret mounted as a volume in
