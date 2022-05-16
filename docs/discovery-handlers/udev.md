@@ -10,6 +10,8 @@ All of Akri's components can be deployed by specifying values in its Helm chart 
 
 In order for the Agent to discover udev devices, a udev Discovery Handler must exist. Akri supports an Agent image that includes all supported Discovery Handlers. This Agent will be used if `agent.full=true` is set. By default, a slim Agent without any embedded Discovery Handlers is deployed and the required Discovery Handlers can be deployed as DaemonSets. This documentation will use that strategy, deploying udev Discovery Handlers by specifying `udev.discovery.enabled=true` when installing Akri.
 
+> Note: if not able to discover the udev devices, mount the udev directory into the discovery handlers by adding `--set udev.discovery.host.udev=/run/udev` to the installation.
+
 ## udev Configuration Settings
 
 Instead of having to assemble your own udev Configuration yaml, we have provided a [Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/udev-configuration.yaml). Helm allows us to parametrize the commonly modified fields in our configuration files, and we have provided many for udev (to see them, run `helm inspect values akri-helm-charts/akri`). To apply the udev Configuration to your cluster, simply set `udev.configuration.enabled=true` when installing Akri. Be sure to also **specify one or more udev rules** for the Configuration, as explained [below](#discovery-handler-discovery-details-settings).
@@ -164,6 +166,8 @@ helm install akri akri-helm-charts/akri \
     --set udev.configuration.discoveryDetails.udevRules[0]='SUBSYSTEM=="sound"\, ATTR{vendor}=="Great Vendor"'
 ```
 
+> Note: if not able to discover the udev devices, mount the udev directory into the discovery handlers by adding `--set udev.discovery.host.udev=/run/udev` to the installation.
+
 The following installation examples have been given to show how to the udev Configuration can be tailored to you cluster:
 
 * Modifying the udev rule
@@ -185,6 +189,7 @@ helm install akri akri-helm-charts/akri \
     --set udev.configuration.discoveryDetails.udevRules[1]='SUBSYSTEM=="sound"\, ATTR{vendor}=="Awesome Vendor"'
 ```
 
+> Note: if not able to discover the udev devices, mount the udev directory into the discovery handlers by adding `--set udev.discovery.host.udev=/run/udev` to the installation.
 Akri will now discover these devices and advertize them to the cluster as resources. Each discovered device is represented as an Akri Instance. To list them, run `kubectl get akrii`. Note `akrii` is a short name for Akri Instance. All the instances will be named in the format `<configuration-name>-<hash>`. You could change the name of the Configuration and resultant Instances to be `sound-device` by adding `--set udev.configuration.name=sound-devices` to your installation command. Now, you can schedule pods that request these Instances as resources, as explained in the [requesting akri resources document](../user-guide/requesting-akri-resources.md).
 
 ## Specifying a broker pod image
