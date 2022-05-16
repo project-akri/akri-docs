@@ -106,7 +106,7 @@ helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.configuration.enabled=true \
     --set udev.configuration.enabled=true \
-    --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"'
+    --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"'
 ```
 
 {% hint style="info" %}
@@ -127,7 +127,7 @@ helm install udev-config akri-helm-charts/akri \
  --set agent.enabled=false \
  --set rbac.enabled=false \
  --set udev.configuration.enabled=true  \
- --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"'
+ --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"'
 
 helm install onvif-config akri-helm-charts/akri \
  --set controller.enabled=false \
@@ -174,7 +174,7 @@ helm upgrade akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.enabled=true \
     --set udev.enabled=true \
-    --set udev.udevRules[0]='KERNEL=="video[0-9]*"'
+    --set udev.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"'
 ```
 
 ### Adding additional Configurations via new Helm installations
@@ -187,7 +187,7 @@ helm install udev-config akri-helm-charts/akri \
  --set agent.enabled=false \
  --set rbac.enabled=false \
  --set udev.configuration.enabled=true  \
- --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"'
+ --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"'
 ```
 ## Modifying a broker
 Want to change what broker is deployed to already discovered devices or deploy a new Job to the devices? Instead of deleting and reapplying the Configuration, you can modify the `brokerSpec` of the Configuration using one of the strategies from the [section on modifying a deployed Configuration](#Modifying-a-deployed-Configuration).
