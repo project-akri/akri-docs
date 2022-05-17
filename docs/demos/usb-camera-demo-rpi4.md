@@ -100,7 +100,7 @@ You tell Akri what you want to find with an Akri Configuration, which is one of 
 2. any additional device filtering
 3. an image for a Pod (that we call a "broker") that you want to be automatically deployed to utilize each discovered device
 
-For this demo, we will specify (1) Akri's udev Discovery Handler, which is used to discover devices in the Linux device file system. Akri's udev Discovery Handler supports (2) filtering by udev rules. We want to find all video devices in the Linux device file system, which can be specified with the udev rule `KERNEL=="video[0-9]*"`. Say we wanted to be more specific and only discover devices made by Great Vendor, we could adjust our rule to be `KERNEL=="video[0-9]*"\, ENV{ID_VENDOR}=="Great Vendor"`. For (3) a broker Pod image, we will use a sample container that Akri has provided that pulls frames from the cameras and serves them over gRPC. 
+For this demo, we will specify (1) Akri's udev Discovery Handler, which is used to discover devices in the Linux device file system. Akri's udev Discovery Handler supports (2) filtering by udev rules. We want to find all video capture devices in the Linux device file system, which can be specified with the udev rule `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"`. Say we wanted to be more specific and only discover devices made by Great Vendor, we could adjust our rule to be `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"\, ENV{ID_VENDOR}=="Great Vendor"`. For (3) a broker Pod image, we will use a sample container that Akri has provided that pulls frames from the cameras and serves them over gRPC. 
 
 All of Akri's components can be deployed by specifying values in its Helm chart during an installation. Instead of having to build a Configuration from scratch, Akri has provided [Helm templates](https://github.com/project-akri/akri/blob/main/deployment/helm/templates) for Configurations for each supported Discovery Handler. Lets customize the generic [udev Configuration Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/udev-configuration.yaml) with our three specifications above. We can also set the name for the Configuration to be `akri-udev-video`.
 
@@ -117,7 +117,7 @@ In order for the Agent to know how to discover video devices, the udev Discovery
         --set udev.discovery.enabled=true \
         --set udev.configuration.enabled=true \
         --set udev.configuration.name=akri-udev-video \
-        --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"' \
+        --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
         --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" 
     ```
 
@@ -204,19 +204,8 @@ Look at the Configuration and Instances in more detail.
       --set udev.discovery.enabled=true \
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \
-      --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_VENDOR}=="Microsoft"' \
+      --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"\, ENV{ID_VENDOR}=="Microsoft"' \
       --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" 
    ```
 
-   As another example, to make sure that the camera has a capture capability rather than just being a video output device, modify the udev rule as follows: 
-   ```bash
-   helm repo add akri-helm-charts https://project-akri.github.io/akri/
-   helm install akri akri-helm-charts/akri \
-      $AKRI_HELM_CRICTL_CONFIGURATION \
-      --set udev.discovery.enabled=true \
-      --set udev.configuration.enabled=true \
-      --set udev.configuration.name=akri-udev-video \
-      --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}=="*:capture:*"' \
-      --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" 
-   ```
 5. Discover other udev devices by creating a new udev configuration and broker. Learn more about the udev Discovery Handler Configuration [here](../discovery-handlers/udev.md).

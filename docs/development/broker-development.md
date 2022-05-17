@@ -46,7 +46,7 @@ helm install akri akri-helm-charts/akri \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.name=akri-udev-video \
-    --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"' \
+    --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
     --set udev.configuration.brokerPod.image.repository="ghcr.io/brokers/camera-broker" \
     --set udev.configuration.brokerPod.image.tag="v0.0.1"
 ```
@@ -75,7 +75,7 @@ You can request that additional environment variables are set in Pods that reque
   --set udev.discovery.enabled=true \
   --set udev.configuration.enabled=true \
   --set udev.configuration.name=akri-udev-video \
-  --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"' \
+  --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
   --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" \
   --set udev.configuration.brokerProperties.FORMAT='JPEG' \
   --set udev.configuration.brokerProperties.RESOLUTION_WIDTH='1000' \

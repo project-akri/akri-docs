@@ -115,7 +115,7 @@ helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
-    --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"' \
+    --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
     --set udev.configuration.brokerPod.image.repository=nginx
 ```
 
@@ -128,7 +128,7 @@ helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
-    --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"' \
+    --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
     --set udev.configuration.brokerJob.image.repository=busybox
 ```
 
