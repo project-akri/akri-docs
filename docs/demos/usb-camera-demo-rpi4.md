@@ -36,17 +36,20 @@ The following will be covered in this demo:
     ```sh
 	sudo kubeadm init
     ```
-1. To enable workloads on our single-node cluster, remove the master taint.
-    ```sh
-    kubectl taint nodes --all node-role.kubernetes.io/master-
-    ```
-     > **Note** If this command does not work you may need to setup kubenetes config and environment variables using the commands below	
+    You will then need to setup kubenetes config and environment variables using the commands below	
+    
     ```sh
     mkdir -p $HOME/.kube
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
     export KUBECONFIG=$HOME/.kube/config
     ```
+    
+1. To enable workloads on our single-node cluster, remove the master taint.
+    ```sh
+    kubectl taint nodes --all node-role.kubernetes.io/master-
+    ```
+
 1. Apply a network provider to the cluster.
     ```sh
     kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
