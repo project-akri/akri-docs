@@ -258,7 +258,7 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
 
 ## Going beyond the demo
 
-1. Plug in real cameras! You can [pass environment variables](../development/broker-development.md#Specifying-additional-broker-environment-variables-in-a-Configuration) to the frame server broker to specify the format, resolution width/height, and frames per second of your cameras. Note, if not able to discover cameras, mount the udev directory into the discovery handlers by adding `--set udev.discovery.host.udev=/run/udev` to the installation.
+1. Plug in real cameras! You can [pass environment variables](../development/broker-development.md#Specifying-additional-broker-environment-variables-in-a-Configuration) to the frame server broker to specify the format, resolution width/height, and frames per second of your cameras.
 2. Apply the [ONVIF Configuration](../discovery-handlers/onvif.md) and make the streaming app display footage from both the local video devices and onvif cameras. To do this, modify the [video streaming yaml](https://github.com/project-akri/akri/blob/main/deployment/samples/akri-video-streaming-app.yaml) as described in the inline comments in order to create a larger service that aggregates the output from both the `udev-camera-svc` service and `onvif-camera-svc` service.
 3. Add more nodes to the cluster.
 4. Modify the udev rule to find a more specific subset of cameras
