@@ -103,7 +103,7 @@ You tell Akri what you want to find with an Akri Configuration, which is one of 
 
 For this demo, we will specify 
 1. Akri's udev Discovery Handler, which is used to discover devices in the Linux device file system. Akri's udev Discovery Handler supports 
-2. filtering by udev rules. We want to find all mock USB cameras in the Linux device file system, which can be specified with a simple udev rule 'KERNEL=="video[0-9]*"'. It matches name of the mock USB cameras.
+2. filtering by udev rules. We want to find all mock USB cameras in the Linux device file system, which can be specified with a simple udev rule `KERNEL=="video[0-9]*"`. It matches name of the mock USB cameras.
 > Note, when real USB cameras are used, the filtering udev rule can be more precise to avoid mistaken device match. For example, a better rule is `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"` that adds a criteria on device capability. We may go further by adding criteria such as vendor name. An example is `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"\, ENV{ID_VENDOR}=="Great Vendor"`. In order to write correct rule, check output of "udevadm" command for USB cameras. A example is "udevadm info --query=all --name=video1".
 3. a broker Pod image, we will use a sample container that Akri has provided that pulls frames from the cameras and serves them over gRPC.
 
@@ -122,7 +122,7 @@ In order for the Agent to know how to discover video devices, the udev Discovery
         --set udev.discovery.enabled=true \
         --set udev.configuration.enabled=true \
         --set udev.configuration.name=akri-udev-video \
-        --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\' \
+        --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"' \
         --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker"
    ```
 
