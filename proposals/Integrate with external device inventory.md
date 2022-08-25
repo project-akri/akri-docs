@@ -22,13 +22,12 @@ The above issues can be resolved by allowing Akri getting additional device info
 The below workflow presents a new flow from discovering device till creating broker POD. Additional steps are highlighted as yellow color.
 <img src="../media/integrate-extenal-device-inventory-diagram.svg" style="padding-bottom: 10px padding-top: 20px; margin-right: auto; display: block; margin-left: auto;background-color:white"/>
 
-- Introduce a new setting that user can specify the name of a customized external device inventory POD or service, so Akri agent can request for additional device information. The proposed external device inventory POD/service must expose a REST POST API /queryDevice for Akri Agent to raise request.
-- Instead of directly creating Akri instance after Akri agent discovers new devices, Akri agent will query the external device inventory POD/service to get more device related information, including credential. 
-- Please note for protected ONVIF device, Akri agent should use the ONVIF credential to finish a successful discovery work, such as querying stream URI.
+- Introduce a new setting that user can specify a customized external device inventory POD or service, so Akri agent can request for additional device information. The proposed external device inventory POD/service must expose a REST POST API /queryDevice for Akri Agent to raise request.
+- Implement a new Akri Agent gRPC service: RequestDeviceInfo. During the procedure of discovering a new device, discovery handler can invoke Akri agent RequestDeviceInfo, and Akri agent will query external device inventory POD/service to get more device related information, including credential. Response device info will be fed back to device handler so it can continue device discovery step. For example, for protected ONVIF device, device discovery handler will use the ONVIF credential to query for camera's stream URI.
 
 This proposed external device inventory POD/service name should be set within each Akri configuration, so it is possible that different discovery config has specified external device inventory system. Another flag is proposed to define if the related external device inventory sytem is also device provisioning database. If it is provisioning database, when Akri agent can not fetch any record of a discovered device, it wont create Akri instance for this device. There wont be broker POD created neither for that device. 
 
-The external device inventory POD is not deployed by Akri but solution developer will take care. One possible implementation of the device inventory POD can be a POD with a mounted Azure Key Vault drive using AKV ARC extenstion. It can fetch device credential and assist Akri agent. The benefit is that device credential can be centrally managed from cloud.   
+The external device inventory POD is not deployed by Akri but solution developer will take care its creation. One possible implementation of the device inventory POD can be a POD with a mounted Azure Key Vault drive using AKV ARC extenstion. It can fetch device credential and assist Akri agent. The benefit is that device credential can be centrally managed from cloud.   
 
 
 ## Additional Usage 1: what if a device is undiscoverable but can be added manually
