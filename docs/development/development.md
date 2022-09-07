@@ -65,6 +65,12 @@ cargo version
     > Note: To test a specific component, use the `-p` parameter along with the [workspace member](https://github.com/project-akri/akri/blob/main/Cargo.toml). For example, to only test the Agent, run `cargo test -p agent`
 
 ## Running locally
+Before running Akri agent or controller locally, please ensure the Akri configuration and instance CRDs are applied to cluster, otherwise use the below command to apply them.
+```sh
+    kubectl apply -f akri/deployment/helm/crds/akri-configuration-crd.yaml
+    kubectl apply -f akri/deployment/helm/crds/akri-instance-crd.yaml
+```
+
 To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kubernetes cluster, follow these steps:
 
 1.  Create or provide access to a valid cluster configuration by setting `KUBECONFIG` (can be done in the command line) ...
@@ -90,6 +96,9 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
     cd akri/agent
     sudo -E DEBUG_ECHO_INSTANCES_SHARED=true ENABLE_DEBUG_ECHO=1 RUST_LOG=info METRICS_PORT=8082 KUBECONFIG=$HOME/.kube/config DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode HOST_CRICTL_PATH=/usr/bin/crictl HOST_RUNTIME_ENDPOINT=/var/run/dockershim.sock HOST_IMAGE_ENDPOINT=/var/run/dockershim.sock $HOME/.cargo/bin/cargo run
     ```
+    
+    > Note: `DISCOVERY_HANDLERS_DIRECTORY` is where Akri agent creates an unix domain socket for discovery handler's registeration. This example uses ~/tmp/akri that should exist or is created before executing this command.
+    
     By default, the Agent does not have embedded Discovery Handlers. To allow embedded Discovery Handlers in the
     Agent, turn on the `agent-full` feature and the feature for each Discovery Handler you wish to embed -- Debug echo
     is always included if `agent-full` is turned on. For example, to run the Agent with OPC UA, ONVIF, udev, and
@@ -114,7 +123,7 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
     shared or unshared devices. Run the debug echo Discovery Handler to discover mock unshared devices like so:
     ```sh
     cd akri/discovery-handler-modules/debug-echo-discovery-handler/
-    RUST_LOG=info DEBUG_ECHO_INSTANCES_SHARED=false DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode $HOME/.cargo/bin/cargo run
+    sudo -E RUST_LOG=info DEBUG_ECHO_INSTANCES_SHARED=false DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode $HOME/.cargo/bin/cargo run
     ```
 
 ## Building Containers
