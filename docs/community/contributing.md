@@ -37,6 +37,15 @@ To ensure that all product versioning is consistent, our CI builds will execute 
 
 > Note for MacOS users: `version.sh` uses the GNU `sed` command under-the-hood, but MacOS has built-in its own version. We recommend installing the GNU version via `brew install gnu-sed`. Then follow the brew instructions on how to use the installed GNU `sed` instead of the MacOS one.
 
+Alternatively, you could skip running `version.sh` file altogether. Once you make a pull request, you should comment any one of:
+
+* `/add-same-version-label` to not change version
+* `/version patch` for non-breaking bug fixes and small code changes
+* `/version minor` for non-breaking feature changes
+* `/version major` for major and/or breaking changes
+
+Commenting these commmands on your pull request will automatically update the version for you and push the changes to your pull request branch.
+
 ## Logging
 
 Akri follows similar logging conventions as defined by the [Tracing crate](https://docs.rs/tracing/0.1.22/tracing/struct.Level.html). When adding logging to new code, follow the verbosity guidelines.
