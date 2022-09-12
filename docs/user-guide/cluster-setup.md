@@ -126,7 +126,7 @@ Akri recommends setting this choice as an `AKRI_HELM_CRICTL_CONFIGURATION` envir
 The following are the recommended settings based on Kubernetes distribution.
 {% tabs %}
 {% tab title="Kubernetes" %}
-To use the default standard Kubernetes container runtime socket `/var/run/dockershim.sock`, set `k8s` as the distribution.
+To use the default standard Kubernetes container runtime socket `/run/containerd/containerd.sock`, set `k8s` as the distribution.
 ```sh
 export AKRI_HELM_CRICTL_CONFIGURATION="--set kubernetesDistro=k8s"
 ```
