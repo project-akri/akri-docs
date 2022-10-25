@@ -24,10 +24,10 @@ The majority of Akri is written in Rust. To install Rust and Akri's component's 
 ```sh
 ./build/setup.sh
 ```
-If you previously installed Rust ensure you are using the v1.61.0 toolchain that Akri's build system uses:
+If you previously installed Rust ensure you are using the v1.63.0 toolchain that Akri's build system uses:
 ```sh
-sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.61.0
-rustup default 1.61.0
+sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.63.0
+rustup default 1.63.0
 cargo version
 ``` 
 
@@ -39,14 +39,14 @@ cargo version
     ./build/setup.sh
     ```
 
-    If you previously installed Rust, ensure you are using the v1.61.0 toolchain that Akri's build system uses:
+    If you previously installed Rust, ensure you are using the v1.63.0 toolchain that Akri's build system uses:
     ```sh
-    sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.61.0
+    sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.63.0
     ``` 
-    Then, configure your current shell to see Cargo and set `v1.61.0` as default toolchain.
+    Then, configure your current shell to see Cargo and set `v1.63.0` as default toolchain.
     ```sh
     source $HOME/.cargo/env
-    rustup default 1.61.0
+    rustup default 1.63.0
     cargo version
     ```
 
@@ -94,7 +94,7 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
     
     ```sh
     cd akri/agent
-    sudo -E DEBUG_ECHO_INSTANCES_SHARED=true ENABLE_DEBUG_ECHO=1 RUST_LOG=info METRICS_PORT=8082 KUBECONFIG=$HOME/.kube/config DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode HOST_CRICTL_PATH=/usr/bin/crictl HOST_RUNTIME_ENDPOINT=/var/run/dockershim.sock HOST_IMAGE_ENDPOINT=/var/run/dockershim.sock $HOME/.cargo/bin/cargo run
+    sudo -E DEBUG_ECHO_INSTANCES_SHARED=true ENABLE_DEBUG_ECHO=1 RUST_LOG=info METRICS_PORT=8082 KUBECONFIG=$HOME/.kube/config DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode HOST_CRICTL_PATH=/usr/bin/crictl HOST_RUNTIME_ENDPOINT=/run/containerd/containerd.sock HOST_IMAGE_ENDPOINT=/run/containerd/containerd.sock $HOME/.cargo/bin/cargo run
     ```
     
     > Note: `DISCOVERY_HANDLERS_DIRECTORY` is where Akri agent creates an unix domain socket for discovery handler's registeration. This example uses ~/tmp/akri that should exist or is created before executing this command.
