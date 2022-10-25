@@ -94,7 +94,7 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
     
     ```sh
     cd akri/agent
-    sudo -E DEBUG_ECHO_INSTANCES_SHARED=true ENABLE_DEBUG_ECHO=1 RUST_LOG=info METRICS_PORT=8082 KUBECONFIG=$HOME/.kube/config DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode HOST_CRICTL_PATH=/usr/bin/crictl HOST_RUNTIME_ENDPOINT=/var/run/dockershim.sock HOST_IMAGE_ENDPOINT=/var/run/dockershim.sock $HOME/.cargo/bin/cargo run
+    sudo -E DEBUG_ECHO_INSTANCES_SHARED=true ENABLE_DEBUG_ECHO=1 RUST_LOG=info METRICS_PORT=8082 KUBECONFIG=$HOME/.kube/config DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode HOST_CRICTL_PATH=/usr/bin/crictl HOST_RUNTIME_ENDPOINT=/run/containerd/containerd.sock HOST_IMAGE_ENDPOINT=/run/containerd/containerd.sock $HOME/.cargo/bin/cargo run
     ```
     
     > Note: `DISCOVERY_HANDLERS_DIRECTORY` is where Akri agent creates an unix domain socket for discovery handler's registeration. This example uses ~/tmp/akri that should exist or is created before executing this command.
