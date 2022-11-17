@@ -106,15 +106,15 @@ Now, we must create some OPC UA PLC Servers to discover. Instead of starting fro
 
    If you are **using security**, mount the folder `plc` to `/app/pki/` inside the container:
    ```bash
-   docker run --rm -it -v path/to/plc:/app/pki -p 50000:50000 --name opcplc mcr.microsoft.com/iotedge/opc-plc:latest --pn=50000 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name
+   docker run --rm -it -v path/to/plc:/app/pki -p 50000:50000 --name opcplc1 mcr.microsoft.com/iotedge/opc-plc:latest --pn=50000 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name
 
-   docker run --rm -it -v path/to/plc:/app/pki -p 50001:50001 --name opcplc mcr.microsoft.com/iotedge/opc-plc:latest --pn=50001 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name
+   docker run --rm -it -v path/to/plc:/app/pki -p 50001:50001 --name opcplc2 mcr.microsoft.com/iotedge/opc-plc:latest --pn=50001 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name
    ```
    If you are **not using security**, pass in the flag `--ut` for unsecure transport:
    ```bash
-   docker run --rm -it -p 50000:50000 --name opcplc mcr.microsoft.com/iotedge/opc-plc:latest --pn=50000 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name --ut
+   docker run --rm -it -p 50000:50000 --name opcplc1 mcr.microsoft.com/iotedge/opc-plc:latest --pn=50000 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name --ut
 
-   docker run --rm -it -p 50001:50001 --name opcplc mcr.microsoft.com/iotedge/opc-plc:latest --pn=50001 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name --ut
+   docker run --rm -it -p 50001:50001 --name opcplc2 mcr.microsoft.com/iotedge/opc-plc:latest --pn=50001 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name --ut
    ```
 We have successfully created two OPC UA PLC servers, each with one fast PLC node which generates an **unsigned integer** with **lower bound = 65** and **upper bound = 85** at a **rate of 1**. It should be up and running.
 
