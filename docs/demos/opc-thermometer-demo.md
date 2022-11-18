@@ -122,6 +122,7 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
 ## Running Akri
 
 1. Make sure your OPC UA PLC Servers are running.
+
 2. Now it is time to install the Akri using Helm. When installing Akri, we can specify that we want to deploy the OPC UA
    Discovery Handlers by setting the helm value `opcua.discovery.enabled=true`. We also specify that we want to create
    an OPC UA Configuration with `--set opcua.configuration.enabled=true`. In the Configuration, any values that should
@@ -130,7 +131,8 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
    our temperature variable we made earlier, which has an `Identifier` of `FastUInt1` and `NamespaceIndex`
    of `2`. Your OPC PLC discovery URL will look something like `"opc.tcp://<host IP address>:50000/`. If using security, uncomment `--set opcua.configuration.mountCertificates='true'`.
 
-   > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+    > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+
     
    ```bash 
    helm repo add akri-helm-charts https://project-akri.github.io/akri/
@@ -146,7 +148,9 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
       --set opcua.configuration.discoveryDetails.discoveryUrls[1]="opc.tcp://<HOST IP>:50001/" \
       # --set opcua.configuration.mountCertificates='true'
    ```
-
+       
+   >Note: `FastUInt1` is the identifier of the [fast changing node](https://github.com/Azure-Samples/iot-edge-opc-plc#slow-and-fast-changing-nodes) that is provided by the OPC PLC server. 
+   
    Akri Agent will discover the two Servers and create an Instance for each Server. Watch two broker pods spin up, one for each Server.
 
    ```bash
