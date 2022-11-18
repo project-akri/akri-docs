@@ -78,11 +78,11 @@ When mounting certificates is enabled later in the [Running Akri section](opc-th
 ## Creating OPC UA Servers
 
 Now, we must create some OPC UA PLC Servers to discover. Instead of starting from scratch, we spin up OPC PLC server containers.
+1. Download docker on the machine running the OPC PLC server if not already:
+   ```bash
+   sudo snap install docker
+   ```
 
-1.	Download docker on the machine running the OPC PLC server if not already:
-      ```bash
-      sudo snap install docker 
-      ```
 2. Pull the server image from Microsoft Container Registry (MCR):
    ```bash
    sudo docker pull mcr.microsoft.com/iotedge/opc-plc:latest
