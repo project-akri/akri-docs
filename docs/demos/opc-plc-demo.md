@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Discovering and Using OPC UA Thermometers
 
 OPC UA is a communication protocol for industrial automation. It is a client/server technology that comes with a security and communication framework. This demo will help you get started using Akri to discover OPC UA Servers and utilize them via a broker that contains an OPC UA Client. Specifically, a Akri Configuration called OPC UA Monitoring was created for this scenario, which will show how Akri can be used to detect anomaly values of a specific OPC UA Variable. To do so, the OPC UA Clients in the brokers will subscribe to that variable and serve its value over gRPC for an anomaly detection web application to consume. This Configuration could be used to monitor a barometer, CO detector, and more; however, for this example, that variable will represent the temperature of a thermostat and any value outside the range of 70-80 degrees is an anomaly.
@@ -7,6 +8,17 @@ The demo consists of the following components:
 1. Two .NET OPC UA Servers with a temperature variable
 2. (Optional) Certificates for the Servers and Akri brokers
 3. An OPC UA Monitoring broker that contains an OPC UA Client that subscribes to a specific NodeID (for that temperature variable)
+=======
+# Discovering and Using OPC UA PLC Servers
+
+OPC UA is a communication protocol for industrial automation. It is a client/server technology that comes with a security and communication framework. This demo will help you get started using Akri to discover OPC UA PLC Servers and utilize them via a broker that contains an OPC UA Client. Specifically, a Akri Configuration called OPC UA Monitoring was created for this scenario, which will show how Akri can be used to detect anomaly values of a specific OPC UA Variable. To do so, the OPC UA Clients in the brokers will subscribe to that variable and serve its value over gRPC for an anomaly detection web application to consume. This Configuration could be used to monitor a barometer, CO detector, and more; however, for this example, that variable will represent the PLC values for temperature of a thermostat and any value outside the range of 70-80 degrees is an anomaly.
+
+The demo consists of the following components: 
+
+1. Two OPC UA PLC Servers
+2. (Optional) Certificates for the Servers and Akri brokers
+3. An OPC UA Monitoring broker that contains an OPC UA Client that subscribes to a specific NodeID (for that PLC variable)
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 4. Akri installation
 5. An anomaly detection web application
 
@@ -18,11 +30,24 @@ The demo consists of the following components:
 2. Agent sees the OPC UA Configuration, discovers the servers specified in the Configuration, and creates an Instance for each server.
 3. The Akri Controller sees the Instances in etcd and schedules an OPC UA Monitoring broker pod for each server.
 4. Once the OPC UA Monitoring broker pod starts up, it will create an OPC UA Client that will create a secure channel with its server.
+<<<<<<< HEAD
 5. The OPC UA Client will subscribe to the OPC UA Variable with the NodeID with `Identifier` "Thermometer\_Temperature" and `NamespaceIndex` 2 as specified in the OPC UA Configuration. The server will publish any time the value of that variable changes.
 6. The OPC UA Monitoring broker will serve over gRPC the latest value of the OPC UA Variable and the address of the OPC UA Server that published the value.
 7. The anomaly detection web application will test whether that value is an outlier to its pre-configured dataset. It then will display a log of the values on a web application, showing outliers in red and normal values in green.
 
 The following steps need to be completed to run the demo: 1. Setting up a single-node cluster 1. (Optional) Creating X.509 v3 Certificates for the servers and Akri broker and storing them in a Kubernetes Secret 1. Creating two OPC UA Servers 1. Running Akri 1. Deploying an anomaly detection web application as an end consumer of the brokers
+=======
+5. The OPC UA Client will subscribe to the OPC UA Variable with the NodeID with `Identifier` "FastUInt1" and `NamespaceIndex` 2 as specified in the OPC UA Configuration. The server will publish any time the value of that variable changes.
+6. The OPC UA Monitoring broker will serve over gRPC the latest value of the OPC UA Variable and the address of the OPC UA Server that published the value.
+7. The anomaly detection web application will test whether that value is an outlier to its pre-configured dataset. It then will display a log of the values on a web application, showing outliers in red and normal values in green.
+
+The following steps need to be completed to run the demo: 
+- [Setting up a single-node cluster ](#setting-up-a-cluster)
+- [(Optional) Creating X.509 v3 Certificates for the servers and Akri broker and storing them in a Kubernetes Secret](#creating-x509-v3-certificates)
+- [Creating two OPC UA Servers](#creating-opc-ua-servers)
+- [Running Akri](#running-akri)
+- [Deploying an anomaly detection web application as an end consumer of the brokers](#deploying-an-anomaly-detection-web-application-as-an-end-consumer-of-the-brokers)
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 
 If at any point in the demo, you want to dive deeper into OPC UA or clarify a term, you can reference the [online OPC UA specifications](https://reference.opcfoundation.org/v104/).
 
@@ -32,7 +57,11 @@ Reference our [cluster setup documentation](../user-guide/cluster-setup.md) to s
 
 ## Creating X.509 v3 Certificates
 
+<<<<<<< HEAD
 **If security is not desired, this section can be skipped, as each monitoring broker will use an OPC UA Security Policy of None if it cannot find credentials mounted in its pod.**
+=======
+**If security is not desired, skip to [Creating OPC UA Servers](#creating-opc-ua-servers), as each monitoring broker will use an OPC UA Security Policy of None if it cannot find credentials mounted in its pod.**
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 
 Akri will deploy an OPC UA Monitoring broker for each OPC UA Server a node in the cluster can see. This broker contains an OPC UA Client that will need the proper credentials in order to communicate with the OPC UA Server in a secure fashion. Specifically, before establishing a session, an OPC UA Client and Server must create a secure channel over the communication layer to ensure message integrity, confidentiality, and application authentication. Proper application credentials in the form of X.509 v3 certificates are needed for application authentication.
 
@@ -58,7 +87,11 @@ through](https://github.com/OPCFoundation/Misc-Tools)).
 
 ### Creating an opcua-broker-credentials Kubernetes Secret
 
+<<<<<<< HEAD
 The OPC UA Client certificate will be passed to the OPC UA Monitoring broker as a Kubernetes Secret mounted as a volume. Read more about the decision to use Kubernetes secrets to pass the Client certificates in the [Credentials Passing Proposal](../../proposals/credentials-passing.md). Create a Kubernetes Secret, projecting each certificate/crl/private key with the expected key name (ie `client_certificate`, `client_key`, `ca_certificate`, and `ca_crl`). Specify the file paths such that they point to the credentials made in the previous section.
+=======
+The OPC UA Client certificate will be passed to the OPC UA Monitoring broker as a Kubernetes Secret mounted as a volume. Read more about the decision to use Kubernetes secrets to pass the Client certificates in the [Credentials Passing Proposal](../../proposals/credentials-passing.md). Create a Kubernetes Secret, projecting each certificate/crl/private key with the expected key name (i.e. `client_certificate`, `client_key`, `ca_certificate`, and `ca_crl`). Specify the file paths such that they point to the credentials made in the previous section.
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 
 ```bash
 kubectl create secret generic opcua-broker-credentials \
@@ -72,6 +105,7 @@ When mounting certificates is enabled later in the [Running Akri section](opc-th
 
 ## Creating OPC UA Servers
 
+<<<<<<< HEAD
 Now, we must create some OPC UA Servers to discover. Instead of starting from scratch, we make some small modifications to the OPC Foundation's .NET Console Reference Server.
 
 1. Clone the [repository](https://github.com/OPCFoundation/UA-.NETStandard) at the tag at which this demo was made:
@@ -116,6 +150,12 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
 6. Repeat all the steps above to create a second OPC UA Server, using SomeServer1 certificates for step 4 if using security. In step 3, be sure your servers have different base address by modifying the port or running the second Server on a different host.
 
 =======
+=======
+Now, we must create some OPC UA PLC Servers to discover. Instead of starting from scratch, we deploy OPC PLC server containers.
+
+1. Create an empty YAML file called `opc-deployment.yaml`. 
+
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 2. (Optional) If you are using security, place the OpcPlc certificate and the CA certificate as below.
 
    ```
@@ -137,6 +177,60 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
    apiVersion: apps/v1
    kind: Deployment
    metadata:
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:docs/demos/opc-thermometer-demo.md
+   name: opcplc
+   labels:
+      app: opcplc
+   spec:
+   selector:
+      matchLabels:
+         app: opcplc
+   template:
+      metadata:
+         labels: 
+         app: opcplc
+         name: opc-plc-server
+      spec:
+         hostNetwork: true
+         containers:
+         - name: opcplc1
+           image: mcr.microsoft.com/iotedge/opc-plc:latest
+           ports:
+         - containerPort: 50000
+         args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--ut", "--sph"]
+         - name: opcplc2
+           image: mcr.microsoft.com/iotedge/opc-plc:latest
+           ports:
+         - containerPort: 50001
+         args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--ut", "--sph"]
+   ```
+
+   (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
+
+      ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+   name: opcplc
+   labels:
+      app: opcplc
+   spec:
+   selector:
+      matchLabels:
+         app: opcplc
+   template:
+      metadata:
+         labels: 
+         app: opcplc
+         name: opc-plc-server
+      spec:
+         hostNetwork: true
+         containers:
+         - name: opcplc1
+========
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
      name: opcplc
      labels:
        app: opcplc
@@ -153,15 +247,42 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
        hostNetwork: true
        containers:
        - name: opcplc1
+<<<<<<< HEAD
+=======
+>>>>>>>> b6caee2da31c67493414c5d84604bec660517c53:docs/demos/opc-plc-demo.md
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
          image: mcr.microsoft.com/iotedge/opc-plc:latest
          ports:
          - containerPort: 50000
          args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+<<<<<<< HEAD
        - name: opcplc2
+=======
+<<<<<<<< HEAD:docs/demos/opc-thermometer-demo.md
+         volumeMounts:
+         - mountPath: /app/pki
+            name: opc-certs
+         - name: opcplc2
+========
+       - name: opcplc2
+>>>>>>>> b6caee2da31c67493414c5d84604bec660517c53:docs/demos/opc-plc-demo.md
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
          image: mcr.microsoft.com/iotedge/opc-plc:latest
          ports:
          - containerPort: 50001
          args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:docs/demos/opc-thermometer-demo.md
+         volumeMounts:
+         - mountPath: /app/pki
+            name: opc-certs
+         volumes:
+         - name: opc-certs
+            hostPath:
+               path: <path/to/plc>
+========
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
    ```
    (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
 
@@ -204,12 +325,17 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
         - name: opc-certs
           hostPath:
             path: <path/to/plc>
+<<<<<<< HEAD
+=======
+>>>>>>>> b6caee2da31c67493414c5d84604bec660517c53:docs/demos/opc-plc-demo.md
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
    ```
 4. Save the file, then simply apply your deployment YAML to create two OPC UA servers.
 
    ```bash
    kubectl apply -f opc-deployment.yaml
    ```
+<<<<<<< HEAD
    
 We have successfully created two OPC UA PLC servers, each with one fast PLC node which generates an **unsigned integer** with **lower bound = 65** and **upper bound = 85** at a **rate of 1**. It should be up and running.
 
@@ -217,11 +343,25 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
 ## Running Akri
 
 1. Make sure your OPC UA Servers are running
+=======
+<<<<<<<< HEAD:docs/demos/opc-thermometer-demo.md
+
+========
+   
+>>>>>>>> b6caee2da31c67493414c5d84604bec660517c53:docs/demos/opc-plc-demo.md
+We have successfully created two OPC UA PLC servers, each with one fast PLC node which generates an **unsigned integer** with **lower bound = 65** and **upper bound = 85** at a **rate of 1**. It should be up and running.
+
+## Running Akri
+
+1. Make sure your OPC UA PLC Servers are running.
+
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 2. Now it is time to install the Akri using Helm. When installing Akri, we can specify that we want to deploy the OPC UA
    Discovery Handlers by setting the helm value `opcua.discovery.enabled=true`. We also specify that we want to create
    an OPC UA Configuration with `--set opcua.configuration.enabled=true`. In the Configuration, any values that should
    be set as environment variables in brokers can be set in `opcua.configuration.brokerProperties`. In this scenario, we
    will specify the `Identifier` and `NamespaceIndex` of the NodeID we want the brokers to monitor. In our case that is
+<<<<<<< HEAD
    our temperature variable we made earlier, which has an `Identifier` of `Thermometer_Temperature` and `NamespaceIndex`
    of `2`. Finally, since we did not set up a Local Discovery Server -- see [Setting up and using a Local Discovery
    Server](#setting-up-and-using-a-local-discovery-server-(windows-only)) in the Extensions section at the bottom of
@@ -260,6 +400,42 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
    * If OPC UA Servers were discovered and pods spun up, the instances can be seen by running `kubectl get akrii` and
 
      further inspected by running `kubectl get akrii akri-opcua-monitoring-<ID> -o yaml`
+=======
+   our temperature variable we made earlier, which has an `Identifier` of `FastUInt1` and `NamespaceIndex`
+   of `2`. Your OPC PLC discovery URL will look something like `"opc.tcp://<host IP address>:50000/`. If using security, uncomment `--set opcua.configuration.mountCertificates='true'`.
+
+    > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
+
+    
+   ```bash 
+   helm repo add akri-helm-charts https://project-akri.github.io/akri/
+   helm install akri akri-helm-charts/akri \
+      $AKRI_HELM_CRICTL_CONFIGURATION \
+      --set opcua.discovery.enabled=true \
+      --set opcua.configuration.enabled=true \
+      --set opcua.configuration.name=akri-opcua-monitoring \
+      --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
+      --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
+      --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
+      --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<HOST IP>:50000/" \
+      --set opcua.configuration.discoveryDetails.discoveryUrls[1]="opc.tcp://<HOST IP>:50001/" \
+      # --set opcua.configuration.mountCertificates='true'
+   ```
+       
+   >Note: `FastUInt1` is the identifier of the [fast changing node](https://github.com/Azure-Samples/iot-edge-opc-plc#slow-and-fast-changing-nodes) that is provided by the OPC PLC server. 
+   
+   Akri Agent will discover the two Servers and create an Instance for each Server. Watch two broker pods spin up, one for each Server.
+
+   ```bash
+   kubectl get pods -o wide --watch
+   ```
+
+To inspect more of the elements of Akri:
+
+   * Run `kubectl get crd`, and you should see the CRDs listed.
+   * Run `kubectl get akric`, and you should see `akri-opcua-monitoring`. 
+   * If the OPC PLC Servers were discovered and pods spun up, the instances can be seen by running `kubectl get akrii` and further inspected by running `kubectl get akrii akri-opcua-monitoring-<ID> -o yaml`
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 
 ## Deploying an anomaly detection web application as an end consumer of the brokers
 
@@ -272,7 +448,11 @@ A sample anomaly detection web application was created for this end-to-end demo.
    kubectl apply -f https://raw.githubusercontent.com/project-akri/akri/main/deployment/samples/akri-anomaly-detection-app.yaml
    ```
 
+<<<<<<< HEAD
    ```sh
+=======
+   ```bash
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
    kubectl get pods -o wide --watch
    ```
 
@@ -316,6 +496,15 @@ A sample anomaly detection web application was created for this end-to-end demo.
     kubectl delete crd configurations.akri.sh
    ```
 
+<<<<<<< HEAD
+=======
+4. Delete the OPC UA server deployment.
+
+   ```bash
+   kubectl delete -f opc-deployment.yaml
+   ```
+
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 ## Extensions
 
 Now that you have the end to end demo running let's talk about some ways you can go beyond the demo to better understand the advantages of Akri. This section will cover: 
@@ -333,7 +522,11 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
 1. Confirm that you have successfully added a node to the cluster by running the following in your control plane VM:
 
    ```bash
+<<<<<<< HEAD
       kubectl get no
+=======
+   kubectl get no
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
    ```
 
 2. You can see that another Agent pod has been deployed to the new node; however, no new OPC UA Monitoring brokers have been deployed. This is because the default `capacity` for OPC UA is 1, so by default only one Node is allowed to utilize a device via a broker.
@@ -342,6 +535,7 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
    kubectl get pods -o wide
    ```
 
+<<<<<<< HEAD
 3. Let's play around with the capacity value and use the `helm upgrade` command to modify our OPC UA Monitoring Configuration such that the capacity is 2. On the control plane node, run the following, once again uncommenting `--set opcua.configuration.mountCertificates='true'` if using security. Watch as the broker terminates and then four
 
    come online in a Running state.
@@ -366,17 +560,48 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
 4. Once you are done using Akri, you can remove your worker node from the cluster. For MicroK8s this is done by running
 
    on the worker node:
+=======
+3. Let's play around with the capacity value and use the `helm upgrade` command to modify our OPC UA Monitoring Configuration such that the capacity is 2. On the control plane node, run the following, once again uncommenting `--set opcua.configuration.mountCertificates='true'` if using security. Watch as the broker terminates and then four come online in a Running state.
+
+   ```bash
+   helm upgrade akri akri-helm-charts/akri \
+      $AKRI_HELM_CRICTL_CONFIGURATION \
+      --set opcua.discovery.enabled=true \
+      --set opcua.configuration.enabled=true \
+      --set opcua.configuration.name=akri-opcua-monitoring \
+      --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
+      --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
+      --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
+      --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<HOST IP>:50000/" \
+      --set opcua.configuration.discoveryDetails.discoveryUrls[1]="opc.tcp://<HOST IP>:50001/" \
+      --set opcua.capacity=2 \
+      # --set opcua.configuration.mountCertificates='true'
+   ```
+
+   ```bash
+   watch kubectl get pods,akrii -o wide
+   ```
+
+4. Once you are done using Akri, you can remove your worker node from the cluster. For MicroK8s this is done by running on the worker node:
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 
    ```bash
    microk8s leave
    ```
 
+<<<<<<< HEAD
    Then, to complete the node removal, on the host run the following, inserting the name of the worker node (you can
 
    look it up with `microk8s kubectl get no`):
 
    ```bash
       microk8s remove-node <node name>
+=======
+   Then, to complete the node removal, on the host run the following, inserting the name of the worker node (you can look it up with `microk8s kubectl get no`):
+
+   ```bash
+   microk8s remove-node <node name>
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
    ```
 
 ### Setting up and using a Local Discovery Server (Windows Only)
@@ -385,7 +610,11 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
 
 A Local Discovery Server (LDS) is a unique type of OPC UA server which maintains a list of OPC UA servers that have registered with it. The OPC UA Configuration takes in a list of DiscoveryURLs, whether for LDSes or a specific servers. Rather than having to pass in the DiscoveryURL for every OPC UA Server you want Akri to discover and deploy brokers to, you can set up a Local Discovery Server on the machine your servers are running on, make the servers register with the LDS on start up, and pass only the LDS DiscoveryURL into the OPC UA Monitoring Configuration. Agent will ask the LDS for the addresses of all the servers registered with it and the demo continues as it would've without an LDS.
 
+<<<<<<< HEAD
 The OPC Foundation has provided a Windows based LDS executable which can be downloaded from their [website](https://opcfoundation.org/developer-tools/samples-and-tools-unified-architecture/local-discovery-server-lds/). Download version 1.03.401. It runs as a background service on Windows and can be started or stopped under Windows -&gt; Services. The OPC Foundation has provided [documentation](https://apps.opcfoundation.org/LDS/) on configuring your LDS. Most importantly, it states that you must add the LDS executable to your firewall as an inbound rule. The .NET OPC UA Console Servers that we set up previously are already configured to register with the LDS on its host at the default address [from OPC UA Specification 12](https://reference.opcfoundation.org/v104/Core/docs/Part6/7.6/) of `opc.tcp://localhost:4840/`. This is seen on line 205 of `Quickstarts.ReferenceServer.xml`.
+=======
+The OPC Foundation has provided a Windows based LDS executable which can be downloaded from their [website](https://opcfoundation.org/developer-tools/samples-and-tools-unified-architecture/local-discovery-server-lds/). Download version 1.03.401. It runs as a background service on Windows and can be started or stopped under Windows -&gt; Services. The OPC Foundation has provided [documentation](https://apps.opcfoundation.org/LDS/) on configuring your LDS. Most importantly, it states that you must add the LDS executable to your firewall as an inbound rule. 
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
 
 Make sure you have restarted your OPC UA Servers, since they attempt to register with their LDS on start up. Now, we can install Akri with the OPC UA Configuration, passing in the LDS DiscoveryURL instead of both servers' DiscoveryURLs. Replace "Windows host IP address" with the IP address of the Windows machine you installed the LDS on (and is hosting the servers). Be sure to uncomment mounting certificates if you are enabling security:
 
@@ -396,7 +625,11 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
     --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
+<<<<<<< HEAD
     --set opcua.configuration.brokerProperties.IDENTIFIER='Thermometer_Temperature' \
+=======
+    --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
     --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \
     # --set opcua.configuration.mountCertificates='true'
@@ -419,7 +652,11 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
     --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
+<<<<<<< HEAD
     --set opcua.configuration.brokerProperties.IDENTIFIER='Thermometer_Temperature' \
+=======
+    --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
     --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \
     --set opcua.configuration.discoveryDetails.applicationNames.action=Exclude \
@@ -438,7 +675,11 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
     --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/opcua-monitoring-broker" \
+<<<<<<< HEAD
     --set opcua.configuration.brokerProperties.IDENTIFIER='Thermometer_Temperature' \
+=======
+    --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
     --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \
     --set opcua.configuration.discoveryDetails.applicationNames.action=Include \
@@ -456,8 +697,13 @@ helm install akri akri-helm-charts/akri \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
+<<<<<<< HEAD
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<IP address>:<port>/" \
     --set opcua.configuration.discoveryDetails.discoveryUrls[1]="opc.tcp://<IP address>:<port>/" \
+=======
+    --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<HOST IP>:50000/" \
+    --set opcua.configuration.discoveryDetails.discoveryUrls[1]="opc.tcp://<HOST IP>:50001/" \
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53
     --set opcua.configuration.brokerPod.image.repository='ghcr.io/<USERNAME>/opcua-broker'
     # --set opcua.configuration.mountCertificates='true'
 ```
@@ -469,4 +715,7 @@ Now, your broker will be deployed to all discovered OPC UA servers. Next, you ca
 ### Creating a new OPC UA Configuration
 
 Helm allows us to parametrize the commonly modified fields in our Configuration files, and we have provided many. Run `helm inspect values akri-helm-charts/akri` to see what values of the generic OPC UA Configuration can be customized, such as the Configuration and Instance `ServiceSpec`s, `capacity`, and broker `PodSpec`. We saw in the previous section how broker Pod environment variables can be specified via `--set opcua.configuration.brokerProperties.KEY='VALUE'`. For more advanced configuration changes that are not aided by the generic OPC UA Configuration Helm chart, such as credentials naming, we suggest downloading the OPC UA Configuration file using Helm and then manually modifying it. See the documentation on [customizing an Akri installation](../user-guide/customizing-an-akri-installation.md) for more details.
+<<<<<<< HEAD
 
+=======
+>>>>>>> b6caee2da31c67493414c5d84604bec660517c53

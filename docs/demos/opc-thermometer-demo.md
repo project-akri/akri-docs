@@ -102,83 +102,81 @@ Now, we must create some OPC UA PLC Servers to discover. Instead of starting fro
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-   name: opcplc
-   labels:
-      app: opcplc
+     name: opcplc
+     labels:
+       app: opcplc
    spec:
-   selector:
-      matchLabels:
+     selector:
+       matchLabels:
          app: opcplc
    template:
-      metadata:
-         labels: 
+     metadata:
+       labels: 
          app: opcplc
          name: opc-plc-server
-      spec:
-         hostNetwork: true
-         containers:
-         - name: opcplc1
-           image: mcr.microsoft.com/iotedge/opc-plc:latest
-           ports:
-         - containerPort: 50000
-         args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--ut", "--sph"]
-         - name: opcplc2
-           image: mcr.microsoft.com/iotedge/opc-plc:latest
-           ports:
-         - containerPort: 50001
-         args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--ut", "--sph"]
-   ```
-
-   (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
-
-      ```yaml
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-   name: opcplc
-   labels:
-      app: opcplc
-   spec:
-   selector:
-      matchLabels:
-         app: opcplc
-   template:
-      metadata:
-         labels: 
-         app: opcplc
-         name: opc-plc-server
-      spec:
-         hostNetwork: true
-         containers:
-         - name: opcplc1
+     spec:
+       hostNetwork: true
+       containers:
+       - name: opcplc1
          image: mcr.microsoft.com/iotedge/opc-plc:latest
          ports:
          - containerPort: 50000
          args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
-         volumeMounts:
-         - mountPath: /app/pki
-            name: opc-certs
-         - name: opcplc2
+       - name: opcplc2
          image: mcr.microsoft.com/iotedge/opc-plc:latest
          ports:
          - containerPort: 50001
          args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
-         volumeMounts:
-         - mountPath: /app/pki
-            name: opc-certs
-         volumes:
-         - name: opc-certs
-            hostPath:
-               path: <path/to/plc>
+   ```
+   (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
+
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: opcplc
+     labels:
+       app: opcplc
+   spec:
+     selector:
+       matchLabels:
+         app: opcplc
+   template:
+     metadata:
+       labels: 
+         app: opcplc
+         name: opc-plc-server
+     spec:
+       hostNetwork: true
+       containers:
+      - name: opcplc1
+        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        ports:
+        - containerPort: 50000
+        args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+        volumeMounts:
+        - mountPath: /app/pki
+          name: opc-certs
+      - name: opcplc2
+        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        ports:
+        - containerPort: 50001
+        args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+        volumeMounts:
+        - mountPath: /app/pki
+          name: opc-certs
+      volumes:
+        - name: opc-certs
+          hostPath:
+            path: <path/to/plc>
    ```
 4. Save the file, then simply apply your deployment YAML to create two OPC UA servers.
 
    ```bash
    kubectl apply -f opc-deployment.yaml
    ```
-
+   
 We have successfully created two OPC UA PLC servers, each with one fast PLC node which generates an **unsigned integer** with **lower bound = 65** and **upper bound = 85** at a **rate of 1**. It should be up and running.
-
 
 ## Running Akri
 
