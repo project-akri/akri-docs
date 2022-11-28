@@ -76,6 +76,7 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
 
 1. Clone the [repository](https://github.com/OPCFoundation/UA-.NETStandard) at the tag at which this demo was made:
 
+<<<<<<< HEAD
    ```sh
       git clone -b "1.4.363.49" https://github.com/OPCFoundation/UA-.NETStandard.git --single-branch
    ```
@@ -114,6 +115,105 @@ Now, we must create some OPC UA Servers to discover. Instead of starting from sc
 
 6. Repeat all the steps above to create a second OPC UA Server, using SomeServer1 certificates for step 4 if using security. In step 3, be sure your servers have different base address by modifying the port or running the second Server on a different host.
 
+=======
+2. (Optional) If you are using security, place the OpcPlc certificate and the CA certificate as below.
+
+   ```
+   plc
+   ├── own
+   │   ├── certs
+   │   │   └── OpcPlc [hash].der
+   │   └── private
+   │       └── OpcPlc [hash].pfx
+   └── trusted
+      ├── certs
+      │   └── someCA.der
+      └── crl
+         └── someCA.crl
+   ```
+3. (A) If you are not using security, copy and paste the contents below into the YAML file.
+
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: opcplc
+     labels:
+       app: opcplc
+   spec:
+     selector:
+       matchLabels:
+         app: opcplc
+   template:
+     metadata:
+       labels: 
+         app: opcplc
+         name: opc-plc-server
+     spec:
+       hostNetwork: true
+       containers:
+       - name: opcplc1
+         image: mcr.microsoft.com/iotedge/opc-plc:latest
+         ports:
+         - containerPort: 50000
+         args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+       - name: opcplc2
+         image: mcr.microsoft.com/iotedge/opc-plc:latest
+         ports:
+         - containerPort: 50001
+         args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+   ```
+   (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
+
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: opcplc
+     labels:
+       app: opcplc
+   spec:
+     selector:
+       matchLabels:
+         app: opcplc
+   template:
+     metadata:
+       labels: 
+         app: opcplc
+         name: opc-plc-server
+     spec:
+       hostNetwork: true
+       containers:
+      - name: opcplc1
+        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        ports:
+        - containerPort: 50000
+        args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+        volumeMounts:
+        - mountPath: /app/pki
+          name: opc-certs
+      - name: opcplc2
+        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        ports:
+        - containerPort: 50001
+        args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+        volumeMounts:
+        - mountPath: /app/pki
+          name: opc-certs
+      volumes:
+        - name: opc-certs
+          hostPath:
+            path: <path/to/plc>
+   ```
+4. Save the file, then simply apply your deployment YAML to create two OPC UA servers.
+
+   ```bash
+   kubectl apply -f opc-deployment.yaml
+   ```
+   
+We have successfully created two OPC UA PLC servers, each with one fast PLC node which generates an **unsigned integer** with **lower bound = 65** and **upper bound = 85** at a **rate of 1**. It should be up and running.
+
+>>>>>>> b6caee2 (fixed indents)
 ## Running Akri
 
 1. Make sure your OPC UA Servers are running
