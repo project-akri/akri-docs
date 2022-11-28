@@ -128,6 +128,7 @@ Now, we must create some OPC UA PLC Servers to discover. Instead of starting fro
          - containerPort: 50001
          args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--ut", "--sph"]
    ```
+4. Open two terminals and run the OPC PLC servers with different ports:
 
    (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
 
