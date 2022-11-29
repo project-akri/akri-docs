@@ -12,7 +12,7 @@ The demo consists of the following components:
 
 ## Demo Flow
 
-![](../../media/opcua-demo-diagram.svg)
+![](../../media/updated-opcua-demo-diagram.svg)
 
 1. An operator (meaning you!) applies to a single-node cluster the OPC UA Configuration, which specifies the addresses of the OPC UA Servers, which OPC UA Variable to monitor, and whether to use security.
 2. Agent sees the OPC UA Configuration, discovers the servers specified in the Configuration, and creates an Instance for each server.
@@ -77,47 +77,106 @@ When mounting certificates is enabled later in the [Running Akri section](opc-th
 
 ## Creating OPC UA Servers
 
-Now, we must create some OPC UA PLC Servers to discover. Instead of starting from scratch, we spin up OPC PLC server containers.
-1. Download docker on the machine running the OPC PLC server if not already:
-   ```bash
-   sudo snap install docker
-   ```
+Now, we must create some OPC UA PLC Servers to discover. Instead of starting from scratch, we deploy OPC PLC server containers.
 
-2. Pull the server image from Microsoft Container Registry (MCR):
-   ```bash
-   sudo docker pull mcr.microsoft.com/iotedge/opc-plc:latest
-   ```
+1. Create an empty YAML file called `opc-deployment.yaml`. 
 
-3. (Optional) If using security, place the OpcPlc certificate and the CA certificate as below:
-   ```bash
+2. (Optional) If you are using security, place the OpcPlc certificate and the CA certificate as below.
+
+   ```
    plc
    ├── own
-   │   ├── certs
-   │   │   └── OpcPlc [hash].der
-   │   └── private
-   │       └── OpcPlc [hash].pfx
+   │   ├── certs
+   │   │   └── OpcPlc [hash].der
+   │   └── private
+   │       └── OpcPlc [hash].pfx
    └── trusted
       ├── certs
-      │   └── SomeCA.der
+      │   └── someCA.der
       └── crl
-         └── SomeCA.crl
+         └── someCA.crl
    ```
-4. Open two terminals and run the OPC PLC servers with different ports:
+3. (A) If you are not using security, copy and paste the contents below into the YAML file.
 
-   If you are **using security**, mount the folder `plc` to `/app/pki/` inside the container:
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: opcplc
+     labels:
+       app: opcplc
+   spec:
+     selector:
+       matchLabels:
+         app: opcplc
+   template:
+     metadata:
+       labels: 
+         app: opcplc
+         name: opc-plc-server
+     spec:
+       hostNetwork: true
+       containers:
+       - name: opcplc1
+         image: mcr.microsoft.com/iotedge/opc-plc:latest
+         ports:
+         - containerPort: 50000
+         args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+       - name: opcplc2
+         image: mcr.microsoft.com/iotedge/opc-plc:latest
+         ports:
+         - containerPort: 50001
+         args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+   ```
+   (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
+
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: opcplc
+     labels:
+       app: opcplc
+   spec:
+     selector:
+       matchLabels:
+         app: opcplc
+   template:
+     metadata:
+       labels: 
+         app: opcplc
+         name: opc-plc-server
+     spec:
+       hostNetwork: true
+       containers:
+       - name: opcplc1
+         image: mcr.microsoft.com/iotedge/opc-plc:latest
+         ports:
+         - containerPort: 50000
+         args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+         volumeMounts:
+         - mountPath: /app/pki
+           name: opc-certs
+       - name: opcplc2
+         image: mcr.microsoft.com/iotedge/opc-plc:latest
+         ports:
+         - containerPort: 50001
+         args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+         volumeMounts:
+         - mountPath: /app/pki
+           name: opc-certs
+       volumes:
+         - name: opc-certs
+           hostPath:
+             path: <path/to/plc>
+   ```
+4. Save the file, then simply apply your deployment YAML to create two OPC UA servers.
+
    ```bash
-   docker run --rm -it -v path/to/plc:/app/pki -p 50000:50000 --name opcplc1 mcr.microsoft.com/iotedge/opc-plc:latest --pn=50000 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name
-
-   docker run --rm -it -v path/to/plc:/app/pki -p 50001:50001 --name opcplc2 mcr.microsoft.com/iotedge/opc-plc:latest --pn=50001 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name
+   kubectl apply -f opc-deployment.yaml
    ```
-   If you are **not using security**, pass in the flag `--ut` for unsecure transport:
-   ```bash
-   docker run --rm -it -p 50000:50000 --name opcplc1 mcr.microsoft.com/iotedge/opc-plc:latest --pn=50000 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name --ut
-
-   docker run --rm -it -p 50001:50001 --name opcplc2 mcr.microsoft.com/iotedge/opc-plc:latest --pn=50001 --fn=1 --fr=1 --ft=uint --ftl=65 --ftu=85 --ftr=True -aa --ph=your-machine-name --ut
-   ```
+   
 We have successfully created two OPC UA PLC servers, each with one fast PLC node which generates an **unsigned integer** with **lower bound = 65** and **upper bound = 85** at a **rate of 1**. It should be up and running.
-
 
 ## Running Akri
 
@@ -216,6 +275,12 @@ A sample anomaly detection web application was created for this end-to-end demo.
     helm delete akri
     kubectl delete crd instances.akri.sh
     kubectl delete crd configurations.akri.sh
+   ```
+
+4. Delete the OPC UA server deployment.
+
+   ```bash
+   kubectl delete -f opc-deployment.yaml
    ```
 
 ## Extensions
