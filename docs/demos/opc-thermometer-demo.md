@@ -77,7 +77,7 @@ When mounting certificates is enabled later in the [Running Akri section](opc-th
 
 ## Creating OPC UA Servers
 
-Now, we must create some OPC UA PLC Servers to discover. Instead of starting from scratch, we deploy OPC PLC server containers.
+Now, we must create some OPC UA PLC Servers to discover. Instead of starting from scratch, we deploy OPC PLC server containers. You can read more about the containers and their parameters [here](https://github.com/Azure-Samples/iot-edge-opc-plc).
 
 1. Create an empty YAML file called `opc-deployment.yaml`. 
 
@@ -121,12 +121,12 @@ spec:
         image: mcr.microsoft.com/iotedge/opc-plc:latest
         ports:
         - containerPort: 50000
-        args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph", "--ut"]
+        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph", "--unsecuretransport"]
       - name: opcplc2
         image: mcr.microsoft.com/iotedge/opc-plc:latest
         ports:
         - containerPort: 50001
-        args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph", "--ut"]
+        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph", "--unsecuretransport"]
    ```
    (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
 
@@ -153,7 +153,7 @@ spec:
         image: mcr.microsoft.com/iotedge/opc-plc:latest
         ports:
         - containerPort: 50000
-        args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph"]
         volumeMounts:
         - mountPath: /app/pki
           name: opc-certs
@@ -161,7 +161,7 @@ spec:
         image: mcr.microsoft.com/iotedge/opc-plc:latest
         ports:
         - containerPort: 50001
-        args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph"]
         volumeMounts:
         - mountPath: /app/pki
           name: opc-certs
@@ -170,6 +170,7 @@ spec:
            hostPath:
              path: <path/to/plc>
 ```
+
 4. Save the file, then simply apply your deployment YAML to create two OPC UA servers.
 
 ```bash
