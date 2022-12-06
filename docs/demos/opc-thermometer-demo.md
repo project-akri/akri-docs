@@ -77,104 +77,105 @@ When mounting certificates is enabled later in the [Running Akri section](opc-th
 
 ## Creating OPC UA Servers
 
-Now, we must create some OPC UA PLC Servers to discover. Instead of starting from scratch, we deploy OPC PLC server containers.
+Now, we must create some OPC UA PLC Servers to discover. Instead of starting from scratch, we deploy OPC PLC server containers. You can read more about the containers and their parameters [here](https://github.com/Azure-Samples/iot-edge-opc-plc).
 
 1. Create an empty YAML file called `opc-deployment.yaml`. 
 
 2. (Optional) If you are using security, place the OpcPlc certificate and the CA certificate as below.
 
-   ```
-   plc
-   ├── own
-   │   ├── certs
-   │   │   └── OpcPlc [hash].der
-   │   └── private
-   │       └── OpcPlc [hash].pfx
-   └── trusted
-      ├── certs
-      │   └── someCA.der
-      └── crl
-         └── someCA.crl
-   ```
+```
+plc
+├── own
+│   ├── certs
+│   │   └── OpcPlc [hash].der
+│   └── private
+│       └── OpcPlc [hash].pfx
+└── trusted
+   ├── certs
+   │   └── someCA.der
+   └── crl
+      └── someCA.crl
+```
 3. (A) If you are not using security, copy and paste the contents below into the YAML file.
 
-   ```yaml
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: opcplc
-     labels:
-       app: opcplc
-   spec:
-     selector:
-       matchLabels:
-         app: opcplc
-   template:
-     metadata:
-       labels: 
-         app: opcplc
-         name: opc-plc-server
-     spec:
-       hostNetwork: true
-       containers:
-       - name: opcplc1
-         image: mcr.microsoft.com/iotedge/opc-plc:latest
-         ports:
-         - containerPort: 50000
-         args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
-       - name: opcplc2
-         image: mcr.microsoft.com/iotedge/opc-plc:latest
-         ports:
-         - containerPort: 50001
-         args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opcplc
+  labels:
+    app: opcplc
+spec:
+  selector:
+    matchLabels:
+      app: opcplc
+  template:
+    metadata:
+      labels: 
+        app: opcplc
+        name: opc-plc-server
+    spec:
+      hostNetwork: true
+      containers:
+      - name: opcplc1
+        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        ports:
+        - containerPort: 50000
+        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph", "--unsecuretransport"]
+      - name: opcplc2
+        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        ports:
+        - containerPort: 50001
+        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph", "--unsecuretransport"]
    ```
    (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
 
-   ```yaml
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: opcplc
-     labels:
-       app: opcplc
-   spec:
-     selector:
-       matchLabels:
-         app: opcplc
-   template:
-     metadata:
-       labels: 
-         app: opcplc
-         name: opc-plc-server
-     spec:
-       hostNetwork: true
-       containers:
-       - name: opcplc1
-         image: mcr.microsoft.com/iotedge/opc-plc:latest
-         ports:
-         - containerPort: 50000
-         args: ["--pn=50000", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
-         volumeMounts:
-         - mountPath: /app/pki
-           name: opc-certs
-       - name: opcplc2
-         image: mcr.microsoft.com/iotedge/opc-plc:latest
-         ports:
-         - containerPort: 50001
-         args: ["--pn=50001", "--aa", "--fn=1", "--ft=uint", "--ftl=65", "--ftu=85", "--ftr=True", "--sph"]
-         volumeMounts:
-         - mountPath: /app/pki
-           name: opc-certs
-       volumes:
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opcplc
+  labels:
+    app: opcplc
+spec:
+  selector:
+    matchLabels:
+      app: opcplc
+  template:
+    metadata:
+      labels: 
+        app: opcplc
+        name: opc-plc-server
+    spec:
+      hostNetwork: true
+      containers:
+      - name: opcplc1
+        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        ports:
+        - containerPort: 50000
+        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph"]
+        volumeMounts:
+        - mountPath: /app/pki
+          name: opc-certs
+      - name: opcplc2
+        image: mcr.microsoft.com/iotedge/opc-plc:latest
+        ports:
+        - containerPort: 50001
+        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph"]
+        volumeMounts:
+        - mountPath: /app/pki
+          name: opc-certs
+      volumes:
          - name: opc-certs
            hostPath:
              path: <path/to/plc>
-   ```
+```
+
 4. Save the file, then simply apply your deployment YAML to create two OPC UA servers.
 
-   ```bash
-   kubectl apply -f opc-deployment.yaml
-   ```
+```bash
+kubectl apply -f opc-deployment.yaml
+```
    
 We have successfully created two OPC UA PLC servers, each with one fast PLC node which generates an **unsigned integer** with **lower bound = 65** and **upper bound = 85** at a **rate of 1**. It should be up and running.
 
