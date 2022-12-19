@@ -126,7 +126,7 @@ spec:
         image: mcr.microsoft.com/iotedge/opc-plc:latest
         ports:
         - containerPort: 50001
-        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph", "--unsecuretransport"]
+        args: ["--portnum=50001", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph", "--unsecuretransport"]
    ```
    (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
 
@@ -161,7 +161,7 @@ spec:
         image: mcr.microsoft.com/iotedge/opc-plc:latest
         ports:
         - containerPort: 50001
-        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph"]
+        args: ["--portnum=50001", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph"]
         volumeMounts:
         - mountPath: /app/pki
           name: opc-certs
