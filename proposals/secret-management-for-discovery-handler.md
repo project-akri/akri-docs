@@ -52,32 +52,32 @@ spec:
           - onvif://www.onvif.org/name/AwesomeONVIFCamera
         discoveryTimeoutSeconds: 2
     discoveryProperties:
-      - name: dev-common-data
-        value: “plain text data”
-      - name: dev-auth-username
-        valueFrom:
-          secretKeyRef:
-            name: mysecret
-            key: username
-            optional: false
-      - name: dev-auth-password
-        valueFrom:
-          secretKeyRef:
-            name: mysecret
-            key: password
-            optional: true
-      - name: dev-configData1
-        valueFrom:
-          configMapKeyRef:
-            name: myconfigMap
-            key: configOption1
-            optional: false
-      - name: dev-configData2
-        valueFrom:
-          configMapKeyRef:
-            name: myconfigMap
-            key: configOption2
-            optional: true
+    - name: dev-common-data
+      value: “plain text data”
+    - name: dev-auth-username
+      valueFrom:
+        secretKeyRef:
+          name: mysecret
+          key: username
+          optional: false
+    - name: dev-auth-password
+      valueFrom:
+        secretKeyRef:
+          name: mysecret
+          key: password
+          optional: true
+    - name: dev-configData1
+      valueFrom:
+        configMapKeyRef:
+          name: myconfigMap
+          key: configOption1
+          optional: false
+    - name: dev-configData2
+      valueFrom:
+        configMapKeyRef:
+          name: myconfigMap
+          key: configOption2
+          optional: true
   brokerSpec:
     brokerPodSpec:
       containers:
