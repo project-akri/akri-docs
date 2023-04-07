@@ -93,6 +93,16 @@ The `discoveryHandler.name` must match `RegisterDiscoveryHandlerRequest.name` th
 The service should have all the functionality desired for discovering devices via your protocol and filtering for only the desired set. Each device a Discovery Handler discovers is represented by the `Device` type, as shown in a subset of the [discovery proto file](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto) below. A Discovery Handler sets a unique `id` for the device, device connection information that needs to be set as environment variables in Pods that request the device in `properties`, and any mounts or devices that should be available to requesting Pods.
 
 ```text
+service DiscoveryHandler {
+  rpc Discover (DiscoverRequest) returns (stream DiscoverResponse);
+}
+
+message DiscoverRequest {
+    // String containing all the details (such as filtering options)
+    // the `DiscoveryHandler` needs to find a set of devices.
+    string discovery_details = 1;
+}
+
 message DiscoverResponse {
     // List of discovered devices
     repeated Device devices = 1;
@@ -112,7 +122,7 @@ message Device {
 }
 ```
 
-Note, `discover` creates a streamed connection with the Agent, where the Agent gets the receiving end of the channel and the Discovery Handler sends device updates via the sending end of the channel. If the Agent drops its end, the Discovery Handler should stop discovery and attempt to re-register with the Agent. The Agent may drop its end due to an error or a deleted Configuration.
+Note, `Discover` creates a streamed connection with the Agent, where the Agent gets the receiving end of the channel and the Discovery Handler sends device updates via the sending end of the channel. If the Agent drops its end, the Discovery Handler should stop discovery and attempt to re-register with the Agent. The Agent may drop its end due to an error or a deleted Configuration.
 
 ## Creating a Discovery Handler in Rust using a template
 

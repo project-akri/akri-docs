@@ -81,7 +81,7 @@ Let's walk through building an Akri installation command:
    >
    > ```bash
    > helm upgrade akri akri-helm-charts/akri \
-   >    $AKRI_HELM_CRICTL_CONFIGURATION
+   >    $AKRI_HELM_CRICTL_CONFIGURATION \
    >    --set agent.full=true
    > ```
 
@@ -89,7 +89,7 @@ Let's walk through building an Akri installation command:
 
    ```bash
     helm upgrade akri akri-helm-charts/akri \
-        $AKRI_HELM_CRICTL_CONFIGURATION
+        $AKRI_HELM_CRICTL_CONFIGURATION \
         --set <discovery handler name>.discovery.enabled=true \
         --set <discovery handler name>.configuration.enabled=true \
         # set any discovery details in the Configuration
@@ -101,7 +101,7 @@ Installation could have been done in one step rather than a series of upgrades:
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION
+    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set <discovery handler name>.discovery.enabled=true \
     --set <discovery handler name>.configuration.enabled=true \
     # set any discovery details in the Configuration
@@ -112,7 +112,7 @@ As a real example, Akri's Controller, Agents, udev Discovery Handlers, and a ude
 
 ```bash
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION
+    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
@@ -125,7 +125,7 @@ A terminating BusyBox Job broker could have been specified instead by setting th
 
 ```bash
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION
+    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
