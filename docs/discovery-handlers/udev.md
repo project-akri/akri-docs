@@ -21,6 +21,7 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 | Helm Key | Value | Default | Description |
 | :--- | :--- | :--- | :--- |
 | udev.configuration.discoveryDetails.udevRules | array of udev rules | empty | udev rule [supported by the udev Discovery Handler](#udev-rule-format) |
+| udev.configuration.discoveryDetails.groupRecursive | boolean | false | If set to true, group devices with a matching parent |
 
 The udev Discovery Handler parses the udev rules listed in a Configuration, searches for them using udev, and returns a list of discovered device nodes (ie: /dev/video0). It parses the udev rules via a grammar [grammar](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) Akri has created. It expects the udev rules to be formatted according to the [Linux Man pages](https://linux.die.net/man/7/udev).
 
@@ -224,6 +225,37 @@ helm install akri akri-helm-charts/akri \
 ## Modifying a Configuration
 
 Akri has provided further documentation on [modifying the broker PodSpec](../user-guide/customizing-an-akri-installation.md#modifying-the-brokerpodspec), [instanceServiceSpec, or configurationServiceSpec](../user-guide/customizing-an-akri-installation.md#modifying-instanceservicespec-or-configurationservicespec) More information about how to modify an installed Configuration, add additional Configurations to a cluster, or delete a Configuration can be found in the [Customizing an Akri Installation document](../user-guide/customizing-an-akri-installation.md).
+
+## Grouping related device nodes
+
+Akri currently provides a way to group device nodes under the topmost matching node, this allows to handle a complex device with multiple device nodes as one Instance.
+
+For example with the following udev device tree and the rule `ENV{ID_SERIAL}=="Great Vendor Complex Camera"`:
+```
+root
+├── P: /devices/root/device1
+│   A: vendor=Great Vendor
+│   E: ID_SERIAL=Great Vendor Complex Camera
+│   ├── P: /devices/root/device1/video4linux/video0
+│   │   A: vendor=Great Vendor
+│   │   E: ID_SERIAL=Great Vendor Complex Camera
+│   │   E: DEVNAME=/dev/video0
+│   ├── P: /devices/root/device1/video4linux/video1
+│   │   A: vendor=Great Vendor
+│   │   E: ID_SERIAL=Great Vendor Complex Camera
+│   │   E: DEVNAME=/dev/video1
+│   └── P: /devices/root/device1/sound/card0/pcmC0D0c
+│       A: vendor=Great Vendor
+│       E: ID_SERIAL=Great Vendor Complex Camera
+│       E: DEVNAME=/dev/snd/pcmC0D0c
+└── P: /devices/root/device2
+    A: vendor=Another Vendor
+```
+This would result in a single instance grouping `video0`, `video1` and `pcmC0D0c`.
+
+All the device nodes will get mounted into the broker pod and will be listed in the environment variables with `UDEV_DEVNODE` prefix
+
+This behavior can be enabled by setting the `udev.configuration.discoveryDetails.groupRecursive` to `true`.
 
 ## Implementation details
 
