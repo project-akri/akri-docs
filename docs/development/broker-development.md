@@ -19,7 +19,8 @@ The first step to developing a broker is understanding what information will be 
 | ONVIF | `ONVIF_DEVICE_IP_ADDRESS_{INSTANCE_HASH_ID}` | IP address of the camera | `10.123.456.789` | Y |
 | ONVIF | `ONVIF_DEVICE_MAC_ADDRESS_{INSTANCE_HASH_ID}` | MAC address of the camera | `48:0f:cf:4e:1b:3d`, `480fcf4e1b3d` | Y |
 | OPC UA | `OPCUA_DISCOVERY_URL_{INSTANCE_HASH_ID}` | [DiscoveryURL](https://reference.opcfoundation.org/GDS/docs/4.3.3/) of specific OPC UA Server/Application | `10.123.456.789:1000/Some/Path/` | Y |
-| udev | `UDEV_DEVNODE_{INSTANCE_HASH_ID}` | device node for specific device | `/dev/video1`, `/dev/snd/pcmC1D0p`, `/dev/dri/card0` | Y |
+| udev | `UDEV_DEVNODE_{INSTANCE_HASH_ID}` | device node for specific device | `/dev/video1`, `/dev/snd/pcmC1D0p`, `/dev/dri/card0` | N |
+| udev | `UDEV_DEVPATH_{INSTANCE_HASH_ID}` | device path for specific device | `/devices/pci0000:00/0000:00:02.0/drm/card0/card0-HDMI-A-1` | Y |
 
 A broker should look up the variables set by the appropriate Discovery Handler and use the contents to connect to a specific device. For example, a broker can look up `DEBUG_ECHO_DESCRIPTION_8120FE` for the debugEcho device represented by Akri instance `akri-debug-echo-foo-8120fe`.
 
