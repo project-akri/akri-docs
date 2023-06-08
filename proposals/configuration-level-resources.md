@@ -210,21 +210,3 @@ is another advantage of using the Akri Controller rather than applying Deploymen
 this work on supporting Configuration level resources, the Akri's Controller could support a new deployment strategy for
 using these CL resources. The Controller also takes care of bringing down Pods when resources are no longer available,
 while Pods from manually created Deployments would continue to run even if the resources are no longer there.
-
-## Implementation of Configuration Device Plugin
-
-+------------+
-
-I            I
-
-+------------+
-	- CL resource and IL resource share the capacity pool. i.e. (# of allocated CL virtual devices + # of allocated IL virtual devices) <= capacity.
-	- The name of CL device plugin is the Akri Configuration name and follows the same convention of IL device plugin, i.e., replace ['.', '/'] with "-".
-	- The CL device plugin uses the same name schema as IL device plugin for virtual devices. The virtual device id reported by CL device plugin looks like <instance name>_<slot>.
-	- ConfigurationDevicePluginService represent the CL device plugin.  The ConfigurationDevicePluginService has similar struct as DevicePluginService.
-		○ DevicePluginService contains a list_and_watch_message_sender to notify refreshing list_and_watch, used by the DevicePluginService internally, a copy of list_and_watch_message_sender is stored in the associated InstanceInfo, used by external entity to refresh the DPS's list_and_watch.
-		○ ConfigurationDevicePluginService contains a list_and_watch_message_sender to notify refreshing list_and_watch, used by the ConfigurationDevicePluginService internally, a copy of list_and_watch_message_sender is store in the InstanceConfig, used by external entity to refresh the Configuration DPS's list_and_watch
-	- When IL DPS allocate a virtual device, it notify CL DPS to refresh list_and_watch ,and vice versa, CL DPS notify IL DPS to refresh list_and_watch when it allocates a virtual device.
-	- I added a new generic struct DevicePluginServiceTemplate<T: DevicePluginServiceInner> to eliminate the duplicate code.  DevicePluginServiceTemplate is a wrapper to wrap the worker DevicePluginServiceInner.  Both DevicePluginService and ConfigurationDevicePluginService implement the trait DevicePluginServiceInner.
-		
-	
