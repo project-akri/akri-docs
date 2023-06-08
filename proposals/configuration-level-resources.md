@@ -32,13 +32,34 @@ Furthermore, with Configuration-level resources, users could develop their own d
 ## Implementation
 
 To support Configuration-level resources, the Agent will create an additional device plugin for each
-Configuration (that initiates discovery). No changes are needed to the Controller or Discovery Handlers.
+Configuration (that initiates discovery). No changes are needed to the Discovery Handlers.  For the Controller, changes might be required to support the Configuration device plugin.
 
-The device plugin created for each Configuration will contain `capacity` * `number of
-instances` slots. Each slot will map to a "real" slot of an Instance device plugin. For example,
+There are two different policies to decide the number of slots the device plugin created for each Configuration will contain.
+Users can set the value of `Configuration.uniqueDevices` to specify which policy to use.
+| Policy |Configuration.uniqueDevices| Definition |
+|--- | --- | --- |
+| Per-Instance | true | `1` slot per instance, total `1` * `number of instances` slots.|
+| Per-DeviceUsage | false | `capacity` slots per instance, total `capacity` * `number of instances` slots. |
+
+`Configuration.uniqueDevices` is default to true if not specified in Configuration.
+
+When a slot is allocated, each slot will map to a "real" deviceUage slot in an Instance custom resource.  The total number of slots
+allocated by CL and IL resources for an Instance is restricted by `Instance.deviceUsage`.
+ See [Resource Sharing between CL and IL device plugins](#resource-sharing-between-cl-and-il-device-plugins) for more details.
+
+For example,
 after deploying a `onvif` Configuration with a `capacity` of `2`, the `NodeSpec` of a node that
 could see both cameras would be:
 
+**`Configuration.uniqueDevices`: true**
+```yaml
+Capacity:
+  akri.sh/akri-onvif:         2
+  akri.sh/akri-onvif-8120fe:  2
+  akri.sh/akri-onvif-a19705:  2
+```
+
+**`Configuration.uniqueDevices`: false**
 ```yaml
 Capacity:
   akri.sh/akri-onvif:         4
@@ -67,13 +88,88 @@ spec:
 The Kubernetes scheduler will schedule the Pod to the Node since the resources is available.
 The kubelet on that Node will make an `allocate` call to the `akri.sh/akri-onvif` device plugin in the Akri Agent.
 The Agent will then reserve slots in the associated Instance device plugins (`akri.sh/akri-onvif-8120fe` and `akri.sh/akri-onvif-a19705`).
-When selecting the slots from Instances, the Agent will preference unique Instances; for example, in the above Pod, the Agent will make sure 1 slot of each `akri-onvif-8120fe` and `akri-onvif-a19705` is reserved for each Pod.
+How the Agent select slots to reserve is based on the value of `Configuration.uniqueDevices`. 
+
+ When `Configuration.uniqueDevices` is true, the Agent will select max 1 slot for each Instance. For example, in the above Pod, the Agent will make sure 1 slot of each `akri-onvif-8120fe` and `akri-onvif-a19705` is reserved for each Pod.
+
+ When `Configuration.uniqueDevices` is false, the Agent will select slots based on deviceUsage availability.  In the same example, if both deviceUsage slots of `akri-onvif-8120fe` are reserved, the Agent will selecting both slots from `akri-onvif-a19705`, both maps to the same instance.
+
+  With different slot allocation policies, users can select policy that meet their requirement.  For example, for devices that act as data source (e.g., ip cameras), users might want to set `Configuration.uniqueDevices` to true so a workload won't get the same image from a camera.  For devices that provide services (e.g. GPU or devices that provide computing capacity), set `Configuration.uniqueDevices` to false will help to maximize the device sharing.
 
 There are two implementation options in the case where there are not enough unique Instances to meet the requested number of Configuration-level resources. One scenario where this could happen is if a Pod requests 3 cameras when only 2 exist with a capacity of 2 each. In this case, the Configuration-level camera resource shows as having a quantity of 4, despite there being two cameras. In this case, the kubelet will try to schedule the Pod, thinking there are enough resources. The Agent could either allocate 2 spots on one camera and one on the other or deny the allocation request. The latter is the preferred approach as it is more consistent and ensures the workload is getting the number of unique devices it expects. After failing an `allocateRequest` from the kubelet, the Pod will be in an `UnexpectedAdmissionError` state until another camera comes online and it can be successfully scheduled.
 
+## Resource sharing between CL and IL device plugins
+
+When a slot is allocated, each slot will map to a "real" deviceUage slot in an Instance custom resource.  The total number of slots
+allocated by CL and IL resources for an Instance is restricted by `Instance.deviceUsage`.
+ Here is an example to show how CL and IL device plugins coordinate to each other to achieve resource sharing.
+ In the example, `capacity` is 2 and there are two nodes `node-a` and `node-b` in the cluster that both discover two onvif cameras.
+ The `Configuration.uniqueDevices` is true in this example, if `Configuration.uniqueDevices` is false, the flow is exactly the same instead
+ the capacity of `akri-onvif` is `4 ( 2 * 2)`.
+
+ **`Configuration.uniqueDevices`: true**
+```yaml
+Capacity:
+  akri.sh/akri-onvif:         2
+  akri.sh/akri-onvif-8120fe:  2
+  akri.sh/akri-onvif-a19705:  2
+```
+
+```yaml
+deviceUsage:
+  akri.sh/akri-onvif-8120fe-0: ""
+  akri.sh/akri-onvif-8120fe-1: ""
+
+deviceUsage:
+  akri.sh/akri-onvif-a19705-0: ""
+  akri.sh/akri-onvif-a19705-1: ""
+```
+
+Assume Kubernetes shcedule a pod that request `2` CL devices to to `node-a`.
+ After the pod scheduled to the node, 2 slots are reserved from the CL device plugin.  The CL resource capacity is `0 (2 - 2)` and 
+ the IL resource capacity is `1`, respectively.  The capacity and deviceUsage become:
+
+```yaml
+Capacity:
+  akri.sh/akri-onvif:         0
+  akri.sh/akri-onvif-8120fe:  1
+  akri.sh/akri-onvif-a19705:  1
+```
+
+```yaml
+deviceUsage:
+  akri.sh/akri-onvif-8120fe-0: "node-a"
+  akri.sh/akri-onvif-8120fe-1: ""
+
+deviceUsage:
+  akri.sh/akri-onvif-a19705-0: ""
+  akri.sh/akri-onvif-a19705-1: "node-a"
+```
+
+Assume Kubernetes schedule another pod that request `1` IL resource device `akri-onvif-a19705` to `node-b`.
+ The capacity and deviceUsage is listed below, and there is still one free slot that is available to be used.
+
+```yaml
+Capacity:
+  akri.sh/akri-onvif:         0
+  akri.sh/akri-onvif-8120fe:  1
+  akri.sh/akri-onvif-a19705:  0
+```
+
+```yaml
+deviceUsage:
+  akri.sh/akri-onvif-8120fe-0: "node-a"
+  akri.sh/akri-onvif-8120fe-1: ""
+
+deviceUsage:
+  akri.sh/akri-onvif-a19705-0: "node-b"
+  akri.sh/akri-onvif-a19705-1: "node-a"
+```
+
+
 ## Deployment Strategies with Configuration-level resources
 
-The Akri Agent and Discovery Handlers enable device discovery and Kubernetes resource creation: they discovers devices, createsKubernetes resources to represent the devices, and ensure only `capacity` containers are using a device at once via the device plugin framework. The Akri Controller eases device use. If a broker is specified in a Configuration, the Controller will automatically deploy Kubernetes Pods or Jobs to discovered devices. Currently the Controller only supports two deployment strategies: either deploying a non-terminating Pod (that Akri calls a "broker") to each Node that can see a device or deploying a single Job to the cluster for each discovered device. There are plenty of scenarios that do not fit these two strategies such as a ReplicaSet like deployment of n number of Pods to the cluster. With Configuration-level resources, users could easily achieve their own scenarios without the Akri Controller, as selecting resources is more declarative. A user specifies in a resource request how many OPC UA servers are needed rather than needing to delineate the exact ones already discovered by Akri, as explained in Akri's current documentation on [requesting Akri resources](../docs/user-guide/requesting-akri-resources.md).
+The Akri Agent and Discovery Handlers enable device discovery and Kubernetes resource creation: they discovers devices, creates Kubernetes resources to represent the devices, and ensure only `capacity` containers are using a device at once via the device plugin framework. The Akri Controller eases device use. If a broker is specified in a Configuration, the Controller will automatically deploy Kubernetes Pods or Jobs to discovered devices. Currently the Controller only supports two deployment strategies: either deploying a non-terminating Pod (that Akri calls a "broker") to each Node that can see a device or deploying a single Job to the cluster for each discovered device. There are plenty of scenarios that do not fit these two strategies such as a ReplicaSet like deployment of n number of Pods to the cluster. With Configuration-level resources, users could easily achieve their own scenarios without the Akri Controller, as selecting resources is more declarative. A user specifies in a resource request how many OPC UA servers are needed rather than needing to delineate the exact ones already discovered by Akri, as explained in Akri's current documentation on [requesting Akri resources](../docs/user-guide/requesting-akri-resources.md).
 
 For example, with Configuration-level resources, the following Deployment could be applied to a cluster:
 
@@ -114,3 +210,21 @@ is another advantage of using the Akri Controller rather than applying Deploymen
 this work on supporting Configuration level resources, the Akri's Controller could support a new deployment strategy for
 using these CL resources. The Controller also takes care of bringing down Pods when resources are no longer available,
 while Pods from manually created Deployments would continue to run even if the resources are no longer there.
+
+## Implementation of Configuration Device Plugin
+
++------------+
+
+I            I
+
++------------+
+	- CL resource and IL resource share the capacity pool. i.e. (# of allocated CL virtual devices + # of allocated IL virtual devices) <= capacity.
+	- The name of CL device plugin is the Akri Configuration name and follows the same convention of IL device plugin, i.e., replace ['.', '/'] with "-".
+	- The CL device plugin uses the same name schema as IL device plugin for virtual devices. The virtual device id reported by CL device plugin looks like <instance name>_<slot>.
+	- ConfigurationDevicePluginService represent the CL device plugin.  The ConfigurationDevicePluginService has similar struct as DevicePluginService.
+		○ DevicePluginService contains a list_and_watch_message_sender to notify refreshing list_and_watch, used by the DevicePluginService internally, a copy of list_and_watch_message_sender is stored in the associated InstanceInfo, used by external entity to refresh the DPS's list_and_watch.
+		○ ConfigurationDevicePluginService contains a list_and_watch_message_sender to notify refreshing list_and_watch, used by the ConfigurationDevicePluginService internally, a copy of list_and_watch_message_sender is store in the InstanceConfig, used by external entity to refresh the Configuration DPS's list_and_watch
+	- When IL DPS allocate a virtual device, it notify CL DPS to refresh list_and_watch ,and vice versa, CL DPS notify IL DPS to refresh list_and_watch when it allocates a virtual device.
+	- I added a new generic struct DevicePluginServiceTemplate<T: DevicePluginServiceInner> to eliminate the duplicate code.  DevicePluginServiceTemplate is a wrapper to wrap the worker DevicePluginServiceInner.  Both DevicePluginService and ConfigurationDevicePluginService implement the trait DevicePluginServiceInner.
+		
+	
