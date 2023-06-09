@@ -125,7 +125,7 @@ deviceUsage:
   akri.sh/akri-onvif-a19705-1: ""
 ```
 
-Assume Kubernetes shcedule a pod that request `2` CL devices to to `node-a`.
+Assume Kubernetes shcedule a pod that request `2` CL devices to `node-a`.
  After the pod scheduled to the node, 2 slots are reserved from the CL device plugin.  The CL resource capacity is `0 (2 - 2)` and 
  the IL resource capacity is `1`, respectively.  The capacity and deviceUsage become:
 
@@ -166,6 +166,47 @@ deviceUsage:
   akri.sh/akri-onvif-a19705-1: "node-a"
 ```
 
+On the other hand, if the resources are claimed by the IL device plugins, with the same example (2 nodes, 2 cameras, 2 capacity)
+ the deviceUsage will be updated as following:
+ 
+ Initiali state
+```yaml
+Capacity:
+  akri.sh/akri-onvif:         2
+  akri.sh/akri-onvif-8120fe:  2
+  akri.sh/akri-onvif-a19705:  2
+```
+
+```yaml
+deviceUsage:
+  akri.sh/akri-onvif-8120fe-0: ""
+  akri.sh/akri-onvif-8120fe-1: ""
+
+deviceUsage:
+  akri.sh/akri-onvif-a19705-0: ""
+  akri.sh/akri-onvif-a19705-1: ""
+```
+
+ Assume Kubernetes shcedule one pod for each discovered instance. `2` IL devices allocated to `node-a`.
+ After the pod scheduled to the node, 2 slots are reserved for the IL device plugins.  The IL resource capacity is `1 (2 - 1)` and 
+ the CL resource capacity is `0 (2 - 1 - 1)`, respectively.
+
+```yaml
+Capacity:
+  akri.sh/akri-onvif:         0
+  akri.sh/akri-onvif-8120fe:  1
+  akri.sh/akri-onvif-a19705:  1
+```
+
+```yaml
+deviceUsage:
+  akri.sh/akri-onvif-8120fe-0: "node-a"
+  akri.sh/akri-onvif-8120fe-1: ""
+
+deviceUsage:
+  akri.sh/akri-onvif-a19705-0: "node-a"
+  akri.sh/akri-onvif-a19705-1: ""
+```
 
 ## Deployment Strategies with Configuration-level resources
 
