@@ -34,12 +34,12 @@ Furthermore, with Configuration-level resources, users could develop their own d
 To support Configuration-level resources, the Agent will create an additional device plugin for each
 Configuration (that initiates discovery). No changes are needed to the Discovery Handlers.  For the Controller, changes might be required to support the Configuration device plugin.
 
-There are two different policies to decide the number of slots the device plugin created for each Configuration will contain.
+On a node that exposes device plugin for Configuration, there are two different policies to decide how the Configuration device plugin selects slots
 Users can set the value of `Configuration.uniqueDevices` to specify which policy to use.
 | Policy |Configuration.uniqueDevices| Definition |
 |--- | --- | --- |
-| Per-Instance | true | `1` slot per instance, total `1` * `number of instances` slots.|
-| Per-DeviceUsage | false | `capacity` slots per instance, total `capacity` * `number of instances` slots. |
+| Per-Instance | true | `1` slot per instance, total `1` * `number of instances` slots on a node.|
+| Per-DeviceUsage | false | `capacity` slots per instance, total `capacity` * `number of instances` slots on a node.|
 
 `Configuration.uniqueDevices` is default to true if not specified in Configuration.
 
@@ -51,15 +51,6 @@ For example,
 after deploying a `onvif` Configuration with a `capacity` of `2`, the `NodeSpec` of a node that
 could see both cameras would be:
 
-**`Configuration.uniqueDevices`: true**
-```yaml
-Capacity:
-  akri.sh/akri-onvif:         2
-  akri.sh/akri-onvif-8120fe:  2
-  akri.sh/akri-onvif-a19705:  2
-```
-
-**`Configuration.uniqueDevices`: false**
 ```yaml
 Capacity:
   akri.sh/akri-onvif:         4
@@ -92,11 +83,14 @@ How the Agent select slots to reserve is based on the value of `Configuration.un
 
  When `Configuration.uniqueDevices` is true, the Agent will select max 1 slot for each Instance. For example, in the above Pod, the Agent will make sure 1 slot of each `akri-onvif-8120fe` and `akri-onvif-a19705` is reserved for each Pod.
 
- When `Configuration.uniqueDevices` is false, the Agent will select slots based on deviceUsage availability.  In the same example, if both deviceUsage slots of `akri-onvif-8120fe` are reserved, the Agent will selecting both slots from `akri-onvif-a19705`, both maps to the same instance.
+ When `Configuration.uniqueDevices` is false, the Agent will select slots based on deviceUsage availability.  In the same example, if both deviceUsage slots of `akri-onvif-8120fe` are reserved by other nodes, the Agent will selecting both slots from `akri-onvif-a19705`, both maps to the same instance.
 
   With different slot allocation policies, users can select policy that meet their requirement.  For example, for devices that act as data source (e.g., ip cameras), users might want to set `Configuration.uniqueDevices` to true so a workload won't get the same image from a camera.  For devices that provide services (e.g. GPU or devices that provide computing capacity), set `Configuration.uniqueDevices` to false will help to maximize the device sharing.
 
-There are two implementation options in the case where there are not enough unique Instances to meet the requested number of Configuration-level resources. One scenario where this could happen is if a Pod requests 3 cameras when only 2 exist with a capacity of 2 each. In this case, the Configuration-level camera resource shows as having a quantity of 4, despite there being two cameras. In this case, the kubelet will try to schedule the Pod, thinking there are enough resources. The Agent could either allocate 2 spots on one camera and one on the other or deny the allocation request. The latter is the preferred approach as it is more consistent and ensures the workload is getting the number of unique devices it expects. After failing an `allocateRequest` from the kubelet, the Pod will be in an `UnexpectedAdmissionError` state until another camera comes online and it can be successfully scheduled.
+The `Configuration.uniqueDevices` policy provides two different behaviors in the case where there are not enough unique Instances to meet the requested number of Configuration-level resources. One scenario where this could happen is if a Pod requests 3 cameras when only 2 exist with a capacity of 2 each.
+ In this case, if the `Configuration.uniqueDevices` is true, the Configuration-level camera resource shows as having a quantity of 2 on all nodes that has access to two cameras. The kubelet will see there is not enough resource to start the pod and put the pod in Pending state waiting for one more camera resource exposed from Configuration device plugin.
+ 
+ In the same example but the `Configuration.uniqueDevices` is false, the Configuration-level camera resource shows as having a quantity of 4 on all nodes that has access to two cameras.  The kubelet will try to schedule the Pod, thinking there are enough resources. The Agent will allocate 2 spots on one camera and one on the other.
 
 ## Resource sharing between CL and IL device plugins
 
@@ -104,18 +98,16 @@ When a slot is allocated, each slot will map to a "real" deviceUage slot in an I
 allocated by CL and IL resources for an Instance is restricted by `Instance.deviceUsage`.
  Here is an example to show how CL and IL device plugins coordinate to each other to achieve resource sharing.
  In the example, `capacity` is 2 and there are two nodes `node-a` and `node-b` in the cluster that both discover two onvif cameras.
- The `Configuration.uniqueDevices` is true in this example, if `Configuration.uniqueDevices` is false, the flow is exactly the same instead
- the capacity of `akri-onvif` is `4 ( 2 * 2)`.
 
  **`Configuration.uniqueDevices`: true**
+
+ The resource availability for the cluster:
 ```yaml
 Capacity:
-  akri.sh/akri-onvif:         2
+  akri.sh/akri-onvif:         4
   akri.sh/akri-onvif-8120fe:  2
   akri.sh/akri-onvif-a19705:  2
-```
 
-```yaml
 deviceUsage:
   akri.sh/akri-onvif-8120fe-0: ""
   akri.sh/akri-onvif-8120fe-1: ""
@@ -125,18 +117,47 @@ deviceUsage:
   akri.sh/akri-onvif-a19705-1: ""
 ```
 
-Assume Kubernetes shcedule a pod that request `2` CL devices to `node-a`.
- After the pod scheduled to the node, 2 slots are reserved from the CL device plugin.  The CL resource capacity is `0 (2 - 2)` and 
- the IL resource capacity is `1`, respectively.  The capacity and deviceUsage become:
-
+ The resource exposed by `node-a`:
 ```yaml
-Capacity:
-  akri.sh/akri-onvif:         0
-  akri.sh/akri-onvif-8120fe:  1
-  akri.sh/akri-onvif-a19705:  1
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; free deviceUsage slots available
+  akri.sh/akri-onvif-a19705:  "Healthy" ; free deviceUsage slots available
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; free
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
 ```
 
+ The resource exposed by `node-b`:
 ```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; free deviceUsage slots available
+  akri.sh/akri-onvif-a19705:  "Healthy" ; free deviceUsage slots available
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; free
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+```
+
+Assume Kubernetes shcedule a pod that request `2` CL devices to `node-a`.
+ After the pod scheduled to the node, 2 slots are reserved from the CL device plugin.  On `node-a`, the CL resource availability is `2` (but allocated) and 
+ the IL resource availability is `1`, respectively.  The cluster and node states become:
+
+ The resource availability for the cluster:
+```yaml
+Capacity:
+  akri.sh/akri-onvif:         4
+  akri.sh/akri-onvif-8120fe:  2
+  akri.sh/akri-onvif-a19705:  2
+
 deviceUsage:
   akri.sh/akri-onvif-8120fe-0: "node-a"
   akri.sh/akri-onvif-8120fe-1: ""
@@ -146,17 +167,45 @@ deviceUsage:
   akri.sh/akri-onvif-a19705-1: "node-a"
 ```
 
+ Resources exposed by `node-a`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; reserved by self
+  akri.sh/akri-onvif-a19705:  "Healthy" ; reserved by self
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Unhealthy" ; reserved by CL device plugin
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Unhealthy" ; reserved by CL device plugin
+```
+
+ Resources exposed by `node-b`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; one free deviceUsage slot available
+  akri.sh/akri-onvif-a19705:  "Healthy" ; one free deviceUsage slot available
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Unhealthy" ; reserved by other node
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Unhealthy" ; reserved by other node
+```
+
 Assume Kubernetes schedule another pod that request `1` IL resource device `akri-onvif-a19705` to `node-b`.
- The capacity and deviceUsage is listed below, and there is still one free slot that is available to be used.
+ The state is listed below, and there is still one free slot that is available to be used.
 
 ```yaml
 Capacity:
-  akri.sh/akri-onvif:         0
-  akri.sh/akri-onvif-8120fe:  1
-  akri.sh/akri-onvif-a19705:  0
-```
+  akri.sh/akri-onvif:         4
+  akri.sh/akri-onvif-8120fe:  2
+  akri.sh/akri-onvif-a19705:  2
 
-```yaml
 deviceUsage:
   akri.sh/akri-onvif-8120fe-0: "node-a"
   akri.sh/akri-onvif-8120fe-1: ""
@@ -166,18 +215,46 @@ deviceUsage:
   akri.sh/akri-onvif-a19705-1: "node-a"
 ```
 
-On the other hand, if the resources are claimed by the IL device plugins, with the same example (2 nodes, 2 cameras, 2 capacity)
+ Resource exposed by `node-a`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; reserved by self
+  akri.sh/akri-onvif-a19705:  "Healthy" ; reserved by self
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Unhealthy" ; reserved by CL device plugin
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Unhealthy" ; reserved by other node
+  akri.sh/akri-onvif-a19705-1: "Unhealthy" ; reserved by CL device plugin
+```
+
+ Resource exposed by `node-b`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; one free deviceUsage slot available
+  akri.sh/akri-onvif-a19705:  "Unhealthy" ; no free slot, reserved by other node and IL device plugin
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Unhealthy" ; reserved by other node
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; reserved by self
+  akri.sh/akri-onvif-a19705-1: "Unhealthy" ; reserved by other node
+```
+
+On the other hand, if the resources are claimed by the IL device plugins, with the same example (2 nodes, 2 cameras, capacity = 2)
  the deviceUsage will be updated as following:
  
  Initiali state
 ```yaml
 Capacity:
-  akri.sh/akri-onvif:         2
+  akri.sh/akri-onvif:         4
   akri.sh/akri-onvif-8120fe:  2
   akri.sh/akri-onvif-a19705:  2
-```
 
-```yaml
 deviceUsage:
   akri.sh/akri-onvif-8120fe-0: ""
   akri.sh/akri-onvif-8120fe-1: ""
@@ -187,25 +264,190 @@ deviceUsage:
   akri.sh/akri-onvif-a19705-1: ""
 ```
 
- Assume Kubernetes shcedule one pod for each discovered instance. `2` IL devices allocated to `node-a`.
- After the pod scheduled to the node, 2 slots are reserved for the IL device plugins.  The IL resource capacity is `1 (2 - 1)` and 
- the CL resource capacity is `0 (2 - 1 - 1)`, respectively.
+ The resource exposed by `node-a`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; free deviceUsage slots available
+  akri.sh/akri-onvif-a19705:  "Healthy" ; free deviceUsage slots available
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; free
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+```
+
+ The resource exposed by `node-b`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; free deviceUsage slots available
+  akri.sh/akri-onvif-a19705:  "Healthy" ; free deviceUsage slots available
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; free
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+```
+
+ Assume Kubernetes shcedule one pod for each discovered instance. `2` IL devices are allocated to `node-a`.
+ After the pod scheduled to the node, 2 slots are reserved for the IL device plugins.  The IL resource availability is `1 (2 - 1)` respectively and 
+ the CL resource availability is `2`.
 
 ```yaml
 Capacity:
-  akri.sh/akri-onvif:         0
-  akri.sh/akri-onvif-8120fe:  1
-  akri.sh/akri-onvif-a19705:  1
-```
+  akri.sh/akri-onvif:         4
+  akri.sh/akri-onvif-8120fe:  2
+  akri.sh/akri-onvif-a19705:  2
 
-```yaml
 deviceUsage:
   akri.sh/akri-onvif-8120fe-0: "node-a"
   akri.sh/akri-onvif-8120fe-1: ""
 
 deviceUsage:
-  akri.sh/akri-onvif-a19705-0: "node-a"
+  akri.sh/akri-onvif-a19705-0: ""
+  akri.sh/akri-onvif-a19705-1: "node-a"
+```
+
+ Resources exposed by `node-a`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; one free deviceUsage slot available
+  akri.sh/akri-onvif-a19705:  "Healthy" ; one free deviceUsage slot available
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; reserved by self
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; reserved by self
+```
+
+ Resources exposed by `node-b`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe:  "Healthy" ; one free deviceUsage slot
+  akri.sh/akri-onvif-a19705:  "Healthy" ; one free deviceUsage slot
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Unhealthy" ; reserved by other node
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Unhealthy" ; reserved by other node
+```
+
+ The `Configuration.uniqueDevices` is true in previous example, if `Configuration.uniqueDevices` is false, the flow is exactly the same except 
+ different number of devices (instances * capacity = 2 * 2) reported by the Configuration device plugins on those two nodes and the CL device plugin decides resource availability based on the same rule used by IL device plugin.
+
+ **`Configuration.uniqueDevices`: false**
+
+ The resource availability for the cluster:
+```yaml
+Capacity:
+  akri.sh/akri-onvif:         4
+  akri.sh/akri-onvif-8120fe:  2
+  akri.sh/akri-onvif-a19705:  2
+
+deviceUsage:
+  akri.sh/akri-onvif-8120fe-0: ""
+  akri.sh/akri-onvif-8120fe-1: ""
+
+deviceUsage:
+  akri.sh/akri-onvif-a19705-0: ""
   akri.sh/akri-onvif-a19705-1: ""
+```
+
+ The resource exposed by `node-a`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; free
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; free
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+```
+
+ The resource exposed by `node-b`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; free
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; free
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; free
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+```
+
+Assume Kubernetes shcedule a pod that request `2` CL devices to `node-a`. Devices from the same instance might be selected.
+
+ The resource availability for the cluster:
+```yaml
+Capacity:
+  akri.sh/akri-onvif:         4
+  akri.sh/akri-onvif-8120fe:  2
+  akri.sh/akri-onvif-a19705:  2
+
+deviceUsage:
+  akri.sh/akri-onvif-8120fe-0: "node-a"
+  akri.sh/akri-onvif-8120fe-1: "node-a"
+
+deviceUsage:
+  akri.sh/akri-onvif-a19705-0: ""
+  akri.sh/akri-onvif-a19705-1: ""
+```
+
+ The resource exposed by `node-a`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe-0: "Healthy" ; reserved by self
+  akri.sh/akri-onvif-8120fe-1: "Healthy" ; reserved by self
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Unhealthy" ; reserved by CL device plugin
+  akri.sh/akri-onvif-8120fe-1: "Unhealthy" ; reserved by CL device plugin
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+```
+
+ The resource exposed by `node-b`:
+```yaml
+CL device plugin:
+  akri.sh/akri-onvif-8120fe-0: "Unhealthy" ; reserved by other node
+  akri.sh/akri-onvif-8120fe-1: "Unhealthy" ; reserved by other node
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
+
+IL device plugin1:
+  akri.sh/akri-onvif-8120fe-0: "Unhealthy" ; reserved by other node
+  akri.sh/akri-onvif-8120fe-1: "Unhealthy" ; reserved by other node
+
+IL device plugin2:
+  akri.sh/akri-onvif-a19705-0: "Healthy" ; free
+  akri.sh/akri-onvif-a19705-1: "Healthy" ; free
 ```
 
 ## Deployment Strategies with Configuration-level resources
