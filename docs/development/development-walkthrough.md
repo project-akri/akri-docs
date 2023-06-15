@@ -586,7 +586,7 @@ RUN cargo build \
     --bin=standalone \
     --release
 
-FROM amd64/debian:buster-slim
+FROM amd64/debian:bullseye-slim
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     ca-certificates \
