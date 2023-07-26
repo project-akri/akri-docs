@@ -58,6 +58,7 @@ spec:
       valueFrom:
         secretKeyRef:
           name: mysecret
+          namespace: mysecret-namespace
           key: username
           optional: false
     - name: dev-auth-password
@@ -70,6 +71,7 @@ spec:
       valueFrom:
         configMapKeyRef:
           name: myconfigMap
+          namespace: myconfig-map-namespace
           key: configOption1
           optional: false
     - name: dev-configData2
