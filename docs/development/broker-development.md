@@ -16,6 +16,7 @@ The first step to developing a broker is understanding what information will be 
 | :--- | :--- | :--- | :--- | :--- |
 | debugEcho (for testing) | `DEBUG_ECHO_DESCRIPTION_{INSTANCE_HASH_ID}` | some random string | `foo`, `bar` | Y |
 | ONVIF | `ONVIF_DEVICE_SERVICE_URL_{INSTANCE_HASH_ID}` | ONVIF camera source URL | `http://10.123.456.789:1000/onvif/device_service` | Y |
+| ONVIF | `ONVIF_DEVICE_UUID_{INSTANCE_HASH_ID}` | ONVIF camera device uuid | `30b10f68-c915-4053-b3f1-bd15b2105091` | Y |
 | ONVIF | `ONVIF_DEVICE_IP_ADDRESS_{INSTANCE_HASH_ID}` | IP address of the camera | `10.123.456.789` | Y |
 | ONVIF | `ONVIF_DEVICE_MAC_ADDRESS_{INSTANCE_HASH_ID}` | MAC address of the camera | `48:0f:cf:4e:1b:3d`, `480fcf4e1b3d` | Y |
 | OPC UA | `OPCUA_DISCOVERY_URL_{INSTANCE_HASH_ID}` | [DiscoveryURL](https://reference.opcfoundation.org/GDS/docs/4.3.3/) of specific OPC UA Server/Application | `10.123.456.789:1000/Some/Path/` | Y |
