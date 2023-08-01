@@ -187,18 +187,20 @@ stringData:
 ```
 
 ## Device credential entry
-Device credential entry is a direct mapping from device id to its credential, using "`username_<device-id>`" and "`password_<device id>`" as key names.
+Device credential entry is a direct mapping from device id to its credential, using "`username_<device-id>`" and "`password_<device id>`" 
+as key names, note that `device_id` is in uuid string format, need to convert to C_IDENTIFIER format for use it 
+in `discoveryProperties` key name.
 
 ```yaml
     discoveryProperties:
-    - name: "username_6a67158b-42b1-400b-8afe-1bec9a5d7909"
+    - name: "username_6a67158b_42b1_400b_8afe_1bec9a5d7909"
       valueFrom:
         secretKeyRef:
           name: "onvif-auth-secret"
           namespace: "onvif-auth-secret-namespace"
           key: "camera1_username"
           optional: false
-    - name: "password_6a67158b-42b1-400b-8afe-1bec9a5d7909"
+    - name: "password_6a67158b_42b1_400b_8afe_1bec9a5d7909"
       valueFrom:
         secretKeyRef:
           name: "onvif-auth-secret"
