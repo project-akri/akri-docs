@@ -132,7 +132,7 @@ export AKRI_HELM_CRICTL_CONFIGURATION="--set kubernetesDistro=k8s"
 ```
 {% endtab %}
 
-{% tab title="K3s" %}
+{% tab title="K3s/RKE2" %}
 To use the default K3s container runtime socket `/run/k3s/containerd/containerd.sock`, set `k3s` as the distribution. 
 
 ```bash
