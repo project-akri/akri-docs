@@ -59,7 +59,7 @@ There are 3 ways to organize secret information:
 3.	Device credential entry
 
 All three ways can be used in the same Akri Configuration, the order above is the order of Onvif Discovery Handler processing the secret 
-nformation. If there is any secret information duplication between different groups, the latter overwrites the prior entries.
+information. If there is any secret information duplication between different groups, the latter overwrites the prior entries.
 If there is any duplication within the same group, it’s up to the Onvif Discovery Handler to decide which one wins when processing
 the entries, and it’s not guaranteed the order is always the same.
 
@@ -190,6 +190,11 @@ stringData:
 Device credential entry is a direct mapping from device id to its credential, using "`username_<device-id>`" and "`password_<device id>`" 
 as key names, note that `device_id` is in uuid string format, need to convert to C_IDENTIFIER format for use it 
 in `discoveryProperties` key name.
+
+In addition to the "`username_<device-id>`" and "`password_<device-id>`" keys, Onvif Discovery Handler looks for two specific key names
+"`username_default`" and "`password_default`" that, if specified, Onvif Discovery Handler uses it as a fall back username/password value.
+If Onvif Discovery Handler cannot find a match credential by looking up the device id, and "`username_default`"/"`password_default`" are specified,
+Onvif Discovery Handler uses the default username/password to authenticate the device discovery.
 
 ```yaml
     discoveryProperties:
