@@ -18,13 +18,15 @@ There are two Akri CRDs:
 
 The configuration of Akri is enabled by the Configuration CRD. Akri users will create Configurations to describe what resources should be discovered and what pod should be deployed on the nodes that discover a resource. Take a look at the [Akri Configuration CRD](https://github.com/project-akri/akri/blob/main/deployment/helm/crds/akri-configuration-crd.yaml). It specifies what components all Configurations must have, including the following:
 
-* the desired discovery protocol used for finding resources, i.e. ONVIF or udev.
+* the desired discovery protocol used for finding resources, i.e. ONVIF, OPC-UA or udev.
 * a capacity (spec.capacity) that defines the maximum number of nodes that may schedule workloads on this resource.
 * a PodSpec (spec.brokerPodSpec) that defines the "broker" pod that will be scheduled to each of these reported resources.
 * a ServiceSpec (spec.instanceServiceSpec) that defines the service that provides a single stable endpoint to access each individual resource's set of broker pods.
 * a ServiceSpec (spec.configurationServiceSpec) that defines the service that provides a single stable endpoint to access the set of all brokers for all resources associated with the Configuration.
 
-Akri has already provided two Configurations, one for discovering IP cameras using the ONVIF protocol and the other for discovering USB cameras via udev. Let's look at an [example ONVIF Configuration yaml](https://github.com/project-akri/akri/blob/main/test/yaml/akri-onvif-video-configuration.yaml). You can see it specifies the protocol ONVIF, an image for the broker pod, a capacity of 5, and two Kubernetes services. In this case, the broker pod is a sample frame server we have provided. To get only the frames from a specific camera, a user could point an application at the Instance service, while the Configuration service provides the frames from all the cameras.The ONVIF Configuration can be customized using Helm. When installing the ONVIF Configuration to your Akri enabled cluster, you can specify [the values](https://github.com/project-akri/akri/blob/main/deployment/helm/values.yaml) you want to be inserted into the [ONVIF Configuration template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/onvif-configuration.yaml). Learn more about [deploying the ONVIF sample here](../discovery-handlers/onvif.md).
+Akri Helm Chart already provides three Configurations, one for discovering IP cameras using the ONVIF protocol, one for OPC-UA devices, and one for discovering node devices via udev. 
+
+Let's look at an [example ONVIF Configuration yaml](https://github.com/project-akri/akri/blob/main/test/yaml/akri-onvif-video-configuration.yaml). You can see it specifies the protocol ONVIF, an image for the broker pod, a capacity of 5, and two Kubernetes services. In this case, the broker pod is a sample frame server we have provided. To get only the frames from a specific camera, a user could point an application at the Instance service, while the Configuration service provides the frames from all the cameras.The ONVIF Configuration can be customized using Helm. When installing the ONVIF Configuration to your Akri enabled cluster, you can specify [the values](https://github.com/project-akri/akri/blob/main/deployment/helm/values.yaml) you want to be inserted into the [ONVIF Configuration template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/onvif-configuration.yaml). Learn more about [deploying the ONVIF sample here](../discovery-handlers/onvif.md).
 
 ### Akri Instance CRD
 
@@ -51,12 +53,15 @@ To get started creating a Discovery Handler, see [Discovery Handler development]
 
 ## Controller
 
-The Akri controller serves two purposes: 
+The Akri controller serves two purposes:
 
 1. Handle (create and/or delete) the Pods & Services that enable resource availability
 2. Ensure that Instances are aligned to the cluster state at any given moment
 
-To achieve these goals, the basic flow of the controller is: 1. Watch for Instance changes to determine what Pods and Services should exist 1. Watch for Nodes that are contained in Instances that no longer exist
+To achieve these goals, the basic flow of the controller is:
+
+1. Watch for Instance changes to determine what Pods and Services should exist
+1. Watch for Nodes that are contained in Instances that no longer exist
 
 This basic flow allows the Akri controller to ensure that protocol brokers and Kubernetes Services are running on all nodes exposing desired resources while respecting the limitations defined by `Configuration.capacity`.
 
