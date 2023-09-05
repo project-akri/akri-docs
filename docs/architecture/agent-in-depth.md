@@ -38,3 +38,64 @@ Supported Rust DHs each have a [library](https://github.com/project-akri/akri/tr
 
 Reference the [Discovery Handler development document](../development/handler-development.md) to learn how to implement a Discovery Handler.
 
+## Passing additional properties to Discovery Handlers
+
+In addition to the `discoveryDetails` in Configuration that sets details for narrowing the Discovery Handlers' search, the `discoveryProperties` can be used to pass additional information to Discovery Handler. One of scenarios that can leverage `discoveryProperties` is to pass credential data to Discovery Handlers to perform
+authenticated resource discovery.
+It's not uncommon that resources that a Configuration requests to discovery are in 'authenticated-enabled' mode that a Discovery Handler can discover the
+existances of resources but requires credentials to authenticate access details information of the resource. The credential data can be placed in 
+`discoverProperties`, if it is specified in Configuration, Agent reads the content and generate a list of string key-value pair properties and pass the list to
+Discovery Handler along with `discoveryDetails`.
+
+Agent supports plain text, K8s `secret` and `configMap` in the schema of `discoverProperies`. An example below shows how each type of property is specified in `discoveryProperties`. The `name` of property is required and the value can be specified by `value` or `valueFrom`. For value specified by `valueFrom`, it can be from `secret` or `configMap`. The `optional` attribute is default to `false`, it means if the data doesn't exist (in the `secret` or `configMap`), the Configuration deployment 
+will fail. If `optional` is `true`, Agent will ignore the entry if the data doesn't exist, and pass all exist properties to Discovery Handler, the Configuration deployment will success.
+
+```yaml 
+    discoveryProperties:
+    - name: property-from-plain-text
+      value: “plain text data”
+    - name: property-from-secret
+      valueFrom:
+        secretKeyRef:
+          name: mysecret
+          namespace: mysecret-namespace
+          key: secret-key
+          optional: false
+    - name: property-from-configmap
+      valueFrom:
+        configMapKeyRef:
+          name: myconfigMap
+          namespace: myconfigmap-namespace
+          key: configmap-key
+          optional: true
+```
+
+For the example above, with the content of secret and configMap.
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+  namespace: mysecret-namespace
+type: Opaque
+stringData:
+  secret-key: "secret1"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfigMap
+  namespace: myconfigmap-namespace
+data:
+  configmap-key: "configmap1"
+```
+
+Agent read all properties and pass the string key-value pair list to Discovery Handle.
+
+```yaml
+"property-from-plain-text": “plain text data”
+"property-from-secret": "secret1"
+"property-from-configmap": "configmap1"
+```
