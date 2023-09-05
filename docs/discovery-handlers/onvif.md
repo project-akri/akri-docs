@@ -34,7 +34,13 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 | onvif.configuration.discoveryDetails.macAddresses.items | array of mac addresses | empty | mac addresses that the filter action acts upon |
 | onvif.configuration.discoveryDetails.scope.action | Include, Exclude | Exclude | filter action to take on a set of scopes |
 | onvif.configuration.discoveryDetails.scope.items | array of scopes | empty | scopes that the filter action acts upon |
+| onvif.configuration.discoveryDetails.uuids.action* | Include, Exclude | Exclude | filter action to take on a set of device uuids |
+| onvif.configuration.discoveryDetails.uuids.items* | array of IP addresses | empty | device uuids that the filter action acts upon |
 | onvif.configuration.discoveryDetails.discoveryTimeoutSeconds | number of seconds | 1 | max amount of time the Discovery Handler should search before reporting any (newly) discovered devices |
+
+*Onvif device uuid: the address property of the Endpoint Reference [ONVIF Core Specification 7.3.1 Endpoint reference] can be used as the device id to identify the device.
+The address property in Endpoint Reference is in the Uniform Resource Name: Universally Unique Identifier (URN:UUID) format.
+The same UUID can be retrieved by the `GetEndpointReference` command after a camera is discovered by Probe message.
 
 ### Broker Pod Settings
 
@@ -113,7 +119,7 @@ The following installation examples have been given to show how to the ONVIF Con
 
 #### Filtering ONVIF cameras
 
-The ONVIF Discovery Handler supports basic filter capabilities has been provided. Discovery details can be set in the Configuration that tell the Discovery Handler to either include or exclude specific IP addresses, MAC addresses, or ONVIF scopes.
+The ONVIF Discovery Handler supports basic filter capabilities has been provided. Discovery details can be set in the Configuration that tell the Discovery Handler to either include or exclude specific IP addresses, MAC addresses, ONVIF scopes, or device uuids.
 
 For example, the following enables discovery of every camera that does not have an IP address of 10.0.0.1:
 
@@ -126,6 +132,19 @@ helm install akri akri-helm-charts/akri \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.ipAddresses.action=Exclude \
     --set onvif.configuration.discoveryDetails.ipAddresses.items[0]=10.0.0.1
+```
+
+The following enables discovery of every camera that uuid is not `3fa1fe68-b915-4053-a3e1-ac15a21f5f91`:
+
+```bash
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
+helm install akri akri-helm-charts/akri \
+    $AKRI_HELM_CRICTL_CONFIGURATION \
+    --set onvif.discovery.enabled=true \
+    --set onvif.configuration.enabled=true \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
+    --set onvif.configuration.discoveryDetails.uuids.action=Exclude \
+    --set onvif.configuration.discoveryDetails.uuids.items[0]="3fa1fe68-b915-4053-a3e1-ac15a21f5f91"
 ```
 
 You can enable cluster access for every camera with a specific name, you can modify the Configuration like so:
