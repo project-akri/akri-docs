@@ -94,6 +94,195 @@ By default, if a broker Pod is specified, a single broker Pod is deployed to eac
 | :--- | :--- | :--- | :--- |
 | onvif.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device (up to 1 per Node) |
 
+### Discovery Handler Discovery Properties Settings
+
+Agent read the the content of `discoveryProperties` in Configuration and generate a string key-value pair list to Discovery Handler.  The Onvif discovery handler
+leverage the `discoveryProperties` to read the credentials for authenticated discovery. There are two attributes required for Onvif discovery handler to perform
+authenticated discovery:
+1. an id that can unique identify a camera
+2. a credential (username/password) to authenticate the access to a camera
+
+Onvif discovery handler can get the device uuid when discovering Onvif camera devices, and use the id to look up matched credential from the string key-value pair list passed by Agent.
+
+#### Organize Credentials in Akri Configuration and Kubernetes Secrets
+All secret information are kept in Kubernetes Secrets. In Configuration, we need to create a mapping for the secret information so Agent
+can read the secret information and pass it with the mapping to Onvif Discovery Handler.  With the mapping and secret information, Onvif
+Discovery Handler can look up credential using device ids.
+
+There are 3 ways to organize secret information:
+1.	Device credential list
+2.	Device credential ref list
+3.	Device credential entry
+
+All three ways can be used in the same Configuration, the order above is the order of Onvif Discovery Handler processing the secret 
+information. If there is any secret information duplication between different groups, the latter overwrites the prior entries.
+If there is any duplication within the same group, it’s up to the Onvif Discovery Handler to decide which one wins when processing
+the entries, and it’s not guaranteed the order is always the same.
+
+##### Device credential list
+Onvif Discovery Handler first looks for a key named “`device_credential_list`” and expects its value points to a string array of credential
+lists in json format.  The value is an array of credential list which points to a Kubernetes secret, the secret is expected in json format.
+
+Here is an example of Device credential list.
+In Configuration, an entry named “`device_credential_list`” is listed in discoveryProperties.  The value contains an array of device secret lists.  The device secret lists are entries that point to the actual Kubernetes Secret key.
+
+```yaml
+    discoveryProperties:
+    - name: "device_credential_list"
+      value: |+
+        [
+          "secret_list1",
+          "secret_list2"
+        ]
+    - name: "secret_list1"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "secret_list1"
+          optional: false
+    - name: "secret_list2"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "secret_list2"
+          optional: false
+```
+
+In Kubernetes Secret `onvif-auth-secret`, the `secret_list1` and `secret_list2` contain the actual secret information for a list of devices.  The entry uses the device id as key and the value is a json object with username and password.  The password can be optionally encoded with base64 (with “`base64encoded`” set to true).
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onvif-auth-secret
+  namespace: onvif-auth-secret-namespace
+type: Opaque
+stringData:
+  secret_list1: |+
+    {
+      "6821dc67-8438-5588-1547-4d1349048438" : { "username" : "admin", "password" : "adminpassword" },
+      "6a67158b-42b1-400b-8afe-1bec9a5d7919" : { "username" : "user1", "password" : "SGFwcHlEYXk=", "base64encoded": true }
+    }
+  secret_list2: |+
+    {
+      "5f5a69c2-e0ae-504f-829b-00fcdab169cc" : { "username" : "admin", "password" : "admin" }
+    }
+```
+
+##### Device credential ref list
+
+Device credential ref list is similar to Device credential list except the device ids are listed and the credentials are references 
+to another entries in the Akri `discoveryProperties`. The key name for device credential ref list is “`device_credential_ref_list`”.
+
+For example, the device credential ref list below contains an array of “device id”->”credential reference” objects.  The credential of device id “5f5a69c2-e0ae-504f-829b-00fcdab169cc” is refered to (username-> device1_username, password->device1_password).  The device1_username and device1_password are entries in Akri discoverProperties that point to the actual secret information in Kubernetes Secrets.  Note different device ids may use the same secret reference.
+
+```yaml
+    - name: "device_credential_ref_list"
+      value: |+
+        [
+          "secret_ref_list1",
+          "secret_ref_list2"
+        ]
+    - name: "secret_ref_list1"
+      value: |+
+        {
+          "5f5a69c2-e0ae-504f-829b-00fcdab169cc" : { "username_ref" : "device1_username", "password_ref" : "device1_password" },
+          "6a67158b-42b1-400b-8afe-1bec9a5d7909":  { "username_ref" : "device2_username", "password_ref" : "device2_password" }
+        }
+    - name: "secret_ref_list2"
+      value: |+
+        {
+          "7a67158b-42b1-400b-8afe-1bec9a5d790a":  { "username_ref" : "device2_username", "password_ref" : "device2_password" }
+        }
+    - name: "device1_username"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "device1_username"
+          optional: false
+    - name: "device1_password"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "device1_password"
+          optional: true
+    - name: "device2_username"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "device2_username"
+          optional: false
+    - name: "device2_password"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "device2_password"
+          optional: true
+```
+
+The actual secret information is in Kubernetes Secret `onvif-auth-secret`
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onvif-auth-secret
+  namespace: onvif-auth-secret-namespace
+type: Opaque
+stringData:
+  device1_username: "admin"
+  device1_password: "admin"
+  device2_username: "cam2_user"
+  device2_password: "cam2_pwd"
+```
+
+##### Device credential entry
+Device credential entry is a direct mapping from device id to its credential, using "`username_<device-id>`" and "`password_<device id>`" 
+as key names, note that `device_id` is in uuid string format, need to convert to C_IDENTIFIER format for use it 
+in `discoveryProperties` key name.
+
+In addition to the "`username_<device-id>`" and "`password_<device-id>`" keys, Onvif Discovery Handler looks for two specific key names
+"`username_default`" and "`password_default`" that, if specified, Onvif Discovery Handler uses it as a fall back username/password value.
+If Onvif Discovery Handler cannot find a match credential by looking up the device id, and "`username_default`"/"`password_default`" are specified,
+Onvif Discovery Handler uses the default username/password to authenticate the device discovery.
+
+```yaml
+    discoveryProperties:
+    - name: "username_6a67158b_42b1_400b_8afe_1bec9a5d7909"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "username_6a67158b_42b1_400b_8afe_1bec9a5d7909"
+          optional: false
+    - name: "password_6a67158b_42b1_400b_8afe_1bec9a5d7909"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "password_6a67158b_42b1_400b_8afe_1bec9a5d7909"
+          optional: false
+```
+
+The actual secret information is in Kubernetes Secret `onvif-auth-secret`
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onvif-auth-secret
+  namespace: onvif-auth-secret-namespace
+type: Opaque
+stringData:
+  username_6a67158b_42b1_400b_8afe_1bec9a5d7909: "admin"
+  password_6a67158b_42b1_400b_8afe_1bec9a5d7909: "admin"
+```
+
 ### Installing Akri with the ONVIF Configuration and Discovery Handler
 
 Leveraging the above settings, Akri can be installed with the ONVIF Discovery Handler and an ONVIF Configuration that specifies the Akri frame server broker:
