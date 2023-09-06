@@ -35,7 +35,7 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 | onvif.configuration.discoveryDetails.scope.action | Include, Exclude | Exclude | filter action to take on a set of scopes |
 | onvif.configuration.discoveryDetails.scope.items | array of scopes | empty | scopes that the filter action acts upon |
 | onvif.configuration.discoveryDetails.uuids.action* | Include, Exclude | Exclude | filter action to take on a set of device uuids |
-| onvif.configuration.discoveryDetails.uuids.items* | array of IP addresses | empty | device uuids that the filter action acts upon |
+| onvif.configuration.discoveryDetails.uuids.items* | array of UUIDs | empty | device uuids that the filter action acts upon |
 | onvif.configuration.discoveryDetails.discoveryTimeoutSeconds | number of seconds | 1 | max amount of time the Discovery Handler should search before reporting any (newly) discovered devices |
 
 *Onvif device uuid: the address property of the Endpoint Reference [ONVIF Core Specification 7.3.1 Endpoint reference] can be used as the device id to identify the device.
@@ -102,7 +102,7 @@ authenticated discovery:
 1. an id that can unique identify a camera
 2. a credential (username/password) to authenticate the access to a camera
 
-Onvif discovery handler can get the device uuid when discovering Onvif camera devices, and use the id to look up matched credential from the string key-value pair list passed by Agent.
+Onvif discovery handler gets the device uuid when discovering Onvif camera devices, and use the id to look up for matching credential from the string key-value pair list passed by Agent.
 
 #### Organize Credentials in Akri Configuration and Kubernetes Secrets
 All secret information are kept in Kubernetes Secrets. In Configuration, we need to create a mapping for the secret information so Agent
@@ -120,9 +120,6 @@ If there is any duplication within the same group, it’s up to the Onvif Discov
 the entries, and it’s not guaranteed the order is always the same.
 
 ##### Device credential list
-Onvif Discovery Handler first looks for a key named “`device_credential_list`” and expects its value points to a string array of credential
-lists in json format.  The value is an array of credential list which points to a Kubernetes secret, the secret is expected in json format.
-
 Here is an example of Device credential list.
 In Configuration, an entry named “`device_credential_list`” is listed in discoveryProperties.  The value contains an array of device secret lists.  The device secret lists are entries that point to the actual Kubernetes Secret key.
 
@@ -412,8 +409,8 @@ stringData:
     {
         "3fa1fe68-b915-4053-a3e1-ac15a21f5f91" :
             {
-                "username" : "Johnson",
-                "password" : "Sm9obnNvbjEwMjI=",
+                "username" : "user1",
+                "password" : "SGFwcHlEYXk=",
                 "base64encoded": true
             }
     }
