@@ -96,7 +96,7 @@ By default, if a broker Pod is specified, a single broker Pod is deployed to eac
 
 ### Discovery Handler Discovery Properties Settings
 
-Agent read the the content of `discoveryProperties` in Configuration and generate a string key-value pair list to Discovery Handler.  The Onvif discovery handler
+Agent read the content of `discoveryProperties` in Configuration and generate a string key-value pair list to Discovery Handler.  The Onvif discovery handler
 leverage the `discoveryProperties` to read the credentials for authenticated discovery. There are two attributes required for Onvif discovery handler to perform
 authenticated discovery:
 1. an id that can unique identify a camera
