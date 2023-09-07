@@ -34,7 +34,13 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 | onvif.configuration.discoveryDetails.macAddresses.items | array of mac addresses | empty | mac addresses that the filter action acts upon |
 | onvif.configuration.discoveryDetails.scope.action | Include, Exclude | Exclude | filter action to take on a set of scopes |
 | onvif.configuration.discoveryDetails.scope.items | array of scopes | empty | scopes that the filter action acts upon |
+| onvif.configuration.discoveryDetails.uuids.action* | Include, Exclude | Exclude | filter action to take on a set of device uuids |
+| onvif.configuration.discoveryDetails.uuids.items* | array of UUIDs | empty | device uuids that the filter action acts upon |
 | onvif.configuration.discoveryDetails.discoveryTimeoutSeconds | number of seconds | 1 | max amount of time the Discovery Handler should search before reporting any (newly) discovered devices |
+
+*Onvif device uuid: the address property of the Endpoint Reference [ONVIF Core Specification 7.3.1 Endpoint reference] can be used as the device id to identify the device.
+The address property in Endpoint Reference is in the Uniform Resource Name: Universally Unique Identifier (URN:UUID) format.
+The same UUID can be retrieved by the `GetEndpointReference` command after a camera is discovered by Probe message.
 
 ### Broker Pod Settings
 
@@ -88,6 +94,192 @@ By default, if a broker Pod is specified, a single broker Pod is deployed to eac
 | :--- | :--- | :--- | :--- |
 | onvif.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device (up to 1 per Node) |
 
+### Discovery Handler Discovery Properties Settings
+
+Agent read the content of `discoveryProperties` in Configuration and generate a string key-value pair list to Discovery Handler.  The Onvif discovery handler
+leverage the `discoveryProperties` to read the credentials for authenticated discovery. There are two attributes required for Onvif discovery handler to perform
+authenticated discovery:
+1. an id that can unique identify a camera
+2. a credential (username/password) to authenticate the access to a camera
+
+Onvif discovery handler gets the device uuid when discovering Onvif camera devices, and use the id to look up for matching credential from the string key-value pair list passed by Agent.
+
+#### Organize Credentials in Akri Configuration and Kubernetes Secrets
+All secret information are kept in Kubernetes Secrets. In Configuration, we need to create a mapping for the secret information so Agent
+can read the secret information and pass it with the mapping to Onvif Discovery Handler.  With the mapping and secret information, Onvif
+Discovery Handler can look up credential using device ids.
+
+There are 3 ways to organize secret information:
+1.	Device credential list
+2.	Device credential ref list
+3.	Device credential entry
+
+All three ways can be used in the same Configuration, the order above is the order of Onvif Discovery Handler processing the secret 
+information. If there is any secret information duplication between different groups, the latter overwrites the prior entries.
+If there is any duplication within the same group, it’s up to the Onvif Discovery Handler to decide which one wins when processing
+the entries, and it’s not guaranteed the order is always the same.
+
+##### Device credential list
+Here is an example of Device credential list.
+In Configuration, an entry named “`device_credential_list`” is listed in discoveryProperties.  The value contains an array of device secret lists.  The device secret lists are entries that point to the actual Kubernetes Secret key.
+
+```yaml
+    discoveryProperties:
+    - name: "device_credential_list"
+      value: |+
+        [
+          "secret_list1",
+          "secret_list2"
+        ]
+    - name: "secret_list1"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "secret_list1"
+          optional: false
+    - name: "secret_list2"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "secret_list2"
+          optional: false
+```
+
+In Kubernetes Secret `onvif-auth-secret`, the `secret_list1` and `secret_list2` contain the actual secret information for a list of devices.  The entry uses the device id as key and the value is a json object with username and password.  The password can be optionally encoded with base64 (with “`base64encoded`” set to true).
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onvif-auth-secret
+  namespace: onvif-auth-secret-namespace
+type: Opaque
+stringData:
+  secret_list1: |+
+    {
+      "6821dc67-8438-5588-1547-4d1349048438" : { "username" : "admin", "password" : "adminpassword" },
+      "6a67158b-42b1-400b-8afe-1bec9a5d7919" : { "username" : "user1", "password" : "SGFwcHlEYXk=", "base64encoded": true }
+    }
+  secret_list2: |+
+    {
+      "5f5a69c2-e0ae-504f-829b-00fcdab169cc" : { "username" : "admin", "password" : "admin" }
+    }
+```
+
+##### Device credential ref list
+
+Device credential ref list is similar to Device credential list except the device ids are listed and the credentials are references 
+to another entries in the Akri `discoveryProperties`. The key name for device credential ref list is “`device_credential_ref_list`”.
+
+For example, the device credential ref list below contains an array of “device id”->”credential reference” objects.  The credential of device id “5f5a69c2-e0ae-504f-829b-00fcdab169cc” is refered to (username-> device1_username, password->device1_password).  The device1_username and device1_password are entries in Akri discoverProperties that point to the actual secret information in Kubernetes Secrets.  Note different device ids may use the same secret reference.
+
+```yaml
+    - name: "device_credential_ref_list"
+      value: |+
+        [
+          "secret_ref_list1",
+          "secret_ref_list2"
+        ]
+    - name: "secret_ref_list1"
+      value: |+
+        {
+          "5f5a69c2-e0ae-504f-829b-00fcdab169cc" : { "username_ref" : "device1_username", "password_ref" : "device1_password" },
+          "6a67158b-42b1-400b-8afe-1bec9a5d7909":  { "username_ref" : "device2_username", "password_ref" : "device2_password" }
+        }
+    - name: "secret_ref_list2"
+      value: |+
+        {
+          "7a67158b-42b1-400b-8afe-1bec9a5d790a":  { "username_ref" : "device2_username", "password_ref" : "device2_password" }
+        }
+    - name: "device1_username"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "device1_username"
+          optional: false
+    - name: "device1_password"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "device1_password"
+          optional: true
+    - name: "device2_username"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "device2_username"
+          optional: false
+    - name: "device2_password"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "device2_password"
+          optional: true
+```
+
+The actual secret information is in Kubernetes Secret `onvif-auth-secret`
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onvif-auth-secret
+  namespace: onvif-auth-secret-namespace
+type: Opaque
+stringData:
+  device1_username: "admin"
+  device1_password: "admin"
+  device2_username: "cam2_user"
+  device2_password: "cam2_pwd"
+```
+
+##### Device credential entry
+Device credential entry is a direct mapping from device id to its credential, using "`username_<device-id>`" and "`password_<device id>`" 
+as key names, note that `device_id` is in uuid string format, need to convert to C_IDENTIFIER format for use it 
+in `discoveryProperties` key name.
+
+In addition to the "`username_<device-id>`" and "`password_<device-id>`" keys, Onvif Discovery Handler looks for two specific key names
+"`username_default`" and "`password_default`" that, if specified, Onvif Discovery Handler uses it as a fall back username/password value.
+If Onvif Discovery Handler cannot find a match credential by looking up the device id, and "`username_default`"/"`password_default`" are specified,
+Onvif Discovery Handler uses the default username/password to authenticate the device discovery.
+
+```yaml
+    discoveryProperties:
+    - name: "username_6a67158b_42b1_400b_8afe_1bec9a5d7909"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "username_6a67158b_42b1_400b_8afe_1bec9a5d7909"
+          optional: false
+    - name: "password_6a67158b_42b1_400b_8afe_1bec9a5d7909"
+      valueFrom:
+        secretKeyRef:
+          name: "onvif-auth-secret"
+          namespace: "onvif-auth-secret-namespace"
+          key: "password_6a67158b_42b1_400b_8afe_1bec9a5d7909"
+          optional: false
+```
+
+The actual secret information is in Kubernetes Secret `onvif-auth-secret`
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onvif-auth-secret
+  namespace: onvif-auth-secret-namespace
+type: Opaque
+stringData:
+  username_6a67158b_42b1_400b_8afe_1bec9a5d7909: "admin"
+  password_6a67158b_42b1_400b_8afe_1bec9a5d7909: "admin"
+```
+
 ### Installing Akri with the ONVIF Configuration and Discovery Handler
 
 Leveraging the above settings, Akri can be installed with the ONVIF Discovery Handler and an ONVIF Configuration that specifies the Akri frame server broker:
@@ -113,7 +305,7 @@ The following installation examples have been given to show how to the ONVIF Con
 
 #### Filtering ONVIF cameras
 
-The ONVIF Discovery Handler supports basic filter capabilities has been provided. Discovery details can be set in the Configuration that tell the Discovery Handler to either include or exclude specific IP addresses, MAC addresses, or ONVIF scopes.
+The ONVIF Discovery Handler supports basic filter capabilities has been provided. Discovery details can be set in the Configuration that tell the Discovery Handler to either include or exclude specific IP addresses, MAC addresses, ONVIF scopes, or device uuids.
 
 For example, the following enables discovery of every camera that does not have an IP address of 10.0.0.1:
 
@@ -126,6 +318,19 @@ helm install akri akri-helm-charts/akri \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.ipAddresses.action=Exclude \
     --set onvif.configuration.discoveryDetails.ipAddresses.items[0]=10.0.0.1
+```
+
+The following enables discovery of every camera that uuid is not `3fa1fe68-b915-4053-a3e1-ac15a21f5f91`:
+
+```bash
+helm repo add akri-helm-charts https://project-akri.github.io/akri/
+helm install akri akri-helm-charts/akri \
+    $AKRI_HELM_CRICTL_CONFIGURATION \
+    --set onvif.discovery.enabled=true \
+    --set onvif.configuration.enabled=true \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
+    --set onvif.configuration.discoveryDetails.uuids.action=Exclude \
+    --set onvif.configuration.discoveryDetails.uuids.items[0]="3fa1fe68-b915-4053-a3e1-ac15a21f5f91"
 ```
 
 You can enable cluster access for every camera with a specific name, you can modify the Configuration like so:
@@ -154,6 +359,65 @@ helm install akri akri-helm-charts/akri \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.discoveryTimeoutSeconds=2
+```
+
+### Accessing Secret data in Broker
+
+The Onvif a sample broker (`akri-onvif-video-broker`) can be configured to access Secret and ConfigMap data, if configured, it expects the Secret and ConfigMap data are
+mounted as files. The sample broker checks the environment variables `CREDENTIAL_DIRECTORY` for the directory that contains Secret data and
+`CREDENTIAL_CONFIGMAP_DIRECTORY` for direcctory contains configMap data. `CREDENTIAL_CONFIGMAP_DIRECTORY` is optional.  When the sample broker launched, the uuids of
+discovered Onvif devices are set in the environment variables `ONVIF_DEVICE_UUID_{INSTANCE_HASH_ID}`, the sample broker picks the first one found from the environment variables `ONVIF_DEVICE_UUID_{INSTANCE_HASH_ID}` as device uuid and get match credential from files under `CREDENTIAL_DIRECTORY` and `CREDENTIAL_CONFIGMAP_DIRECTORY`. 
+The schema of how the Secret/ConfigMap files are organized aligned to the schema that Onvif Discovery Handler used for passing the secret data, as follow:
+1. The sample broker first looks for files under `CREDENTIAL_DIRECTORY` with file name "username_<device_uuid>" for username and "password_<device_uuid>" for password, where device_uuid is the device uuid string that replaces all '-' with underscore '_'.
+If file "username_<device_uuid>" exists, but "password_<device_uuid>" doesn't exist, the sample broker uses empty string as password. The sample broker also looks for
+files "username_default" and "password_default", if found, the username and password is used as fallback username/password if a credential with matched device uuid can
+not be found.
+2. If the sample broker can not find a matched credential from the username/password secret files directly, it looks for credentials from the device credential ref list `device_credential_ref_list`.  The sample broker try to get a file name `device_credential_ref_list` from `CREDENTIAL_CONFIGMAP_DIRECTORY`, and if the file does not 
+exists, it tries to get the same file name under `CREDENTIAL_DIRECTORY`.  The credential ref list should contains reference entries to the actual credentals. The sample
+broker look up the device uuid from the list to get the credential referece and read the actual credential files from `CREDENTIAL_DIRECTORY`.  Similar to the fallback credenial "username_default" and "password_default", a credential ref entry with key "default" indicates the fallback credental.
+3. if the sample broker can not find a matched credental from credential ref list, it looks for credentials from crdential list `device_credential_list`.  The sample broker try to get a file name `device_credential_list` from `CREDENTIAL_CONFIGMAP_DIRECTORY`, and if the file does not xxists, it tries to get the same file name under `CREDENTIAL_DIRECTORY`.  The credential list should contains actual credential entries. The sample broker look up the device uuid from the list to get the credential. Similarly, a credential entry with key "default" indicates the fallback credental.
+
+The following example shows how the credential information is organized in Secret and ConfigMap.  There are 4 credentials specified in this example, credential for device id
+"6a67158b-42b1-400b-8afe-1bec9a5d7919", "3fa1fe68-b915-4053-a3e1-ac15a21f5f91", "6a67158b-42b1-400b-8afe-1bec9a5d7909" and a fallback credential "username_default"/"password_default".
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: onvif-auth-configmap
+data:
+  device_credential_ref_list: |+ 
+    [ "credential_ref_list1" ]
+  credential_ref_list1: |+
+    {
+        "6a67158b-42b1-400b-8afe-1bec9a5d7919":
+            {
+                "username_ref" : "device2_username",
+                "password_ref" : "device2_password"
+            }
+    }
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onvif-auth-secret
+type: Opaque
+stringData:
+  device_credential_list: |+ 
+    [ "credential_list" ]
+  credential_list: |+
+    {
+        "3fa1fe68-b915-4053-a3e1-ac15a21f5f91" :
+            {
+                "username" : "user1",
+                "password" : "SGFwcHlEYXk=",
+                "base64encoded": true
+            }
+    }
+  username_6a67158b_42b1_400b_8afe_1bec9a5d7909: "admin"
+  password_6a67158b_42b1_400b_8afe_1bec9a5d7909: "admin"
+  username_default: "user1"
+  password_default: "12345"
 ```
 
 ## Modifying a Configuration
