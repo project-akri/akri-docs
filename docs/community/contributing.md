@@ -75,7 +75,7 @@ The Developer Certificate of Origin (DCO) is a legal statement used in open sour
 
 The DCO requires contributors to use a real name for identification purposes, which need not be their legal or birth name. This name should be one by which they are recognized in the community to enable future communication if necessary. Importantly, the real name should not be an anonymous or false identity..
 
-When you submit a pull request, the DCO-bot will automatically assess whether your commits include the required `Signed-off-by` line, ensuring compliance with the Developer Certificate of Origin (DCO). If any commits lack the necessary sign-off, the bot may prompt you to add it, guiding you through the process. Importantly, you'll typically only need to complete this sign-off once, as it applies universally across repositories using the DCO.
+When you submit a pull request, the DCO-bot will automatically assess whether your commits include the required `Signed-off-by` line, ensuring compliance with the Developer Certificate of Origin (DCO). If any commits lack the necessary sign-off, the bot may prompt you to add it, guiding you through the process. It's important to note that you'll generally need to sign off on every commit you create.
 
 For more details and the exact DCO text, you can visit [Developer Certificate of Origin](developercertificate.org).
 
