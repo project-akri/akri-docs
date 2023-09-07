@@ -71,7 +71,11 @@ You can add labels by commenting:
 
 ## DCO
 
-The Developer Certificate of Origin (DCO) is a legal statement used in open source software development. Contributors use it to confirm that they have the right to submit their code changes to a project and that they agree to license their contributions under the project's open source license. This helps protect the project and its maintainers from potential legal issues. The exact text and format of the DCO can typically be found in a project's documentation or repository guidelines. You can usually find this information in the project's README or CONTRIBUTING.md file on their code hosting platform, like GitHub.
+The Developer Certificate of Origin (DCO) is a legal statement used in open source software development. Contributors use it to confirm that they have the right to submit their code changes to a project and that they agree to license their contributions under the project's open source license. This helps protect the project and its maintainers from potential legal issues. 
+
+The DCO requires contributors to use a real name for identification purposes, which need not be their legal or birth name. This name should be one by which they are recognized in the community to enable future communication if necessary. Importantly, the real name should not be an anonymous or false identity..
+
+When you submit a pull request, the DCO-bot will automatically assess whether your commits include the required `Signed-off-by` line, ensuring compliance with the Developer Certificate of Origin (DCO). If any commits lack the necessary sign-off, the bot may prompt you to add it, guiding you through the process. Importantly, you'll typically only need to complete this sign-off once, as it applies universally across repositories using the DCO.
 
 For more details and the exact DCO text, you can visit [Developer Certificate of Origin](developercertificate.org).
 
