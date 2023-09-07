@@ -363,7 +363,7 @@ helm install akri akri-helm-charts/akri \
 
 ### Accessing Secret data in Broker
 
-The Onvif a sample broker (`akri-onvif-video-broker`) can be configured to access Secret and ConfigMap data, if configured, it expects the Secret and ConfigMap data are
+The Onvif sample broker (`akri-onvif-video-broker`) can be configured to access Secret and ConfigMap data, if configured, it expects the Secret and ConfigMap data are
 mounted as files. The sample broker checks the environment variables `CREDENTIAL_DIRECTORY` for the directory that contains Secret data and
 `CREDENTIAL_CONFIGMAP_DIRECTORY` for direcctory contains configMap data. `CREDENTIAL_CONFIGMAP_DIRECTORY` is optional.  When the sample broker launched, the uuids of
 discovered Onvif devices are set in the environment variables `ONVIF_DEVICE_UUID_{INSTANCE_HASH_ID}`, the sample broker picks the first one found from the environment variables `ONVIF_DEVICE_UUID_{INSTANCE_HASH_ID}` as device uuid and get match credential from files under `CREDENTIAL_DIRECTORY` and `CREDENTIAL_CONFIGMAP_DIRECTORY`. 
@@ -375,10 +375,10 @@ not be found.
 2. If the sample broker can not find a matched credential from the username/password secret files directly, it looks for credentials from the device credential ref list `device_credential_ref_list`.  The sample broker try to get a file name `device_credential_ref_list` from `CREDENTIAL_CONFIGMAP_DIRECTORY`, and if the file does not 
 exists, it tries to get the same file name under `CREDENTIAL_DIRECTORY`.  The credential ref list should contains reference entries to the actual credentals. The sample
 broker look up the device uuid from the list to get the credential referece and read the actual credential files from `CREDENTIAL_DIRECTORY`.  Similar to the fallback credenial "username_default" and "password_default", a credential ref entry with key "default" indicates the fallback credental.
-3. if the sample broker can not find a matched credental from credential ref list, it looks for credentials from crdential list `device_credential_list`.  The sample broker try to get a file name `device_credential_list` from `CREDENTIAL_CONFIGMAP_DIRECTORY`, and if the file does not xxists, it tries to get the same file name under `CREDENTIAL_DIRECTORY`.  The credential list should contains actual credential entries. The sample broker look up the device uuid from the list to get the credential. Similarly, a credential entry with key "default" indicates the fallback credental.
+3. if the sample broker can not find a matched credental from credential ref list, it looks for credentials from crdential list `device_credential_list`.  The sample broker try to get a file name `device_credential_list` from `CREDENTIAL_CONFIGMAP_DIRECTORY`, and if the file does not exist, it tries to get the same file name under `CREDENTIAL_DIRECTORY`.  The credential list should contains actual credential entries. The sample broker look up the device uuid from the list to get the credential. Similarly, a credential entry with key "default" indicates the fallback credental.
 
 The following example shows how the credential information is organized in Secret and ConfigMap.  There are 4 credentials specified in this example, credential for device id
-"6a67158b-42b1-400b-8afe-1bec9a5d7919", "3fa1fe68-b915-4053-a3e1-ac15a21f5f91", "6a67158b-42b1-400b-8afe-1bec9a5d7909" and a fallback credential "username_default"/"password_default".
+"5f5a69c2-e0ae-504f-829b-00fcdab169cc", "3fa1fe68-b915-4053-a3e1-ac15a21f5f91", "6a67158b-42b1-400b-8afe-1bec9a5d7909" and a fallback credential "username_default"/"password_default".
 
 ```yaml
 apiVersion: v1
@@ -390,7 +390,7 @@ data:
     [ "credential_ref_list1" ]
   credential_ref_list1: |+
     {
-        "6a67158b-42b1-400b-8afe-1bec9a5d7919":
+        "5f5a69c2-e0ae-504f-829b-00fcdab169cc":
             {
                 "username_ref" : "device2_username",
                 "password_ref" : "device2_password"
@@ -416,6 +416,8 @@ stringData:
     }
   username_6a67158b_42b1_400b_8afe_1bec9a5d7909: "admin"
   password_6a67158b_42b1_400b_8afe_1bec9a5d7909: "admin"
+  device2_username: "user2"
+  device2_password: "abcde"
   username_default: "user1"
   password_default: "12345"
 ```
