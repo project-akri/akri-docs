@@ -69,11 +69,15 @@ You can add labels by commenting:
   - `/add-build-dependency-containers-label`
   - `/add-same-version-label`
 
-## CLA
+## DCO
 
-Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit [https://cla.microsoft.com](https://cla.microsoft.com).
+The Developer Certificate of Origin (DCO) is a legal statement used in open source software development. Contributors use it to confirm that they have the right to submit their code changes to a project and that they agree to license their contributions under the project's open source license. This helps protect the project and its maintainers from potential legal issues. 
 
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
+The DCO requires contributors to use a real name for identification purposes, which need not be their legal or birth name. This name should be one by which they are recognized in the community to enable future communication if necessary. Importantly, the real name should not be an anonymous or false identity..
+
+When you submit a pull request, the DCO-bot will automatically assess whether your commits include the required `Signed-off-by` line, ensuring compliance with the Developer Certificate of Origin (DCO). If any commits lack the necessary sign-off, the bot may prompt you to add it, guiding you through the process. It's important to note that you'll generally need to sign off on every commit you create.
+
+For more details and the exact DCO text, you can visit [Developer Certificate of Origin](developercertificate.org).
 
 ## Code of Conduct
 
