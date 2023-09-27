@@ -1,9 +1,9 @@
 ### Passing credentials to Onvif Discovery Handler to discover authenticated devices
 Make sure you have at least one Onvif camera that is reachable so Onvif discovery handler can discovery your Onvif camera. To test accessing Onvif with credentials, make sure your Onvif camera is authentication-enabled. **Write down the username and password**, they are required in the flow below.
 
-#### Acquire Onvif camera's device uuid
+#### Preparation
 
-First use the following helm chart to deploy an Akri Configuration that uses ONVIF discovery handler and see if your camera is discovered.
+Add Akri helm chart repo and set the environment variable `AKRI_HELM_CRICTL_CONFIGURATION` to proper value.
 
 ```bash
 # add akri helm charts repo
@@ -19,7 +19,11 @@ See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) f
 export AKRI_HELM_CRICTL_CONFIGURATION="--set kubernetesDistro=k8s"
 ```
 
-Install an Akri configuration named `akri-onvif` that uses debug echo discovery handler
+#### Acquire Onvif camera's device uuid
+In real product scenarios, the device uuids are acquired directly from the vendors or already known before installing Akri Configuration.
+If you already know the device uuids, you can skip this and go to the next step.
+
+First use the following helm chart to deploy an Akri Configuration and see if your camera is discovered.
 
 ```bash
 helm install akri akri-helm-charts/akri-dev \
@@ -57,12 +61,11 @@ pod/akri-webhook-configuration-75d9b95fbc-wqhgw   1/1     Running   0          6
 pod/kube-02-akri-onvif-029957-pod                 1/1     Running   0          48s
 pod/kube-03-akri-onvif-029957-pod                 1/1     Running   0          48s
 ```
-Dump the environment variables from the container to check the device uuid from the container's environment variables. Below is an example, the Onvif discovery handler discovers the camera and expose the device's uuid. **Write down the device uuid for later use**. Note that in real product scenarios, the device uuids are acquired directly from the vendors or already known before installing Akri Configuration.
+Get the device uuid from the Akri Instance. Below is an example, the Onvif discovery handler discovers the camera and expose the device's uuid. **Write down the device uuid for later use**. Note that in real product scenarios, the device uuids are acquired directly from the vendors or already known before installing Akri Configuration.
 
 ```bash=
-$ kubectl exec -i kube-02-akri-onvif-029957-pod -- /bin/sh -c "printenv|grep ONVIF_DEVICE"
-ONVIF_DEVICE_SERVICE_URL_029957=http://192.168.1.145:2020/onvif/device_service
-ONVIF_DEVICE_UUID_029957=3fa1fe68-b915-4053-a3e1-ac15a21f5f91
+$ kubectl get akrii akri-onvif-029957 -o yaml | grep ONVIF_DEVICE_UUID
+    ONVIF_DEVICE_UUID: 3fa1fe68-b915-4053-a3e1-ac15a21f5f91
 ```
 
 #### Set up Kubernetes secrets
@@ -98,6 +101,7 @@ Upgrade the Akri Configuration to include the secret information and the sample 
 
 ```bash
 helm upgrade akri akri-helm-charts/akri-dev \
+   --install \
    $AKRI_HELM_CRICTL_CONFIGURATION \
    --set onvif.discovery.enabled=true \
    --set onvif.configuration.enabled=true \
