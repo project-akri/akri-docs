@@ -61,7 +61,36 @@ spec:
 Apply your Deployment to the cluster and watch the broker start to run. If you inspect the Instance of the resource you requested in your deployment, you will see one of the slots has now been reserved by the node that is currently running the broker.
 
 ```bash
-kubectl apply -f deployment-requesting-onvif-camera.yaml                                  
+kubectl apply -f deployment-requesting-onvif-camera.yaml
 kubectl get akrii onvif-camera-<id> -o yaml
 ```
 
+## Requesting resources at Configuration level
+Akri also exposes all discovered devices as resources at Configuration level. Configuration level resources can be referred by the name of Configuration. With Configuration-level resources, instead of needing to know the specific Instances id `onvif-camera-<id>` to request, you can use Configuration name `<configuration-name>` to requst resources. Agent will behind the scenes do the work of selecting which Instances to reserve.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: onvif-camera-broker-deployment
+  labels:
+    app: onvif-camera-broker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: onvif-camera-broker
+  template:
+    metadata:
+      labels:
+        app: onvif-camera-broker
+    spec:
+      containers:
+      - name: onvif-camera-broker
+        image: nginx
+        resources:
+          limits:
+            akri.sh/onvif-camera: "1"
+          requests:
+            akri.sh/onvif-camera: "1"
+```
