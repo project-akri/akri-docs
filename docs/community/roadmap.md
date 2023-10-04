@@ -1,6 +1,6 @@
 # Roadmap
 
-Akri uses a [single project board](https://github.com/project-akri/akri/projects/3) to track issues. The board illustrates what features are requested by community members, currently being investigated, and under development. We review the project board each [community meeting](https://hackmd.io/@akri/S1GKJidJd) to make sure all issues are addressed and categorized.
+Akri uses a [single project board](https://github.com/project-akri/akri/projects/1) to track issues. The board illustrates what features are requested by community members, currently being investigated, and under development. We review the project board each [community meeting](https://hackmd.io/@akri/S1GKJidJd) to make sure all issues are addressed and categorized. Additionally, Akri is currently working towards a full-feature stable `v1.0` release. Reference the [Akri 1.0 project board](https://github.com/orgs/project-akri/projects/2) to see what exciting features and milestones are coming to Akri `v1.0`.
 
 The following detail a couple of the larger goals of Akri: to discover more devices and provide more deployment strategies.
 
