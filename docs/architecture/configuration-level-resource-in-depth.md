@@ -65,7 +65,14 @@ free.
 
 ## Deployment Strategies with Configuration-level resources
 
-The Akri Agent and Discovery Handlers enable device discovery and Kubernetes resource creation: they discover devices, create Kubernetes resources to represent the devices, and ensure only `capacity` containers are using a device at once via the device plugin framework. The Akri Controller eases device use. If a broker is specified in a Configuration, the Controller will automatically deploy Kubernetes Pods or Jobs to discovered devices. Currently the Controller only supports two deployment strategies: either deploying a non-terminating Pod (that Akri calls a "broker") to each Node that can see a device or deploying a single Job to the cluster for each device discovered. There are plenty of scenarios that do not fit these two strategies such as a ReplicaSet like deployment of n number of Pods to the cluster. With Configuration-level resources, users could easily achieve their own scenarios without the Akri Controller, as selecting resources is more declarative. A user specifies in a resource request how many OPC UA servers are needed rather than needing to delineate the exact ones already discovered by Akri, as explained in Akri's current documentation on [requesting Akri resources](../docs/user-guide/requesting-akri-resources.md).
+The Akri Agent and Discovery Handlers enable device discovery and Kubernetes resource creation: they discover devices, create Kubernetes resources to represent
+the devices, and ensure only `capacity` containers are using a device at once via the device plugin framework. The Akri Controller eases device use.
+If a broker is specified in a Configuration, the Controller will automatically deploy Kubernetes Pods or Jobs to discovered devices. Currently the Controller only
+supports two deployment strategies: either deploying a non-terminating Pod (that Akri calls a "broker") to each Node that can see a device or deploying a single
+Job to the cluster for each device discovered. There are plenty of scenarios that do not fit these two strategies such as a ReplicaSet like deployment of n number
+of Pods to the cluster. With Configuration-level resources, users could easily achieve their own scenarios without the Akri Controller, as selecting resources is
+more declarative. A user specifies in a resource request how many OPC UA servers are needed rather than needing to delineate the exact ones already discovered by
+Akri, as explained in Akri's current documentation on [requesting Akri resources](../user-guide/requesting-akri-resources.md).
 
 For example, with Configuration-level resources, the following Deployment could be applied to a cluster:
 
