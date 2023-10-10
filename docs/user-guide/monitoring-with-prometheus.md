@@ -80,6 +80,8 @@ Akri uses the [Rust Prometheus client library](https://github.com/tikv/rust-prom
 | Metric Name | Metric Type | Metric Source | Buckets |
 | :--- | :--- | :--- | :--- |
 | akri\_instance\_count | IntGaugeVec | Agent | Configuration, shared |
+| akri\_discovery\_response\_result | IntCounterVec | Agent | Discovery Handler name, response result (Success/Fail) |
+| akri\_discovery\_response\_time | HistogramVec | Agent | Configuration |
 | akri\_broker\_pod\_count | IntGaugeVec | Controller | Configuration, Node |
 
 ## Exposing metrics from an Akri Broker Pod
