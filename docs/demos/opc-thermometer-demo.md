@@ -241,7 +241,7 @@ A sample anomaly detection web application was created for this end-to-end demo.
 2. Determine which port the service is running on. Be sure to save this port number for the next step.
 
    ```bash
-   kubectl get service/akri-anomaly-detection-app--output=jsonpath='{.spec.ports[?(@.name=="http")].nodePort}' && echo
+   kubectl get service/akri-anomaly-detection-app --output=jsonpath='{.spec.ports[?(@.name=="http")].nodePort}' && echo
    ```
 
 3. SSH port forwarding can be used to access the streaming application. In a new terminal, enter your ssh command to to access your VM followed by the port forwarding request. The following command will use port 50000 on the host. Feel free to change it if it is not available. Be sure to replace `<anomaly-app-port>` with the port number outputted in the previous step.
