@@ -29,6 +29,7 @@
 * [Resource Sharing](architecture/resource-sharing-in-depth.md)
 * [Controller](architecture/controller-in-depth.md)
 * [Agent](architecture/agent-in-depth.md)
+* [Configuration-Level Resources](architecture/configuration-level-resource-in-depth.md)
 
 ## Developing for Akri <a id="development"></a>
 
