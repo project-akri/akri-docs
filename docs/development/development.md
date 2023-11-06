@@ -24,10 +24,10 @@ The majority of Akri is written in Rust. To install Rust and Akri's component's 
 ```sh
 ./build/setup.sh
 ```
-If you previously installed Rust ensure you are using the v1.68.1 toolchain that Akri's build system uses:
+If you previously installed Rust ensure you are using the v1.70 toolchain that Akri's build system uses:
 ```sh
-sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.68.1
-rustup default 1.68.1
+sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.70
+rustup default 1.70
 cargo version
 ``` 
 
@@ -39,14 +39,14 @@ cargo version
     ./build/setup.sh
     ```
 
-    If you previously installed Rust, ensure you are using the v1.68.1 toolchain that Akri's build system uses:
+    If you previously installed Rust, ensure you are using the v1.70 toolchain that Akri's build system uses:
     ```sh
-    sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.68.1
+    sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.70
     ``` 
-    Then, configure your current shell to see Cargo and set `v1.68.1` as default toolchain.
+    Then, configure your current shell to see Cargo and set `v1.70` as default toolchain.
     ```sh
     source $HOME/.cargo/env
-    rustup default 1.68.1
+    rustup default 1.70
     cargo version
     ```
 
