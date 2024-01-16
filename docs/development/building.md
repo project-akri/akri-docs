@@ -16,7 +16,7 @@ In essence, Akri components can be thought of as:
 
 The Akri core components are the containers that provide Akri's functionality. They include the agent, the controller, the webhook and the discovery handlers. All of these are written in Rust.
 
-The samples containers are a set of brokers and applications written either in .NET, python or Rust that are used in this documentation examples.
+The samples containers are a set of brokers and applications that can be written in any language, such as .NET, python or Rust. They are used in documentation examples, quickstarts, and demos.
 
 All components are built with a `make` command. These are the supporting Makefiles:
 
