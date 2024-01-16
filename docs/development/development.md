@@ -127,11 +127,12 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
     ```
 
 ## Building Containers
+
 `Makefile` has been created to help with the more complicated task of building the Akri components and containers for the various supported platforms.
 
 ### Tools for building Akri's Rust containers
+
 In order to cross-build Akri's Rust code for both ARM and x64 containers, several tools are leveraged.
-- The [Cross](https://github.com/rust-embedded/cross) tool can be installed with this command: `cargo install cross`.
 - `qemu` can be installed with:
   ```sh
   sudo apt-get install -y qemu qemu qemu-system-misc qemu-user-static qemu-user binfmt-support
@@ -155,86 +156,69 @@ sudo docker login $CONTAINER_REPOSITORY
 ```
 
 ### Build intermediate containers
+
 To ensure quick builds, we have created a number of intermediate containers that rarely change.
 
 By default, `Makefile` will try to create containers with tag following this format: `<repo>/$USER/<component>:<label>` where
 
-* `<component>` = rust-crossbuild | opencv-base
-* `<repo>` = `devcaptest.azurecr.io`
-  * `<repo>` can be overridden by setting `REGISTRY=<desired repo>`
-* `$USER` = the user executing `Makefile` (could be `root` if using sudo)
-  * `<repo>/$USER` can be overridden by setting `PREFIX=<desired container path>`
-* `<label>` = the label is defined in [../build/intermediate-containers.mk](https://github.com/project-akri/akri/blob/main/build/intermediate-containers.mk)
+- `<component>` = opencv-base
+- `<repo>` = `devcaptest.azurecr.io`
+  - `<repo>` can be overridden by setting `REGISTRY=<desired repo>`
+- `$USER` = the user executing `Makefile` (could be `root` if using sudo)
+  - `<repo>/$USER` can be overridden by setting `PREFIX=<desired container path>`
+- `<label>` = the label is defined in [../build/intermediate-containers.mk](https://github.com/project-akri/akri/blob/main/build/intermediate-containers.mk)
 
-#### Rust cross-build containers
-These containers are used by the `cross` tool to crossbuild the Akri Rust code.  There is a container built for each supported platform and they contain any required dependencies for Akri components to build.  The dockerfile can be found here: build/containers/intermediate/Dockerfile.rust-crossbuild-*
-  ```sh
-  # To make all of the Rust cross-build containers:
-  PREFIX=$CONTAINER_REPOSITORY make rust-crossbuild
-  # To make specific platform(s):
-  PREFIX=$CONTAINER_REPOSITORY BUILD_AMD64=1 BUILD_ARM32=1 BUILD_ARM64=1 make rust-crossbuild
-  ```
-After building the cross container(s), update [Cross.toml](https://github.com/project-akri/akri/blob/main/Cross.toml) to point to your intermediate container(s).
 
 #### .NET OpenCV containers
+
 These containers allow the ONVIF broker to be created without rebuilding OpenCV for .NET each time.  There is a container built for AMD64 and it is used to crossbuild to each supported platform.  The dockerfile can be found here: build/containers/intermediate/Dockerfile.opencvsharp-build.
+
   ```sh
   # To make all of the OpenCV base containers:
-  PREFIX=$CONTAINER_REPOSITORY make opencv-base
+  make opencv-base PUSH=1 PREFIX=$CONTAINER_REPOSITORY
   # To make specific platform(s):
-  PREFIX=$CONTAINER_REPOSITORY BUILD_AMD64=1 BUILD_ARM32=1 BUILD_ARM64=1 make opencv-base
+  make opencv-base PUSH=1 PREFIX=$CONTAINER_REPOSITORY PLATFORMS="amd64 arm64 arm/v7"
   ```
 
-### Build Akri component containers
+### Build and push Akri component containers
+
 By default, `Makefile` will try to create containers with tag following this format: `<repo>/$USER/<component>:<label>` where
 
-* `<component>` = controller | agent | etc
-* `<repo>` = `devcaptest.azurecr.io`
-  * `<repo>` can be overridden by setting `REGISTRY=<desired repo>`
-* `$USER` = the user executing `Makefile` (could be `root` if using sudo)
-  * `<repo>/$USER` can be overridden by setting `PREFIX=<desired container path>`
-* `<label>` = v$(cat version.txt)
-  * `<label>` can be overridden by setting `LABEL_PREFIX=<desired label>`
-
-**Note**: Before building these final component containers, make sure you have built any necessary [intermediate containers](./#build-intermediate-containers). In particular, to build any of the rust containers (the Controller, Agent, or udev broker), you must first [build the cross-build containers](./#rust-cross-build-containers).
+- `<component>` = controller | agent | etc
+- `<repo>` = `devcaptest.azurecr.io`
+  - `<repo>` can be overridden by setting `REGISTRY=<desired repo>`
+- `$USER` = the user executing `Makefile` (could be `root` if using sudo)
+  - `<repo>/$USER` can be overridden by setting `PREFIX=<desired container path>`
+- `<label>` = v$(cat version.txt)
+  - `<label>` can be overridden by setting `LABEL_PREFIX=<desired label>`
 
 ```sh
-# To make all of the Akri containers:
-PREFIX=$CONTAINER_REPOSITORY make akri
+# To make all Akri containers:
+make akri PREFIX=$CONTAINER_REPOSITORY PUSH=1
 # To make a specific component:
-PREFIX=$CONTAINER_REPOSITORY make akri-controller
-PREFIX=$CONTAINER_REPOSITORY make akri-udev
-PREFIX=$CONTAINER_REPOSITORY make akri-onvif
-PREFIX=$CONTAINER_REPOSITORY make akri-opcua-monitoring
-PREFIX=$CONTAINER_REPOSITORY make akri-anomaly-detection
-PREFIX=$CONTAINER_REPOSITORY make akri-streaming
-PREFIX=$CONTAINER_REPOSITORY make akri-agent
+make akri-controller PREFIX=$CONTAINER_REPOSITORY PUSH=1
+make akri-agent PREFIX=$CONTAINER_REPOSITORY PUSH=1
+make akri-udev-discovery-handler PREFIX=$CONTAINER_REPOSITORY PUSH=1
+make akri-debug-echo-discovery-handler PREFIX=$CONTAINER_REPOSITORY PUSH=1
 # To make an Agent with embedded Discovery Handlers, turn on the `agent-full` feature along with the 
 # feature for any Discovery Handlers that should be embedded.
-PREFIX=$CONTAINER_REPOSITORY BUILD_SLIM_AGENT=0 AGENT_FEATURES="agent-full onvif-feat opcua-feat udev-feat" make akri-agent-full 
+make akri-agent-full PREFIX=$CONTAINER_REPOSITORY AGENT_FEATURES="onvif-feat opcua-feat udev-feat" PUSH=1
 
 # To make a specific component on specific platform(s):
-PREFIX=$CONTAINER_REPOSITORY BUILD_AMD64=1 BUILD_ARM32=1 BUILD_ARM64=1 make akri-streaming
+make akri-controller PREFIX=$CONTAINER_REPOSITORY PLATFORMS="amd64 arm64 arm/v7" PUSH=1
 
 # To make a specific component on specific platform(s) with a specific label:
-PREFIX=$CONTAINER_REPOSITORY LABEL_PREFIX=latest BUILD_AMD64=1 BUILD_ARM32=1 BUILD_ARM64=1 make akri-streaming
-```
-
-**NOTE:** If your docker install requires you to use `sudo`, this will conflict with the `cross` command.  This flow has helped:
-```sh
-sudo -s
-source /home/$SUDO_USER/.cargo/env
-
-# run make commands that crossbuild the Rust
-
-exit
+make akri-controller PREFIX=$CONTAINER_REPOSITORY LABEL_PREFIX=latest PLATFORMS="amd64 arm64 arm/v7" PUSH=1
 ```
 
 ### More information about Akri build
-For more detailed information about the Akri build infrastructure, review the [Akri Container building document](./building.md)
+
+For more detailed information about the Akri build infrastructure and other Makefile targets, review the [Akri Container building document](./building.md)
 
 ## Installing Akri with newly built containers
-When installing Akri using helm, you can set the `imagePullSecrets`, `image.repository` and `image.tag` [Helm values](https://github.com/project-akri/akri/blob/main/deployment/helm/values.yaml) to point to your newly created containers. For example, to install Akri with with custom Controller and Agent containers, run the following, specifying the `image.tag` version to reflect [version.txt](https://github.com/project-akri/akri/blob/main/version.txt):
+
+When installing Akri using helm, you can set the `imagePullSecrets`, `image.repository` and `image.tag` [Helm values](https://github.com/project-akri/akri/blob/main/deployment/helm/values.yaml) to point to your newly created containers. For example, to install Akri with custom Controller and Agent containers, run the following, specifying the `image.tag` version to reflect [version.txt](https://github.com/project-akri/akri/blob/main/version.txt):
+
 ```bash
 kubectl create secret docker-registry <your-secret-name> --docker-server=ghcr.io  --docker-username=<your-github-alias> --docker-password=<your-github-token>
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
@@ -242,14 +226,15 @@ helm install akri akri-helm-charts/akri-dev \
     $AKRI_HELM_CRICTL_CONFIGURATION \
     --set imagePullSecrets[0].name="<your-secret-name>" \
     --set agent.image.repository="ghcr.io/<your-github-alias>/agent" \
-    --set agent.image.tag="v<akri-version>-amd64" \
+    --set agent.image.tag="v<akri-version>" \
     --set controller.image.repository="ghcr.io/<your-github-alias>/controller" \
-    --set controller.image.tag="v<akri-version>-amd64"
+    --set controller.image.tag="v<akri-version>"
 ```
 
 More information about the Akri Helm charts can be found in the [user guide](../user-guide/getting-started.md#understanding-akri-helm-charts).
 
 ## Useful Helm Commands
+
 ### Helm Package
 If you make changes to anything in the [helm folder](https://github.com/project-akri/akri/tree/main/deployment/helm), you will probably need to create a new Helm chart for Akri. This can be done using the [`helm package`](https://helm.sh/docs/helm/helm_package/) command. To create a chart using the current state of the Helm templates and CRDs, run (from one level above the Akri directory) `helm package akri/deployment/helm/`. You will see a tgz file called `akri-<akri-version>.tgz` at the location where you ran the command. Now, install Akri using that chart:
 ```sh
@@ -298,10 +283,10 @@ Akri existed before naming guidelines were documented and may not employ the gui
 
 ### General Principles
 
-+ Akri uses English
-+ Akri is written principally in Rust, and Rust [naming](https://rust-lang.github.io/api-guidelines/naming.html) conventions are used
-+ Types need not be included in names unless ambiguity would result
-+ Shorter, simpler names are preferred
+- Akri uses English
+- Akri is written principally in Rust, and Rust [naming](https://rust-lang.github.io/api-guidelines/naming.html) conventions are used
+- Types need not be included in names unless ambiguity would result
+- Shorter, simpler names are preferred
 
 ### Akri Discovery Handlers
 
@@ -309,17 +294,17 @@ Various Discovery Handlers have been developed: `debug_echo`, `onvif`, `opcua`, 
 
 Guidance:
 
-+ `snake_case` names
-+ (widely understood) initializations|acronyms are preferred
+- `snake_case` names
+- (widely understood) initializations|acronyms are preferred
 
-### Akri Brokers
+### Akri Samples Brokers
 
-Various Brokers have been developed: `onvif-video-broker`, `opcua-monitoring-broker`, `udev-video-broker`
+Various samples Brokers have been developed: `onvif-video-broker`, `opcua-monitoring-broker`, `udev-video-broker`
 
 Guidance:
 
-+ Broker names should reflect Discovery Handler (Protocol) names and be suffixed `-broker`
-+ Use Programming language-specific naming conventions when developing Brokers in non-Rust languages
+- Broker names should reflect Discovery Handler (Protocol) names and be suffixed `-broker`
+- Use Programming language-specific naming conventions when developing Brokers in non-Rust languages
 
 > **NOTE** Even though the initialization of [ONVIF](https://en.wikipedia.org/wiki/ONVIF) includes "Video", the specification is broader than video and the broker name adds specificity by including the word (`onvif-video-broker`) in order to effectively describe its functionality.
 
@@ -327,14 +312,14 @@ Guidance:
 
 Various Kubernetes Resources have been developed:
 
-+ CRDS: `Configurations`, `Instances`
-+ Instances: `akri-agent-daemonset`, `akri-controller-deployment`, `akri-onvif`, `akri-opcua`, `akri-udev`
+- CRDS: `Configurations`, `Instances`
+- Instances: `akri-agent-daemonset`, `akri-controller-deployment`, `akri-onvif`, `akri-opcua`, `akri-udev`
 
 Guidance:
 
-+ Kubernetes Convention is that resources (e.g. `DaemonSet`) and CRDs use (upper) CamelCase
-+ Akri Convention is that Akri Kubernetes resources be prefixed `akri-`, e.g. `akri-agent-daemonset`
-+ Names combining words should use hyphens (`-`) to separate the words e.g. `akri-debug-echo`
+- Kubernetes Convention is that resources (e.g. `DaemonSet`) and CRDs use (upper) CamelCase
+- Akri Convention is that Akri Kubernetes resources be prefixed `akri-`, e.g. `akri-agent-daemonset`
+- Names combining words should use hyphens (`-`) to separate the words e.g. `akri-debug-echo`
 
 > **NOTE** `akri-agent-daemonset` contradicts the general principle of not including types, if it had been named after these guidelines were drafted, it would be named `akri-agent`.
 >

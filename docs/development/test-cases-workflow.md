@@ -121,7 +121,7 @@ There are other options in addition to `--distribution` that affect the test run
 | `--release` | Use `akri` chart instead of `akri-dev` |
 | `--test-version` | Version of the chart to use |
 | `--use-local` | Use local chart (i.e `/deployment/helm` and local images) |
-| `--local-tag` | When using local images, the tag used by images (by default will look for `pr-amd64` tag) |
+| `--local-tag` | When using local images, the tag used by images (by default will look for `pr` tag) |
 
 ## Technical details and writing new tests
 
