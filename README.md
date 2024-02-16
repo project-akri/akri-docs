@@ -36,4 +36,4 @@ HackMD](https://hackmd.io/team/akri). Create an issue to request that a HackMD p
 If you have a scenario or use-case you'd like to share more broadly, we are always looking for contributions to [Akri's
 Medium Blog](https://medium.com/akri).
 
-
+> The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our [Trademark Usage page](https://www.linuxfoundation.org/legal/trademark-usage)

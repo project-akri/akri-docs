@@ -47,3 +47,7 @@ Akri's documentation is divided into six sections:
 1. ⚙️ [Architecture](./architecture/architecture-overview.md): Documentation that details the design and implementation of Akri's components.
 1. 💻 [Development](./development/development.md): Documentation for Akri developers or how to build, test, and extend Akri.
 1. 🎉 [Community](./community/roadmap.md): Information on what's next for Akri and how to get involved! 
+
+## Trademark
+
+The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our [Trademark Usage page](https://www.linuxfoundation.org/legal/trademark-usage)
