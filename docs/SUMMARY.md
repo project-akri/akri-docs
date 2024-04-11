@@ -16,7 +16,7 @@
 * [OPC UA](discovery-handlers/opc-ua.md)
 * [udev](discovery-handlers/udev.md)
 
-## Demos and Examples
+## Demos
 
 * [Introduction and Demo Videos](demos/video-links.md)
 * [Discovering and Using USB Cameras](demos/usb-camera-demo.md)
