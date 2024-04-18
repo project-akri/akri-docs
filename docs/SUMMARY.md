@@ -18,11 +18,11 @@
 
 ## Demos
 
-* [Introduction and Demo Videos](demos/video-links.md)
 * [Discovering and Using USB Cameras](demos/usb-camera-demo.md)
 * [Discovering and Using USB Cameras on Raspberry Pi 4](demos/usb-camera-demo-rpi4.md)
 * [Discovering and Using OPC UA Thermometers](demos/opc-thermometer-demo.md)
 * [Discovering and Using Authentication-Enabled Onvif Cameras](demos/onvif-authentication-access.md)
+* [Introduction and Demo Videos](demos/video-links.md)
 
 ## Architecture
 
