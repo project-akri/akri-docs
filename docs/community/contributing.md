@@ -79,6 +79,9 @@ When you submit a pull request, the DCO-bot will automatically assess whether yo
 
 For more details and the exact DCO text, you can visit [Developer Certificate of Origin](developercertificate.org).
 
+## Adopters
+If you are leveraging Akri for your solution, we highly encourage you to add your organization or project information to our [adopter list](https://github.com/project-akri/akri/blob/main/ADOPTERS.md). Please submit a pull request against the [ADOPTERS.md in the Akri GitHub](https://github.com/project-akri/akri/blob/main/ADOPTERS.md). Your participation helps us prioritize feature development in the project.
+
 ## Code of Conduct
 
 Participation in the Akri community is governed by the [Code of Conduct](../../CODE_OF_CONDUCT.md).
