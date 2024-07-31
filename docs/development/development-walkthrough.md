@@ -418,12 +418,10 @@ sudo helm delete akri
 
 Akri has provided helm templates for custom Discovery Handlers and their Configurations. These templates are provided as a starting point. They may need to be modified to meet the needs of a Discovery Handler. When installing Akri, specify that you want to deploy a custom Discovery Handler as a DaemonSet by setting `custom.discovery.enabled=true`. Specify the container for that DaemonSet as the HTTP discovery handler that you built [above](development-walkthrough.md#build-the-discoveryhandler-container) by setting `custom.discovery.image.repository=$DH_IMAGE` and `custom.discovery.image.repository=$TAGS`. To automatically deploy a custom Configuration, set `custom.configuration.enabled=true`. We will customize this Configuration to contain the discovery endpoint needed by our HTTP Discovery Handler by setting it in the `discovery_details` string of the Configuration, like so: `custom.configuration.discoveryDetails=http://discovery:9999/discovery`. We also need to set the name the Discovery Handler will register under (`custom.configuration.discoveryHandlerName`) and a name for the Discovery Handler and Configuration (`custom.discovery.name` and `custom.configuration.name`). All these settings come together as the following Akri installation command:
 
-> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
   helm repo add akri-helm-charts https://project-akri.github.io/akri/
   helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set imagePullSecrets[0].name="crPullSecret" \
     --set custom.discovery.enabled=true  \
     --set custom.discovery.image.repository=$DH_IMAGE \
@@ -445,7 +443,6 @@ If you simply wanted Akri to expose discovered devices to the cluster as Kuberne
 
 ```bash
   helm upgrade akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set imagePullSecrets[0].name="crPullSecret" \
     --set custom.discovery.enabled=true  \
     --set custom.discovery.image.repository=$DH_IMAGE \
@@ -634,7 +631,6 @@ Now that the HTTP broker has been created, we can substitute it's image in for t
 
 ```bash
   helm upgrade akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set imagePullSecrets[0].name="crPullSecret" \
     --set custom.discovery.enabled=true  \
     --set custom.discovery.image.repository=$DH_IMAGE \

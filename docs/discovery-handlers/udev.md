@@ -154,12 +154,9 @@ To test which devices Akri will discover with a udev rule, you can run the rule 
 
 Leveraging the above settings, Akri can be installed with the udev Discovery Handler and a udev Configuration with our udev rule specified.
 
-> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
-
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-   $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.discoveryDetails.udevRules[0]='SUBSYSTEM=="sound"\, ATTR{vendor}=="Great Vendor"'
@@ -179,7 +176,6 @@ The udev Discovery Handler will find all devices that are described by ANY of th
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.discoveryDetails.udevRules[0]='SUBSYSTEM=="sound"\, ATTR{vendor}=="Great Vendor"' \
@@ -195,7 +191,6 @@ Instead of manually deploying Pods to resources advertized by Akri, you can add 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.discoveryDetails.udevRules[0]='SUBSYSTEM=="sound"\, ATTR{vendor}=="Great Vendor"' \
@@ -213,7 +208,6 @@ By default in the generic udev Configuration, the udev broker is run in privileg
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.discoveryDetails.udevRules[0]='SUBSYSTEM=="sound"\, ATTR{vendor}=="Great Vendor"' \

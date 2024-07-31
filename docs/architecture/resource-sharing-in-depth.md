@@ -68,7 +68,4 @@ In this case, we can depend on the Instance as the truth. If the kubelet sends a
 
 There is one case that is not addressed above: when a workload fails, finishes, or generally no longer exists. In this case, the slot that the workload claimed needs to be released.
 
-Unfortunately, the kubelet's Device-Plugin framework does not make finding this simple. There is no deallocate or "pod failed" notification and there is no simple way to connect a slot with a workload. However, the kubelet does let Akri Agent pass some annotations that will be attached to the workload's container.
-
-So, to support this slot recovery, Akri Agents add annotations identifying both the slot name and resource instance name. These annotations allow each Akri Agent to periodically query the container runtime (through crictl, which is mounted on each akri-agent-daemonset Pod) to find all running containers. These containers and their annotations are then used to ensure that all `Instance.deviceUsage` maps are accurate. Any slots found without a backing container are cleared out (after a 5 minute timeout, that allows for a container to temporarily disappear).
-
+Unfortunately, the kubelet's Device-Plugin framework does not make finding this simple. There is no deallocate or "pod failed" notification. However, the kubelet does let Akri Agent access a list of workloads currently using slots (and the slots they are using), this is used to clear the `Instance.deviceUsage` map when a slot is used there, but not reflected in the kubelet, with a 20 seconds delay ensuring the workload got enough time to spawn.

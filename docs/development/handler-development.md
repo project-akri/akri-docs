@@ -186,7 +186,6 @@ Also set the name the Discovery Handler will register under (`custom.configurati
 ```bash
   helm repo add akri-helm-charts https://project-akri.github.io/akri/
   helm install akri akri-helm-charts/akri \
-  $AKRI_HELM_CRICTL_CONFIGURATION \
   --set imagePullSecrets[0].name="crPullSecret" \
   --set custom.discovery.enabled=true  \
   --set custom.discovery.image.repository=$DH_IMAGE \
@@ -201,11 +200,9 @@ Also set the name the Discovery Handler will register under (`custom.configurati
 {% hint style="info" %}
 Note: if your Discovery Handler's `discoveryDetails` cannot be easily set using Helm, generate a Configuration file and modify it as needed. configuration.enabled\`.)
 
-> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
   helm install akri akri-helm-charts/akri \
-   $AKRI_HELM_CRICTL_CONFIGURATION \
    --set imagePullSecrets[0].name="crPullSecret" \
    --set custom.discovery.enabled=true  \
    --set custom.discovery.image.repository=$DH_IMAGE \
@@ -242,7 +239,6 @@ If you simply wanted Akri to expose discovered devices to the cluster as Kuberne
 
 ```bash
   helm upgrade akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set imagePullSecrets[0].name="crPullSecret" \
     --set custom.discovery.enabled=true  \
     --set custom.discovery.image.repository=$DH_IMAGE \

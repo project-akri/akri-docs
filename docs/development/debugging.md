@@ -17,12 +17,10 @@ This section walks through deploying non-terminating Nginx Kubernetes Pods to di
 
 To install Akri with **external** Debug Echo Discovery Handlers and a Configuration to discover unshared debug echo devices, run:
 
-> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set agent.allowDebugEcho=true \
     --set debugEcho.discovery.enabled=true \
     --set debugEcho.configuration.enabled=true \
@@ -37,7 +35,6 @@ To instead install Akri with Debug Echo Discovery Handlers embedded in the Agent
 ```text
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-  $AKRI_HELM_CRICTL_CONFIGURATION \
   --set agent.allowDebugEcho=true \
   --set agent.full=true \
   --set debugEcho.configuration.enabled=true \
@@ -60,12 +57,9 @@ This section walks through deploying `busybox` [Kubernetes Jobs](https://kuberne
 
 To install Akri with **external** Debug Echo Discovery Handlers and a Configuration to discover unshared debug echo devices, run:
 
-> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
-
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri-dev \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set agent.allowDebugEcho=true \
     --set debugEcho.discovery.enabled=true \
     --set debugEcho.configuration.enabled=true \
@@ -79,7 +73,6 @@ To instead install Akri with Debug Echo Discovery Handlers embedded in the Agent
 ```text
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri-dev \
-  $AKRI_HELM_CRICTL_CONFIGURATION \
   --set agent.allowDebugEcho=true \
   --set agent.full=true \
   --set debugEcho.configuration.enabled=true \

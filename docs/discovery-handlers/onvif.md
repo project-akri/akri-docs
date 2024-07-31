@@ -284,12 +284,10 @@ stringData:
 
 Leveraging the above settings, Akri can be installed with the ONVIF Discovery Handler and an ONVIF Configuration that specifies the Akri frame server broker:
 
-> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
@@ -312,7 +310,6 @@ For example, the following enables discovery of every camera that does not have 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
@@ -325,7 +322,6 @@ The following enables discovery of every camera that uuid is not `3fa1fe68-b915-
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
@@ -338,7 +334,6 @@ You can enable cluster access for every camera with a specific name, you can mod
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
@@ -354,7 +349,6 @@ The ONVIF Discovery Handler will search for up to `discoveryTimeoutSeconds` for 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
