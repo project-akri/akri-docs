@@ -14,25 +14,20 @@ Starting in v0.0.36, an **akri-dev** Helm chart will be published for each build
 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
-helm install akri akri-helm-charts/akri-dev \
-   $AKRI_HELM_CRICTL_CONFIGURATION
+helm install akri akri-helm-charts/akri-dev
 ```
-
-> Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 Starting in Release v0.0.44, an **akri** Helm chart will be published for each [Release](https://github.com/project-akri/akri/releases). Releases will generally reflect milestones and will have more rigorous testing. You can deploy Release versions of Akri with this command (note: **akri**):
 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
-helm install akri akri-helm-charts/akri \
-   $AKRI_HELM_CRICTL_CONFIGURATION
+helm install akri akri-helm-charts/akri
 ```
 
 To use the latest containers of the Akri components, add `--set useLatestContainers=true` when installing Akri like so:
 
 ```bash
 helm install akri akri-helm-charts/akri \
-   $AKRI_HELM_CRICTL_CONFIGURATION \
    --set useLatestContainers=true
 ```
 
@@ -60,11 +55,10 @@ Let's walk through building an Akri installation command:
     helm repo add akri-helm-charts https://project-akri.github.io/akri/
    ```
 
-2. Install Akri's Controller and Agent, specifying the crictl configuration from [the cluster setup steps](cluster-setup.md#configure-crictl) in not using vanilla Kubernetes:
+2. Install Akri's Controller and Agent:
 
    ```bash
-     helm install akri akri-helm-charts/akri \
-        $AKRI_HELM_CRICTL_CONFIGURATION
+     helm install akri akri-helm-charts/akri
    ```
 
    > Note: To use Akri's latest dev releases, specify `akri-helm-charts/akri`
@@ -73,7 +67,6 @@ Let's walk through building an Akri installation command:
 
    ```bash
     helm upgrade akri akri-helm-charts/akri \
-         $AKRI_HELM_CRICTL_CONFIGURATION \
          --set <discovery handler name>.discovery.enabled=true
    ```
 
@@ -81,7 +74,6 @@ Let's walk through building an Akri installation command:
    >
    > ```bash
    > helm upgrade akri akri-helm-charts/akri \
-   >    $AKRI_HELM_CRICTL_CONFIGURATION \
    >    --set agent.full=true
    > ```
 
@@ -89,7 +81,6 @@ Let's walk through building an Akri installation command:
 
    ```bash
     helm upgrade akri akri-helm-charts/akri \
-        $AKRI_HELM_CRICTL_CONFIGURATION \
         --set <discovery handler name>.discovery.enabled=true \
         --set <discovery handler name>.configuration.enabled=true \
         # set any discovery details in the Configuration
@@ -101,7 +92,6 @@ Installation could have been done in one step rather than a series of upgrades:
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set <discovery handler name>.discovery.enabled=true \
     --set <discovery handler name>.configuration.enabled=true \
     # set any discovery details in the Configuration
@@ -112,7 +102,6 @@ As a real example, Akri's Controller, Agents, udev Discovery Handlers, and a ude
 
 ```bash
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
@@ -125,7 +114,6 @@ A terminating BusyBox Job broker could have been specified instead by setting th
 
 ```bash
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set udev.discovery.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \

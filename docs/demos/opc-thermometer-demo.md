@@ -191,13 +191,11 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
    our temperature variable we made earlier, which has an `Identifier` of `FastUInt1` and `NamespaceIndex`
    of `2`. Your OPC PLC discovery URL will look something like `"opc.tcp://<host IP address>:50000/`. If using security, uncomment `--set opcua.configuration.mountCertificates='true'`.
 
-    > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
     
    ```bash 
    helm repo add akri-helm-charts https://project-akri.github.io/akri/
    helm install akri akri-helm-charts/akri \
-      $AKRI_HELM_CRICTL_CONFIGURATION \
       --set opcua.discovery.enabled=true \
       --set opcua.configuration.enabled=true \
       --set opcua.configuration.name=akri-opcua-monitoring \
@@ -314,7 +312,6 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
 
    ```bash
    helm upgrade akri akri-helm-charts/akri \
-      $AKRI_HELM_CRICTL_CONFIGURATION \
       --set opcua.discovery.enabled=true \
       --set opcua.configuration.enabled=true \
       --set opcua.configuration.name=akri-opcua-monitoring \
@@ -355,7 +352,6 @@ Make sure you have restarted your OPC UA Servers, since they attempt to register
 
 ```bash
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
@@ -378,7 +374,6 @@ Instead of deploying brokers to all servers registered with specified Local Disc
 
 ```bash
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
@@ -391,13 +386,11 @@ helm install akri akri-helm-charts/akri \
     # --set opcua.configuration.mountCertificates='true'
 ```
 
-> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 Alternatively, to only discover the server named "SomeServer0", do the following:
 
 ```bash
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
@@ -417,7 +410,6 @@ The OPC UA Monitoring broker and anomaly detection application support a very sp
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<HOST IP>:50000/" \

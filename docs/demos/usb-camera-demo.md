@@ -107,18 +107,16 @@ For this demo, we will specify
 > Note, when real USB cameras are used, the filtering udev rule can be more precise to avoid mistaken device match. For example, a better rule is `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"` that adds a criteria on device capability. We may go further by adding criteria such as vendor name. An example is `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"\, ENV{ID_VENDOR}=="Great Vendor"`. In order to write correct rule, check output of "udevadm" command for USB cameras. A example is "udevadm info --query=all --name=video1".
 3. a broker Pod image, we will use a sample container that Akri has provided that pulls frames from the cameras and serves them over gRPC.
 
-All of Akri's components can be deployed by specifying values in its Helm chart during an installation. Instead of having to build a Configuration from scratch, Akri has provided [Helm templates](https://github.com/project-akri/akri/blob/main/deployment/helm/templates) for Configurations for each supported Discovery Handler. Lets customize the generic [udev Configuration Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/udev-configuration.yaml) with our three specifications above. We can also set the name for the Configuration to be `akri-udev-video`. Also, if using MicroK8s or K3s, configure the crictl path and socket using the `AKRI_HELM_CRICTL_CONFIGURATION` variable created when setting up your cluster.
+All of Akri's components can be deployed by specifying values in its Helm chart during an installation. Instead of having to build a Configuration from scratch, Akri has provided [Helm templates](https://github.com/project-akri/akri/blob/main/deployment/helm/templates) for Configurations for each supported Discovery Handler. Lets customize the generic [udev Configuration Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/udev-configuration.yaml) with our three specifications above. We can also set the name for the Configuration to be `akri-udev-video`.
 
 In order for the Agent to know how to discover video devices, the udev Discovery Handler must exist. Akri supports an Agent image that includes all supported Discovery Handlers. This Agent will be used if `agent.full=true` is set. By default, a slim Agent without any embedded Discovery Handlers is deployed and the required Discovery Handlers can be deployed as DaemonSets. This demo will use that strategy, deploying the udev Discovery Handlers by specifying `udev.discovery.enabled=true` when installing Akri.
 
 1. Add the Akri Helm chart and run the install command, setting Helm values as described above.
 
-   > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
    
    ```bash
     helm repo add akri-helm-charts https://project-akri.github.io/akri/
     helm install akri akri-helm-charts/akri \
-        $AKRI_HELM_CRICTL_CONFIGURATION \
         --set udev.discovery.enabled=true \
         --set udev.configuration.enabled=true \
         --set udev.configuration.name=akri-udev-video \
@@ -270,7 +268,6 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
    ```bash
    helm repo add akri-helm-charts https://project-akri.github.io/akri/
    helm install akri akri-helm-charts/akri \
-      $AKRI_HELM_CRICTL_CONFIGURATION \
       --set udev.discovery.enabled=true \
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \

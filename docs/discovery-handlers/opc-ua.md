@@ -90,12 +90,9 @@ By default, if a broker Pod is specified, a single broker Pod is deployed to eac
 
 Leveraging the above settings, Akri can be installed with the OPC UA Discovery Handler and an OPC UA Configuration that specifies discovery via the default LDS DiscoveryURL:
 
-> Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
-
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true
 ```
@@ -105,7 +102,6 @@ If you have a workload that you would like to automatically be deployed to each 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.brokerPod.image.repository=nginx
@@ -128,7 +124,6 @@ If no DiscoveryURLs are passed as Helm values, the default DiscoveryURL for Loca
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://10.1.2.3:4840/" \
@@ -142,7 +137,6 @@ If you know the DiscoveryURLs for the OPC UA Servers you want Akri to discover, 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://10.123.456.7:4855/"
@@ -155,7 +149,6 @@ OPC UA discovery can also receive a list of both OPC UA LDS DiscoveryURLs and sp
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://10.1.2.3:4840/" \
@@ -172,7 +165,6 @@ Instead of discovering all servers registered with specified Local Discovery Ser
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.discoveryDetails.applicationNames.action=Exclude \
@@ -184,7 +176,6 @@ Alternatively, to only discover the server named "Go Tar Heels!", do the followi
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.discoveryDetails.applicationNames.action=Include \
@@ -212,7 +203,6 @@ Finally, when mounting certificates is enabled with Helm via `--set opcua.config
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set opcua.discovery.enabled=true \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.mountCertificates='true'

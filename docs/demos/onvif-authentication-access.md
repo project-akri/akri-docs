@@ -3,7 +3,7 @@ Make sure you have at least one Onvif camera that is reachable so Onvif discover
 
 #### Preparation
 
-Add Akri helm chart repo and set the environment variable `AKRI_HELM_CRICTL_CONFIGURATION` to proper value.
+Add Akri helm chart repo.
 
 ```bash
 # add akri helm charts repo
@@ -11,13 +11,7 @@ helm repo add akri-helm-charts https://project-akri.github.io/akri/
 # ensure helm repos are up-to-date
 helm repo update
 ```
-Set up the Kubernetes distribution being used, here we use 'k8s', make sure to replace it with a value that matches the Kubernetes distribution you used.
 
-See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
-
- ```bash
-export AKRI_HELM_CRICTL_CONFIGURATION="--set kubernetesDistro=k8s"
-```
 
 #### Acquire Onvif camera's device uuid
 In real product scenarios, the device uuids are acquired directly from the vendors or already known before installing Akri Configuration.
@@ -27,7 +21,6 @@ First use the following helm chart to deploy an Akri Configuration and see if yo
 
 ```bash
 helm install akri akri-helm-charts/akri-dev \
-   $AKRI_HELM_CRICTL_CONFIGURATION \
    --set onvif.discovery.enabled=true \
    --set onvif.configuration.name=akri-onvif \
    --set onvif.configuration.enabled=true \
@@ -102,7 +95,6 @@ Upgrade the Akri Configuration to include the secret information and the sample 
 ```bash
 helm upgrade akri akri-helm-charts/akri-dev \
    --install \
-   $AKRI_HELM_CRICTL_CONFIGURATION \
    --set onvif.discovery.enabled=true \
    --set onvif.configuration.enabled=true \
    --set onvif.configuration.capacity=3 \

@@ -38,18 +38,12 @@ The Akri Controller and Agent publish metrics to port 8080 at a `/metrics` endpo
 
 Install Akri and expose the Controller and Agent's metrics to Prometheus by running:
 
-> Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set prometheus.enabled=true
 ```
-
-{% hint style="info" %}
-This documentation assumes you are using vanilla Kubernetes. Be sure to reference the [user guide](getting-started.md) to determine whether the distribution you are using requires crictl path configuration.
-{% endhint %}
 
 ## Visualizing metrics with Grafana
 
@@ -99,14 +93,12 @@ As an example, an `akri_frame_count` metric has been created in the sample [udev
    ```bash
     helm repo add akri-helm-charts https://project-akri.github.io/akri/
     helm install akri akri-helm-charts/akri \
-        $AKRI_HELM_CRICTL_CONFIGURATION \
         --set udev.enabled=true \
         --set udev.name=akri-udev-video \
         --set udev.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
         --set udev.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker"
    ```
 
-   > **Note**: This instruction assumes you are using vanilla Kubernetes. Be sure to reference the user guide to determine whether the distribution you are using requires crictl path configuration.
    
    > **Note**: To expose the Agent and Controller's Prometheus metrics, add `--set prometheus.enabled=true`.
 
@@ -114,7 +106,6 @@ As an example, an `akri_frame_count` metric has been created in the sample [udev
    >
    > > ```bash
    > > helm upgrade prometheus prometheus-community/kube-prometheus-stack \
-   > >   $AKRI_HELM_CRICTL_CONFIGURATION \
    > >   --set grafana.service.type=NodePort \
    > >   --set prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues=false \
    > >   --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \

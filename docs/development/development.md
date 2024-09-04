@@ -94,7 +94,7 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
     
     ```sh
     cd akri/agent
-    sudo -E DEBUG_ECHO_INSTANCES_SHARED=true ENABLE_DEBUG_ECHO=1 RUST_LOG=info METRICS_PORT=8082 KUBECONFIG=$HOME/.kube/config DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode HOST_CRICTL_PATH=/usr/bin/crictl HOST_RUNTIME_ENDPOINT=/run/containerd/containerd.sock HOST_IMAGE_ENDPOINT=/run/containerd/containerd.sock $HOME/.cargo/bin/cargo run
+    sudo -E DEBUG_ECHO_INSTANCES_SHARED=true ENABLE_DEBUG_ECHO=1 RUST_LOG=info METRICS_PORT=8082 KUBECONFIG=$HOME/.kube/config DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode $HOME/.cargo/bin/cargo run
     ```
     
     > Note: `DISCOVERY_HANDLERS_DIRECTORY` is where Akri agent creates an unix domain socket for discovery handler's registeration. This example uses ~/tmp/akri that should exist or is created before executing this command.
@@ -104,14 +104,6 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
     is always included if `agent-full` is turned on. For example, to run the Agent with OPC UA, ONVIF, udev, and
     debug echo Discovery Handlers add the following to the above command: `--features "agent-full udev-feat
     opcua-feat onvif-feat"`.
-
-    > Note: The environment variables `HOST_CRICTL_PATH`, `HOST_RUNTIME_ENDPOINT`, and `HOST_IMAGE_ENDPOINT` are for
-    > slot-reconciliation (making sure Pods that no longer exist are not still claiming Akri resources). The values of
-    > these vary based on Kubernetes distribution. The above is for vanilla Kubernetes. For MicroK8s, use
-    > `HOST_CRICTL_PATH=/usr/local/bin/crictl HOST_RUNTIME_ENDPOINT=/var/snap/microk8s/common/run/containerd.sock
-    > HOST_IMAGE_ENDPOINT=/var/snap/microk8s/common/run/containerd.sock` and for K3s, use
-    > `HOST_CRICTL_PATH=/usr/local/bin/crictl HOST_RUNTIME_ENDPOINT=/run/k3s/containerd/containerd.sock
-    > HOST_IMAGE_ENDPOINT=/run/k3s/containerd/containerd.sock`.
 
     To run **Discovery Handlers** locally, simply navigate to the Discovery Handler under `akri/discovery-handler-modules/` and run using `cargo run`, setting where the Discovery Handler socket should be created in the `DISCOVERY_HANDLERS_DIRECTORY` variable. The discovery handlers must be run privileged in order to connect to the Agent. For example, to run the ONVIF Discovery Handler locally:
     ```sh
@@ -223,7 +215,6 @@ When installing Akri using helm, you can set the `imagePullSecrets`, `image.repo
 kubectl create secret docker-registry <your-secret-name> --docker-server=ghcr.io  --docker-username=<your-github-alias> --docker-password=<your-github-token>
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri-dev \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set imagePullSecrets[0].name="<your-secret-name>" \
     --set agent.image.repository="ghcr.io/<your-github-alias>/agent" \
     --set agent.image.tag="v<akri-version>" \
@@ -239,7 +230,6 @@ More information about the Akri Helm charts can be found in the [user guide](../
 If you make changes to anything in the [helm folder](https://github.com/project-akri/akri/tree/main/deployment/helm), you will probably need to create a new Helm chart for Akri. This can be done using the [`helm package`](https://helm.sh/docs/helm/helm_package/) command. To create a chart using the current state of the Helm templates and CRDs, run (from one level above the Akri directory) `helm package akri/deployment/helm/`. You will see a tgz file called `akri-<akri-version>.tgz` at the location where you ran the command. Now, install Akri using that chart:
 ```sh
 helm install akri akri-<akri-version>.tgz \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set useLatestContainers=true
 ```
 ### Helm Template

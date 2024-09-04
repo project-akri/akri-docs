@@ -15,12 +15,10 @@ The [ONVIF](../discovery-handlers/onvif.md), [udev](../discovery-handlers/udev.m
 
 To install Akri without any protocol Configurations, run this:
 
-> Note: See [the cluster setup steps](cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
-helm install akri akri-helm-charts/akri \
-  $AKRI_HELM_CRICTL_CONFIGURATION \
+helm install akri akri-helm-charts/akri
 ```
 
 This will deploy the Akri Controller and deploy Akri Agents.
@@ -103,7 +101,6 @@ If you want your end application to consume frames from both IP cameras and loca
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.configuration.enabled=true \
     --set udev.configuration.enabled=true \
     --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"'
@@ -149,7 +146,6 @@ A Configuration can be modified by using the `helm upgrade` command. It upgrades
 
 ```bash
 helm upgrade akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository=<your broker image name> \
     --set onvif.configuration.brokerPod.image.tag=<your broker image tag> \
@@ -171,7 +167,6 @@ Another Configuration can be added to the cluster by using `helm upgrade`. For e
 
 ```bash
 helm upgrade akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.enabled=true \
     --set udev.enabled=true \
     --set udev.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"'
@@ -232,7 +227,6 @@ A Configuration can be deleted from a cluster using `helm upgrade`. For example,
 
 ```bash
 helm upgrade akri akri-helm-charts/akri \
-    $AKRI_HELM_CRICTL_CONFIGURATION \
     --set onvif.enabled=true
 ```
 
@@ -266,7 +260,6 @@ The Agent discovers devices via Discovery Handlers. Akri supports an Agent image
 
 ```bash
 helm install akri akri-helm-charts/akri \
-  $AKRI_HELM_CRICTL_CONFIGURATION \
   --set agent.full=true
 ```
 
@@ -274,7 +267,6 @@ By default, a slim Agent without any embedded Discovery Handlers is deployed and
 
 ```bash
 helm install akri akri-helm-charts/akri \
-  $AKRI_HELM_CRICTL_CONFIGURATION \
   --set opcua.discovery.enabled=true \
   --set onvif.discovery.enabled=true
 ```

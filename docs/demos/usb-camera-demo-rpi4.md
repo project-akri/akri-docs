@@ -122,12 +122,10 @@ In order for the Agent to know how to discover video devices, the udev Discovery
 
 1. Add the Akri Helm chart and run the install command, setting Helm values as described above.
 
-    > Note: See [the cluster setup steps](../user-guide/cluster-setup.md#configure-crictl) for information on how to set the crictl configuration variable `AKRI_HELM_CRICTL_CONFIGURATION`
     
     ```sh
     helm repo add akri-helm-charts https://project-akri.github.io/akri/
     helm install akri akri-helm-charts/akri \
-        $AKRI_HELM_CRICTL_CONFIGURATION \
         --set udev.discovery.enabled=true \
         --set udev.configuration.enabled=true \
         --set udev.configuration.name=akri-udev-video \
@@ -214,7 +212,6 @@ Look at the Configuration and Instances in more detail.
    ```bash
    helm repo add akri-helm-charts https://project-akri.github.io/akri/
    helm install akri akri-helm-charts/akri \
-      $AKRI_HELM_CRICTL_CONFIGURATION \
       --set udev.discovery.enabled=true \
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \
