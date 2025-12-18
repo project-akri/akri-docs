@@ -20,11 +20,11 @@ Discovery Handlers are passed discovery details that are set in a Configuration 
 
 The generic OPC UA Configuration takes in a list of DiscoveryURLs, whether for LDSes or a specific servers and an optional list of application names to either include or exclude. By default, if no DiscoveryURLs are set, the Discovery Handler will attempt to reach out to the Local Discovery Server on its host at the default address [from OPC UA Specification 12](https://reference.opcfoundation.org/v104/Core/docs/Part6/7.6/) of `opc.tcp://localhost:4840/` and get the list of OPC UA servers registered with it.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| opcua.configuration.discoveryDetails.discoveryUrls | array of DiscoveryURLs | \["opc.tcp://localhost:4840/"\] | DiscoveryURLs for OPC UA Servers or Local Discovery Servers |
-| opcua.configuration.discoveryDetails.applicationNames.action | Include, Exclude | Exclude | filter action to take on a set of OPC UA Applications |
-| opcua.configuration.discoveryDetails.applicationNames.items | array of application names | empty | application names that the filter action acts upon |
+| Helm Key                                                     | Value                      | Default                         | Description                                                 |
+| :----------------------------------------------------------- | :------------------------- | :------------------------------ | :---------------------------------------------------------- |
+| opcua.configuration.discoveryDetails.discoveryUrls           | array of DiscoveryURLs     | \["opc.tcp://localhost:4840/"\] | DiscoveryURLs for OPC UA Servers or Local Discovery Servers |
+| opcua.configuration.discoveryDetails.applicationNames.action | Include, Exclude           | Exclude                         | filter action to take on a set of OPC UA Applications       |
+| opcua.configuration.discoveryDetails.applicationNames.items  | array of application names | empty                           | application names that the filter action acts upon          |
 
 ### Broker Pod Settings
 
@@ -32,14 +32,14 @@ If you would like non-terminating workloads ("broker" Pods) to be deployed autom
 
 > Note only a `brokerJob` OR `brokerPod` should be specified.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| opcua.configuration.brokerPod.image.repository | image string | "" | image of broker Pod that should be deployed to discovered devices |
-| opcua.configuration.brokerPod.image.tag | tag string | "latest" | image tag of broker Pod that should be deployed to discovered devices |
-| opcua.configuration.brokerPod.resources.memoryRequest | string | "76Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
-| opcua.configuration.brokerPod.resources.cpuRequest | string | "9m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
-| opcua.configuration.brokerPod.resources.memoryLimit | string | "200Mi" | the maximum amount of RAM this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
-| opcua.configuration.brokerPod.resources.cpuLimit | string | "30m" | the maximum amount of CPU this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| Helm Key                                              | Value        | Default  | Description                                                                                                                                                                                         |
+| :---------------------------------------------------- | :----------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| opcua.configuration.brokerPod.image.repository        | image string | ""       | image of broker Pod that should be deployed to discovered devices                                                                                                                                   |
+| opcua.configuration.brokerPod.image.tag               | tag string   | "latest" | image tag of broker Pod that should be deployed to discovered devices                                                                                                                               |
+| opcua.configuration.brokerPod.resources.memoryRequest | string       | "76Mi"   | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerPod.resources.cpuRequest    | string       | "9m"     | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerPod.resources.memoryLimit   | string       | "200Mi"  | the maximum amount of RAM this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker.                                                                  |
+| opcua.configuration.brokerPod.resources.cpuLimit      | string       | "30m"    | the maximum amount of CPU this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker.                                                                  |
 
 ### Broker Job Settings
 
@@ -47,44 +47,44 @@ If you would like terminating [Jobs](https://kubernetes.io/docs/concepts/workloa
 
 > Note only a `brokerJob` OR `brokerPod` should be specified.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| opcua.configuration.brokerJob.image.repository | image string | "" | image of broker Job that should be deployed to discovered devices |
-| opcua.configuration.brokerJob.image.tag | tag string | "latest" | image tag of broker Job that should be deployed to discovered devices |
-| opcua.configuration.brokerJob.resources.memoryRequest | string | "76Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
-| opcua.configuration.brokerJob.resources.cpuRequest | string | "9m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
-| opcua.configuration.brokerJob.resources.memoryLimit | string | "200Mi" | the maximum amount of RAM this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
-| opcua.configuration.brokerJob.resources.cpuLimit | string | "30m" | the maximum amount of CPU this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
-| opcua.configuration.brokerJob.command | string array | Empty | command to be executed in the Pod |
-| opcua.configuration.brokerJob.restartPolicy | string array | `OnFailure` | `RestartPolicy` for the Job. Can either be `OnFailure` or `Never` for Jobs.|
-| opcua.configuration.brokerJob.backoffLimit | number | 2 | defines the Kubernetes Job [backoff failure policy](https://kubernetes.io/docs/concepts/workloads/controllers/job/#pod-backoff-failure-policy) |
-| opcua.configuration.brokerJob.parallelism | number | 1 | defines the Kubernetes Job [`parallelism`](https://kubernetes.io/docs/concepts/workloads/controllers/job/#parallel-jobs) |
-| opcua.configuration.brokerJob.completions | number | 1 | defines the Kubernetes Job [`completions`](https://kubernetes.io/docs/concepts/workloads/controllers/job) |
+| Helm Key                                              | Value        | Default     | Description                                                                                                                                                                                         |
+| :---------------------------------------------------- | :----------- | :---------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| opcua.configuration.brokerJob.image.repository        | image string | ""          | image of broker Job that should be deployed to discovered devices                                                                                                                                   |
+| opcua.configuration.brokerJob.image.tag               | tag string   | "latest"    | image tag of broker Job that should be deployed to discovered devices                                                                                                                               |
+| opcua.configuration.brokerJob.resources.memoryRequest | string       | "76Mi"      | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerJob.resources.cpuRequest    | string       | "9m"        | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker. |
+| opcua.configuration.brokerJob.resources.memoryLimit   | string       | "200Mi"     | the maximum amount of RAM this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker.                                                                  |
+| opcua.configuration.brokerJob.resources.cpuLimit      | string       | "30m"       | the maximum amount of CPU this Pod can consume. Default based on the Akri OPC UA sample broker. Adjust to the size of your broker.                                                                  |
+| opcua.configuration.brokerJob.command                 | string array | Empty       | command to be executed in the Pod                                                                                                                                                                   |
+| opcua.configuration.brokerJob.restartPolicy           | string array | `OnFailure` | `RestartPolicy` for the Job. Can either be `OnFailure` or `Never` for Jobs.                                                                                                                         |
+| opcua.configuration.brokerJob.backoffLimit            | number       | 2           | defines the Kubernetes Job [backoff failure policy](https://kubernetes.io/docs/concepts/workloads/controllers/job/#pod-backoff-failure-policy)                                                      |
+| opcua.configuration.brokerJob.parallelism             | number       | 1           | defines the Kubernetes Job [`parallelism`](https://kubernetes.io/docs/concepts/workloads/controllers/job/#parallel-jobs)                                                                            |
+| opcua.configuration.brokerJob.completions             | number       | 1           | defines the Kubernetes Job [`completions`](https://kubernetes.io/docs/concepts/workloads/controllers/job)                                                                                           |
 
 ### Mounting Credentials Settings
 
 See [Mounting OPC UA credentials to enable security](#mounting-opc-ua-credentials-to-enable-security) for more details on how to use this setting.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| opcua.configuration.mountCertificates | true, false | false | specify whether to mount a secret named `opcua-broker-credentials` into the OPC UA brokers |
+| Helm Key                              | Value       | Default | Description                                                                                |
+| :------------------------------------ | :---------- | :------ | :----------------------------------------------------------------------------------------- |
+| opcua.configuration.mountCertificates | true, false | false   | specify whether to mount a secret named `opcua-broker-credentials` into the OPC UA brokers |
 
 ### Disabling Automatic Service Creation
 
 By default, if a broker Pod is specified, the generic OPC UA Configuration will create services for all the brokers of a specific Akri Instance and all the brokers of an Akri Configuration. The creation of these services can be disabled.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| opcua.configuration.createInstanceServices | true, false | true | a service should be automatically created for each broker Pod |
-| opcua.configuration.createConfigurationService | true, false | true | a single service should be created for all brokers of a Configuration |
+| Helm Key                                       | Value       | Default | Description                                                           |
+| :--------------------------------------------- | :---------- | :------ | :-------------------------------------------------------------------- |
+| opcua.configuration.createInstanceServices     | true, false | true    | a service should be automatically created for each broker Pod         |
+| opcua.configuration.createConfigurationService | true, false | true    | a single service should be created for all brokers of a Configuration |
 
 ### Capacity Setting
 
 By default, if a broker Pod is specified, a single broker Pod is deployed to each device. To modify the Configuration so that an OPC UA server is accessed by more or fewer nodes via broker Pods, update the `opcua.configuration.capacity` setting to reflect the correct number. For example, if your high availability needs are met by having 1 redundant pod, you can update the Configuration like this by setting `opcua.configuration.capacity=2`.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| opcua.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device (up to 1 per Node) |
+| Helm Key                     | Value  | Default | Description                                                                           |
+| :--------------------------- | :----- | :------ | :------------------------------------------------------------------------------------ |
+| opcua.configuration.capacity | number | 1       | maximum number of brokers that can be deployed to utilize a device (up to 1 per Node) |
 
 ### Installing Akri with the OPC UA Configuration and Discovery Handler
 
@@ -111,11 +111,11 @@ helm install akri akri-helm-charts/akri \
 
 The following installation examples have been given to show how to the OPC UA Configuration can be tailored to you cluster:
 
-* Specifying the DiscoveryURLs for OPC UA Local Discovery Servers
-* Specifying the DiscoveryURLs for specific OPC UA servers
-* Specifying the DiscoveryURLs for both Local Discovery Servers and servers
-* Filtering the servers by application name
-* Mounting OPC UA credentials to enable security
+- Specifying the DiscoveryURLs for OPC UA Local Discovery Servers
+- Specifying the DiscoveryURLs for specific OPC UA servers
+- Specifying the DiscoveryURLs for both Local Discovery Servers and servers
+- Filtering the servers by application name
+- Mounting OPC UA credentials to enable security
 
 ### Specifying the DiscoveryURLs for OPC UA LocalDiscoveryServers
 
@@ -217,8 +217,7 @@ Akri has provided further documentation on [modifying the broker PodSpec](../use
 ## Implementation details
 
 The OPC UA implementation can be understood by looking at several things:
- 
-1. [OpcuaDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines the required properties. 
-1. [OpcuaDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines OPC UA Server discovery. 
-1. [sample-brokers/opcua-monitoring-broker](https://github.com/project-akri/akri/tree/main/samples/brokers/opcua-monitoring-broker) defines a sample OPC UA protocol broker that monitors an OPC UA Variable with a specific NodeID.
 
+1. [OpcuaDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines the required properties.
+1. [OpcuaDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines OPC UA Server discovery.
+1. [sample-brokers/opcua-monitoring-broker](https://github.com/project-akri/akri/tree/main/samples/brokers/opcua-monitoring-broker) defines a sample OPC UA protocol broker that monitors an OPC UA Variable with a specific NodeID.
