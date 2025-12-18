@@ -8,3 +8,4 @@ If you prefer to learn through videos rather than written documentation, the fol
 1. [Discovering and Managing IoT Devices from Kubernetes with Akri](https://www.youtube.com/watch?v=9wCQCV0m5Kk) - A deep dive for Akri. Includes a step-by-step demo of discovering the ONVIF cameras and performing firmware update.
 
 To try more demos/examples with step-by-step guidance, check the rest of the pages under [Demo](https://docs.akri.sh/demos/usb-camera-demo) section.
+

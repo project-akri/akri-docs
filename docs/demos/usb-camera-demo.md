@@ -2,7 +2,7 @@
 
 In this guide, we will walk through using Akri to discover mock USB cameras attached to nodes in a Kubernetes cluster. You'll see how Akri automatically deploys workloads to pull frames from the cameras. We will then deploy a streaming application that will point to services automatically created by Akri to access the video frames from the workloads.
 
-The following will be covered in this demo: 
+The following will be covered in this demo:
 
 1. Setting up mock udev video devices
 2. Setting up a cluster
@@ -51,7 +51,7 @@ The following will be covered in this demo:
    > sudo depmod -a
    > ```
 
-1. "Plug-in" two cameras by inserting the kernel module. To create different number video devices modify the `video_nr` argument. 
+1. "Plug-in" two cameras by inserting the kernel module. To create different number video devices modify the `video_nr` argument.
 
    ```bash
     sudo modprobe v4l2loopback exclusive_caps=1 video_nr=1,2
@@ -95,16 +95,17 @@ Reference our [cluster setup documentation](../user-guide/cluster-setup.md) to s
 
 ## Installing Akri
 
-You tell Akri what you want to find with an Akri Configuration, which is one of Akri's Kubernetes custom resources. The Akri Configuration is simply a `yaml` file that you apply to your cluster. Within it, you specify three things: 
+You tell Akri what you want to find with an Akri Configuration, which is one of Akri's Kubernetes custom resources. The Akri Configuration is simply a `yaml` file that you apply to your cluster. Within it, you specify three things:
 
-1. a Discovery Handler 
-2. any additional device filtering 
+1. a Discovery Handler
+2. any additional device filtering
 3. an image for a Pod (that we call a "broker") that you want to be automatically deployed to utilize each discovered device
 
-For this demo, we will specify 
-1. Akri's udev Discovery Handler, which is used to discover devices in the Linux device file system. Akri's udev Discovery Handler supports 
+For this demo, we will specify
+
+1. Akri's udev Discovery Handler, which is used to discover devices in the Linux device file system. Akri's udev Discovery Handler supports
 2. filtering by udev rules. We want to find all mock USB cameras in the Linux device file system, which can be specified with a simple udev rule `KERNEL=="video[0-9]*"`. It matches name of the mock USB cameras.
-> Note, when real USB cameras are used, the filtering udev rule can be more precise to avoid mistaken device match. For example, a better rule is `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"` that adds a criteria on device capability. We may go further by adding criteria such as vendor name. An example is `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"\, ENV{ID_VENDOR}=="Great Vendor"`. In order to write correct rule, check output of "udevadm" command for USB cameras. A example is "udevadm info --query=all --name=video1".
+   > Note, when real USB cameras are used, the filtering udev rule can be more precise to avoid mistaken device match. For example, a better rule is `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"` that adds a criteria on device capability. We may go further by adding criteria such as vendor name. An example is `KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"\, ENV{ID_VENDOR}=="Great Vendor"`. In order to write correct rule, check output of "udevadm" command for USB cameras. A example is "udevadm info --query=all --name=video1".
 3. a broker Pod image, we will use a sample container that Akri has provided that pulls frames from the cameras and serves them over gRPC.
 
 All of Akri's components can be deployed by specifying values in its Helm chart during an installation. Instead of having to build a Configuration from scratch, Akri has provided [Helm templates](https://github.com/project-akri/akri/blob/main/deployment/helm/templates) for Configurations for each supported Discovery Handler. Lets customize the generic [udev Configuration Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/udev-configuration.yaml) with our three specifications above. We can also set the name for the Configuration to be `akri-udev-video`.
@@ -113,7 +114,6 @@ In order for the Agent to know how to discover video devices, the udev Discovery
 
 1. Add the Akri Helm chart and run the install command, setting Helm values as described above.
 
-   
    ```bash
     helm repo add akri-helm-charts https://project-akri.github.io/akri/
     helm install akri akri-helm-charts/akri \
@@ -154,7 +154,7 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
     kubectl get akrii -o yaml
    ```
 
-    If this was a shared device (such as an IP camera), you may have wanted to increase the number of nodes that could use the same device by specifying `capacity`. There is a `capacity` parameter for each Configuration, which defaults to `1`. Its value could have been increased when installing Akri (via `--set <discovery handler name>.configuration.capacity=2` to allow 2 nodes to use the same device) and more usage slots (the number of usage slots is equal to `capacity`) would have been created in the Instance. 
+   If this was a shared device (such as an IP camera), you may have wanted to increase the number of nodes that could use the same device by specifying `capacity`. There is a `capacity` parameter for each Configuration, which defaults to `1`. Its value could have been increased when installing Akri (via `--set <discovery handler name>.configuration.capacity=2` to allow 2 nodes to use the same device) and more usage slots (the number of usage slots is equal to `capacity`) would have been created in the Instance.
 
    **Deploying a streaming application**
 
@@ -164,13 +164,13 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
     kubectl apply -f https://raw.githubusercontent.com/project-akri/akri/main/deployment/samples/akri-video-streaming-app.yaml
    ```
 
-    For MicroK8s
+   For MicroK8s
 
    ```bash
     watch microk8s kubectl get pods
    ```
 
-    For K3s and vanilla Kubernetes
+   For K3s and vanilla Kubernetes
 
    ```bash
     watch kubectl get pods
@@ -182,7 +182,7 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
    kubectl get service/akri-video-streaming-app --output=jsonpath='{.spec.ports[?(@.name=="http")].nodePort}' && echo
    ```
 
-6. SSH port forwarding can be used to access the streaming application. In a new terminal, enter your ssh command to to access your VM followed by the port forwarding request. The following command will use port 50000 on the host. Feel free to change it if it is not available. Be sure to replace `<streaming-app-port>` with the port number outputted in the previous step. 
+6. SSH port forwarding can be used to access the streaming application. In a new terminal, enter your ssh command to to access your VM followed by the port forwarding request. The following command will use port 50000 on the host. Feel free to change it if it is not available. Be sure to replace `<streaming-app-port>` with the port number outputted in the previous step.
 
    ```bash
    ssh someuser@<Ubuntu VM IP address> -L 50000:localhost:<streaming-app-port>
@@ -201,13 +201,13 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
     kubectl delete deployment akri-video-streaming-app
    ```
 
-    For MicroK8s
+   For MicroK8s
 
    ```bash
     watch microk8s kubectl get pods
    ```
 
-    For K3s and vanilla Kubernetes
+   For K3s and vanilla Kubernetes
 
    ```bash
     watch kubectl get pods
@@ -219,13 +219,13 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
     kubectl delete akric akri-udev-video
    ```
 
-    For MicroK8s
+   For MicroK8s
 
    ```bash
     watch microk8s kubectl get pods,services,akric,akrii -o wide
    ```
 
-    For K3s and vanilla Kubernetes
+   For K3s and vanilla Kubernetes
 
    ```bash
     watch kubectl get pods,services,akric,akrii -o wide
@@ -272,8 +272,6 @@ After installing Akri, since the /dev/video1 and /dev/video2 devices are running
       --set udev.configuration.enabled=true \
       --set udev.configuration.name=akri-udev-video \
       --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"\, ENV{ID_VENDOR}=="Microsoft"' \
-      --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" 
+      --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker"
    ```
 5. Discover other udev devices by creating a new udev configuration and broker. Learn more about the udev Discovery Handler Configuration [here](../discovery-handlers/udev.md).
-
-
