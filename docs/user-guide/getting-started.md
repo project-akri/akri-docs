@@ -126,17 +126,17 @@ See [modifying an Akri Installation](customizing-an-akri-installation.md) to lea
 
 ### Inspecting an Akri Installation
 
-* Run `kubectl get crd`, and you should see Akri's two CRDs listed. 
-* Run `kubectl get pods -o wide`, and you should see the Akri Controller, Agent, and (if specified) broker pods. 
-* Run `kubectl get akric`, and you should see the Configuration for the protocol you specified.  
-* If devices were discovered, the instances can be seen by running `kubectl get akrii` and further inspected by running `kubectl get akrii <discovery handler name>-<ID> -o yaml`.
-* List all that Akri has automatically created and deployed, namely the Akri Controller, Agents, Configurations, Instances (which are the Akri custom resource that represents each device), and if specified, broker Pods, a service for each broker Pod, and a service for all brokers.
+- Run `kubectl get crd`, and you should see Akri's two CRDs listed.
+- Run `kubectl get pods -o wide`, and you should see the Akri Controller, Agent, and (if specified) broker pods.
+- Run `kubectl get akric`, and you should see the Configuration for the protocol you specified.
+- If devices were discovered, the instances can be seen by running `kubectl get akrii` and further inspected by running `kubectl get akrii <discovery handler name>-<ID> -o yaml`.
+- List all that Akri has automatically created and deployed, namely the Akri Controller, Agents, Configurations, Instances (which are the Akri custom resource that represents each device), and if specified, broker Pods, a service for each broker Pod, and a service for all brokers.
 
   ```bash
     watch microk8s kubectl get pods,akric,akrii,services -o wide
   ```
 
-    For K3s and vanilla Kubernetes
+  For K3s and vanilla Kubernetes
 
   ```bash
     watch kubectl get pods,akric,akrii,services -o wide
@@ -171,4 +171,3 @@ See [modifying an Akri Installation](customizing-an-akri-installation.md) to lea
 By default the Controller can be deployed to any control plane or worker node. This can be changed by adding extra settings when installing Akri below. If you don't want the Controller to ever be scheduled to control plane nodes, add `--set controller.allowOnControlPlane=false` to your install command below. Conversely, if you only want the Controller to run on control plane nodes, add `--set controller.onlyOnControlPlane=true`. This will guarantee the Controller only runs on nodes with the label (key, value) of (`node-role.kubernetes.io/master`, ""), which is the default label for the control plane node for Kubernetes.
 
 However, control plane nodes on MicroK8s and K3s/RKE2 may not have this exact label by default, so you can add it by running `kubectl label node ${HOSTNAME,,} node-role.kubernetes.io/master=--overwrite=true`. Or alternatively, in K3s/RKE2, you can keep the default label value on the master and set `controller.nodeSelectors."node-role\.kubernetes\.io/master"=true`.
-

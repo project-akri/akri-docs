@@ -10,6 +10,7 @@ Note: All nodes must be Linux on amd64, arm64v8, or arm32v7.
 
 {% tabs %}
 {% tab title="Kubernetes" %}
+
 1. Reference [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/) for instructions on how to install Kubernetes. See Akri's [release notes](https://github.com/project-akri/akri/releases) to see what versions of Kubernetes Akri has been tested on.
 
 2. Install Helm for deploying Akri.
@@ -25,11 +26,11 @@ Note: To enable workloads on a single-node cluster, remove the master taint.
 ```bash
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
+
 {% endhint %}
 {% endtab %}
 
 {% tab title="K3s" %}
-
 
 1. Install [K3s](https://k3s.io/). The following will install the latest K3s version. Reference Akri's [release notes](https://github.com/project-akri/akri/releases) to see what versions of K3s Akri has been tested on.
 
@@ -65,10 +66,9 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
    ```
 
 5. If desired, add nodes to your cluster by running the K3s installation script with the `K3S_URL` and `K3S_TOKEN` environment variables. See [K3s installation documentation](https://rancher.com/docs/k3s/latest/en/quick-start/#install-script) for more details.
-{% endtab %}
+   {% endtab %}
 
 {% tab title="MicroK8s" %}
-
 
 1. Install [MicroK8s](https://microk8s.io/docs). The following will install the latest MicroK8s version. Add `--channel=$VERSION/stable` to specify as specific Kubernetes version. Reference Akri's [release notes](https://github.com/project-akri/akri/releases) to see what versions of MicroK8s Akri has been tested on.
 
@@ -112,5 +112,5 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
    ```
 
 7. If desired, reference [MicroK8's documentation](https://microk8s.io/docs/clustering) to add additional nodes to the cluster.
-{% endtab %}
-{% endtabs %}
+   {% endtab %}
+   {% endtabs %}

@@ -2,17 +2,17 @@
 
 To enable a deeper understanding of the state of an Akri deployment and Node resource usage by Akri containers, Akri exposes metrics with Prometheus. This document will cover:
 
-* Installing Prometheus
-* Enabling Prometheus with Akri
-* Visualizing metrics with Grafana
-* Akri's currently exposed metrics
-* Exposing metrics from an Akri Broker Pod
+- Installing Prometheus
+- Enabling Prometheus with Akri
+- Visualizing metrics with Grafana
+- Akri's currently exposed metrics
+- Exposing metrics from an Akri Broker Pod
 
 ## Installing Prometheus
 
 In order to expose Akri's metrics, Prometheus must be deployed to your cluster. If you already have Prometheus running on your cluster, you can skip this step.
 
-Prometheus is comprised of many components. Instead of manually deploying all the components, the entire kube-prometheus stack can be deployed via its [Helm chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack). It includes the Prometheus operator, node exporter, built in Grafana support, and more. 
+Prometheus is comprised of many components. Instead of manually deploying all the components, the entire kube-prometheus stack can be deployed via its [Helm chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack). It includes the Prometheus operator, node exporter, built in Grafana support, and more.
 
 1. Get the kube-prometheus stack Helm repo.
 
@@ -38,7 +38,6 @@ The Akri Controller and Agent publish metrics to port 8080 at a `/metrics` endpo
 
 Install Akri and expose the Controller and Agent's metrics to Prometheus by running:
 
-
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
@@ -47,7 +46,7 @@ helm install akri akri-helm-charts/akri \
 
 ## Visualizing metrics with Grafana
 
-Now that Akri's metrics are being exposed to Prometheus, they can be visualized in Grafana. 
+Now that Akri's metrics are being exposed to Prometheus, they can be visualized in Grafana.
 
 1. Determine the port that the Grafana Service is running on, specifying the namespace if necessary, and save it for the next step.
 
@@ -61,22 +60,22 @@ Now that Akri's metrics are being exposed to Prometheus, they can be visualized 
     ssh someuser@<IP address> -L 50000:localhost:<Grafana Service port>
    ```
 
-3. Navigate to `http://localhost:50000/` and enter Grafana's default username `admin` and password `prom-operator`. 
+3. Navigate to `http://localhost:50000/` and enter Grafana's default username `admin` and password `prom-operator`.
 
-   Once logged in, the username and password can be changed in account settings. Now, 
+   Once logged in, the username and password can be changed in account settings. Now,
 
-   you can create a Dashboard to display the Akri metrics. 
+   you can create a Dashboard to display the Akri metrics.
 
 ## Akri's currently exposed metrics
 
 Akri uses the [Rust Prometheus client library](https://github.com/tikv/rust-prometheus) to expose metrics. It exposes all the [default process metrics](https://prometheus.io/docs/instrumenting/writing_clientlibs/#process-metrics), such as Agent or Controller total CPU time usage (`process_cpu_seconds_total`) and RAM usage (`process_resident_memory_bytes`), along with the following custom metrics, all of which are prefixed with `akri`.
 
-| Metric Name | Metric Type | Metric Source | Buckets |
-| :--- | :--- | :--- | :--- |
-| akri\_instance\_count | IntGaugeVec | Agent | Configuration, shared |
-| akri\_discovery\_response\_result | IntCounterVec | Agent | Discovery Handler name, response result (Success/Fail) |
-| akri\_discovery\_response\_time | HistogramVec | Agent | Configuration |
-| akri\_broker\_pod\_count | IntGaugeVec | Controller | Configuration, Node |
+| Metric Name                    | Metric Type   | Metric Source | Buckets                                                |
+| :----------------------------- | :------------ | :------------ | :----------------------------------------------------- |
+| akri_instance_count            | IntGaugeVec   | Agent         | Configuration, shared                                  |
+| akri_discovery_response_result | IntCounterVec | Agent         | Discovery Handler name, response result (Success/Fail) |
+| akri_discovery_response_time   | HistogramVec  | Agent         | Configuration                                          |
+| akri_broker_pod_count          | IntGaugeVec   | Controller    | Configuration, Node                                    |
 
 ## Exposing metrics from an Akri Broker Pod
 
@@ -99,7 +98,6 @@ As an example, an `akri_frame_count` metric has been created in the sample [udev
         --set udev.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker"
    ```
 
-   
    > **Note**: To expose the Agent and Controller's Prometheus metrics, add `--set prometheus.enabled=true`.
 
    > **Note**: If Prometheus is running in a different namespace as Akri and was not enabled to discover ServiceMonitors in other namespaces when installed, upgrade your Prometheus Helm installation to set `prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues` to `false`.
@@ -167,6 +165,3 @@ As an example, an `akri_frame_count` metric has been created in the sample [udev
    kubectl apply -f https://raw.githubusercontent.com/project-akri/akri/main/deployment/samples/akri-video-streaming-app.yaml
    watch kubectl get pods
    ```
-
-
-

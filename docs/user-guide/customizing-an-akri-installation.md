@@ -1,10 +1,10 @@
 # Customizing an Akri Installation
 
-The [ONVIF](../discovery-handlers/onvif.md), [udev](../discovery-handlers/udev.md), and [OPC UA](../discovery-handlers/opc-ua.md) Configurations documentation explains how to deploy Akri and utilize a specific Discovery Handler using Helm (more information about the Akri Helm charts can be found in the [user guide](getting-started.md#understanding-akri-helm-charts)). This documentation elaborates upon them, covering the following: 
+The [ONVIF](../discovery-handlers/onvif.md), [udev](../discovery-handlers/udev.md), and [OPC UA](../discovery-handlers/opc-ua.md) Configurations documentation explains how to deploy Akri and utilize a specific Discovery Handler using Helm (more information about the Akri Helm charts can be found in the [user guide](getting-started.md#understanding-akri-helm-charts)). This documentation elaborates upon them, covering the following:
 
-1. Starting Akri without any Configurations 
+1. Starting Akri without any Configurations
 1. Generating, modifying and applying a Configuration
-1. Deploying multiple Configurations 
+1. Deploying multiple Configurations
 1. Modifying a deployed Configuration
 1. Adding another Configuration to a cluster
 1. Modifying a broker
@@ -14,7 +14,6 @@ The [ONVIF](../discovery-handlers/onvif.md), [udev](../discovery-handlers/udev.m
 ## Starting Akri without any Configurations
 
 To install Akri without any protocol Configurations, run this:
-
 
 ```bash
 helm repo add akri-helm-charts https://project-akri.github.io/akri/
@@ -58,11 +57,11 @@ The `brokerPodSpec` property is a full [PodSpec](https://kubernetes.io/docs/refe
 spec:
   brokerPodSpec:
     containers:
-    - name: akri-onvif-video-broker
-      image: "ghcr.io/project-akri/akri/onvif-video-broker:latest-dev"
-      resources:
-        limits:
-          "{{PLACEHOLDER}}" : "1"
+      - name: akri-onvif-video-broker
+        image: "ghcr.io/project-akri/akri/onvif-video-broker:latest-dev"
+        resources:
+          limits:
+            "{{PLACEHOLDER}}": "1"
     tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
@@ -80,14 +79,14 @@ The `instanceServiceSpec` and `configurationServiceSpec` properties are full [Se
 spec:
   instanceServiceSpec:
     ports:
-    - name: grpc
-      port: 8085
-      targetPort: 8083
+      - name: grpc
+        port: 8085
+        targetPort: 8083
   configurationServiceSpec:
     ports:
-    - name: grpc
-      port: 8086
-      targetPort: 8083
+      - name: grpc
+        port: 8086
+        targetPort: 8083
 ```
 
 {% hint style="info" %}
@@ -135,9 +134,9 @@ helm install onvif-config akri-helm-charts/akri \
 
 ## Modifying a deployed Configuration
 
-An already deployed Configuration can be modified in one of two ways: 
+An already deployed Configuration can be modified in one of two ways:
 
-1. Using the `helm upgrade` command 
+1. Using the `helm upgrade` command
 2. [Generating, modifying and applying a custom Configuration](customizing-an-akri-installation.md#generating-modifying-and-applying-a-configuration)
 
 Note: Only the broker properties and capacity of an applied configuration should be modified, for any other modification, you need to delete and reapply the Configuration.
@@ -243,4 +242,3 @@ helm install akri akri-helm-charts/akri \
   --set opcua.discovery.enabled=true \
   --set onvif.discovery.enabled=true
 ```
-
