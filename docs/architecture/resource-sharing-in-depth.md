@@ -17,12 +17,12 @@ The configuration's capacity determines how many Nodes are allowed to schedule a
 When the Akri Agent discovers a resource and creates an Instance, the deviceUsage map is initialized based on the `Configuration.capacity`. If the capacity is 5, then the deviceUsage map will have 5 mappings, or slots. The slots are named using a simple pattern, in this case, the initial deviceUsage might look like:
 
 ```yaml
-  deviceUsage:
-    my-resource-00095f-0: ""
-    my-resource-00095f-1: ""
-    my-resource-00095f-2: ""
-    my-resource-00095f-3: ""
-    my-resource-00095f-4: ""
+deviceUsage:
+  my-resource-00095f-0: ""
+  my-resource-00095f-1: ""
+  my-resource-00095f-2: ""
+  my-resource-00095f-3: ""
+  my-resource-00095f-4: ""
 ```
 
 Each slot is initialized to be mapped to an empty string, signifying that no Node is utilizing this slot. When a Node utilizes a slot, it will change the mapping to include its name (i.e., `my-resource-00095f-2: "node-a"`)
@@ -30,32 +30,32 @@ Each slot is initialized to be mapped to an empty string, signifying that no Nod
 During this initialization, a separate, but similar, mapping is sent to the kubelet ... for our example with 5 unutilized slots, this mapping would look like this:
 
 ```yaml
-    my-resource-00095f-0: "Healthy"
-    my-resource-00095f-1: "Healthy"
-    my-resource-00095f-2: "Healthy"
-    my-resource-00095f-3: "Healthy"
-    my-resource-00095f-4: "Healthy"
+my-resource-00095f-0: "Healthy"
+my-resource-00095f-1: "Healthy"
+my-resource-00095f-2: "Healthy"
+my-resource-00095f-3: "Healthy"
+my-resource-00095f-4: "Healthy"
 ```
 
 When the kubelet attempts to schedule a workload on a specific Node, that Node's Akri Agent will be queried with a slot name (this slot name is chosen by the kubelet from the mapping list that Akri Agent sent it). Akri Agent will query the appropriate Instance to see if that resource is still visible and if the mapping for that slot is still empty. If both of these requirements are met, then the Akri Agent will update the `Instance.deviceUsage` map to claim the slot, and will allow the kubelet to schedule its intended workload. After this, the `Instance.deviceUsage` may look something like this:
 
 ```yaml
-  deviceUsage:
-    my-resource-00095f-0: ""
-    my-resource-00095f-1: ""
-    my-resource-00095f-2: ""
-    my-resource-00095f-3: "node-a"
-    my-resource-00095f-4: ""
+deviceUsage:
+  my-resource-00095f-0: ""
+  my-resource-00095f-1: ""
+  my-resource-00095f-2: ""
+  my-resource-00095f-3: "node-a"
+  my-resource-00095f-4: ""
 ```
 
 When this Instance is changed, in this case for `node-a` to claim slot `my-resource-00095f-3`, every Akri Agent that can access this instance will react by notifying the kubelet that this slot is no longer available:
 
 ```yaml
-    my-resource-00095f-0: "Healthy"
-    my-resource-00095f-1: "Healthy"
-    my-resource-00095f-2: "Healthy"
-    my-resource-00095f-3: "Unhealthy"
-    my-resource-00095f-4: "Healthy"
+my-resource-00095f-0: "Healthy"
+my-resource-00095f-1: "Healthy"
+my-resource-00095f-2: "Healthy"
+my-resource-00095f-3: "Unhealthy"
+my-resource-00095f-4: "Healthy"
 ```
 
 These two steps will ensure that a specific slot is only used by one Node.

@@ -1,4 +1,5 @@
 ### Passing credentials to Onvif Discovery Handler to discover authenticated devices
+
 Make sure you have at least one Onvif camera that is reachable so Onvif discovery handler can discovery your Onvif camera. To test accessing Onvif with credentials, make sure your Onvif camera is authentication-enabled. **Write down the username and password**, they are required in the flow below.
 
 #### Preparation
@@ -12,8 +13,8 @@ helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm repo update
 ```
 
-
 #### Acquire Onvif camera's device uuid
+
 In real product scenarios, the device uuids are acquired directly from the vendors or already known before installing Akri Configuration.
 If you already know the device uuids, you can skip this and go to the next step.
 
@@ -29,7 +30,7 @@ helm install akri akri-helm-charts/akri-dev \
    --set onvif.configuration.brokerPod.image.tag="stable-alpine"
 ```
 
-Here is the result of running the installation command above on a cluster with 1 control plane and 2 work nodes.  There is one Onvif camera connects to the network, thus 1 pods running on each node.
+Here is the result of running the installation command above on a cluster with 1 control plane and 2 work nodes. There is one Onvif camera connects to the network, thus 1 pods running on each node.
 
 ```bash=
 $ kubectl get nodes,akric,akrii,pods
@@ -54,6 +55,7 @@ pod/akri-webhook-configuration-75d9b95fbc-wqhgw   1/1     Running   0          6
 pod/kube-02-akri-onvif-029957-pod                 1/1     Running   0          48s
 pod/kube-03-akri-onvif-029957-pod                 1/1     Running   0          48s
 ```
+
 Get the device uuid from the Akri Instance. Below is an example, the Onvif discovery handler discovers the camera and expose the device's uuid. **Write down the device uuid for later use**. Note that in real product scenarios, the device uuids are acquired directly from the vendors or already known before installing Akri Configuration.
 
 ```bash=
@@ -62,6 +64,7 @@ $ kubectl get akrii akri-onvif-029957 -o yaml | grep ONVIF_DEVICE_UUID
 ```
 
 #### Set up Kubernetes secrets
+
 Now we can set up the credential information to Kubernetes Secret. Replace the device uuid and the values of username/password with information of your camera.
 
 ```bash
@@ -89,7 +92,9 @@ EOF
 kubectl apply -f /tmp/onvif-auth-secret.yaml
 
 ```
+
 #### Upgrade the Akri configuration
+
 Upgrade the Akri Configuration to include the secret information and the sample video broker container.
 
 ```bash
@@ -116,6 +121,7 @@ helm upgrade akri akri-helm-charts/akri-dev \
 ```
 
 With the secret information, the Onvif discovery handler is able to discovery the Onvif camera and the video broker is up and running
+
 ```bash=
 $ kubectl get nodes,akric,akrii,pods
 NAME           STATUS   ROLES           AGE   VERSION
@@ -166,12 +172,15 @@ Adding frame from rtsp://----:----@192.168.1.145:554/stream1, Q size: 2, frame s
 Adding frame from rtsp://----:----@192.168.1.145:554/stream1, Q size: 2, frame size: 869655
 Adding frame from rtsp://----:----@192.168.1.145:554/stream1, Q size: 2, frame size: 871353
 ```
+
 #### Deploying the sample video streaming application
+
 Deploy the sample video streaming application Instructions described from the step 4 of [camera demo](https://docs.akri.sh/demos/usb-camera-demo#inspecting-akri)
 
 Deploy a video streaming web application that points to both the Configuration and Instance level services that were automatically created by Akri.
 
 Copy and paste the contents into a file and save it as `akri-video-streaming-app.yaml`
+
 ```bash
 cat > /tmp/akri-video-streaming-app.yaml<< EOF
 ---
@@ -204,7 +213,7 @@ spec:
         env:
         # Streamer works in two modes; either specify the following commented
         # block of env vars to explicitly target cameras (update the <id>s for
-        # your specific cameras) or 
+        # your specific cameras) or
         # specify a Akri configuration name to pick up cameras automatically
         # - name: CAMERAS_SOURCE_SVC
         #   value: "akri-udev-video-svc"
@@ -267,8 +276,9 @@ Deploy the video stream app
 ```bash
 kubectl apply -f /tmp/akri-video-streaming-app.yaml
 ```
- 
+
 Determine which port the service is running on. **Save this port number for the next step**:
+
 ```bash
 kubectl get service/akri-video-streaming-app --output=jsonpath='{.spec.ports[?(@.name=="http")].nodePort}' && echo
 ```
@@ -278,25 +288,29 @@ SSH port forwarding can be used to access the streaming application. Open a new 
 ```bash=
 ssh someuser@<machine IP address> -L 50000:localhost:<streaming-app-port>
 ```
+
 Navigate to http://localhost:50000/ using browser. The large feed points to Configuration level service, while the bottom feed points to the service for each Instance or camera.
 
 #### Clean up
+
 Close the page http://localhost:50000/ from the browser
 
 Delete the sample streaming application resources
+
 ```bash
 kubectl delete -f /tmp/akri-video-streaming-app.yaml
 ```
 
 Delete the Secret information
+
 ```bash
 kubectl delete -f /tmp/onvif-auth-secret.yaml
 ```
 
 Delete deployment and Akri installation to clean up the system.
+
 ```bash
 helm delete akri
 kubectl delete crd configurations.akri.sh
 kubectl delete crd instances.akri.sh
 ```
-

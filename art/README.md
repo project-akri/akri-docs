@@ -1,28 +1,26 @@
 # Akri Logo & Assets
 
-
 ## Logo
 
 ![Screen Shot 2020-11-24 at 11 10 44 AM](https://user-images.githubusercontent.com/686194/104776503-0c842b80-572f-11eb-8c69-a74df6d3d3f3.png)
-
 
 ---
 
 This directory contains the Akri icon and logo in different settings. Choose the format that works best for the scenario in which the logo is being used:
 
-* Is the background light or dark?
-* Is there more vertical or horizontal space to work with?
-* Will the logo appear alongside the project name (like on a social media profile avatar)? If so, omit the workmark and just use the icon. Avatars should retain white space around the branding to ensure it is not cropped or squished when viewed in context. 
+- Is the background light or dark?
+- Is there more vertical or horizontal space to work with?
+- Will the logo appear alongside the project name (like on a social media profile avatar)? If so, omit the workmark and just use the icon. Avatars should retain white space around the branding to ensure it is not cropped or squished when viewed in context.
 
 ## Typography
 
 Akri's wordmark uses a monospaced typeface (Inconsolata) to lend a technical, developer-centric style. Ideally complimentary text should follow these attributes - I recommend use of a common, device-friendly default [monospaced typeface](https://en.wikipedia.org/wiki/List_of_monospaced_typefaces) to style headlines to work well with Inconsolata.
 
-Standard page copy *should not* be written in a monospaced font in this way - this typography style is decorative and not used extensively, or legibility can suffer. Standard page copy should use [standard sans-serif typefaces](https://fontsarena.com/blog/operating-systems-default-sans-serif-fonts/) such as Helvetica, Segoe, Arial, etc.
+Standard page copy _should not_ be written in a monospaced font in this way - this typography style is decorative and not used extensively, or legibility can suffer. Standard page copy should use [standard sans-serif typefaces](https://fontsarena.com/blog/operating-systems-default-sans-serif-fonts/) such as Helvetica, Segoe, Arial, etc.
 
-* [Download Inconsolata](https://fonts.google.com/specimen/Inconsolata) _Open Font Licence_  
-* [Standard Monospaced Typefaces](https://www.cssfontstack.com/)  
-* [Open Font License](https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL)  
+- [Download Inconsolata](https://fonts.google.com/specimen/Inconsolata) _Open Font Licence_
+- [Standard Monospaced Typefaces](https://www.cssfontstack.com/)
+- [Open Font License](https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL)
 
 ---
 

@@ -30,4 +30,3 @@ When an instance is deleted, the Akri Controller needs to do several things:
 ## Handling node disappearances
 
 One of the conditions we need to be aware of is node disappearance. In this case, we cannot depend on the disappeared node's Akri Agent to modify the relevant Instance. To free up any `Configuration.capacity` that a node was using prior to disappearing, the Akri Controller watches for Node disappearance events and cleans up any lingering node references in any `Instance.nodes` and `Instance.deviceUsage`.
-

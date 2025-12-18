@@ -7,7 +7,7 @@ Before continuing, you may wish to reference the [Akri architecture](../architec
 Any Docker-compatible container registry will work for hosting the containers being used in this example (Docker Hub, Github Container Registry, Azure Container Registry, etc). Here, we are using the [GitHub Container Registry](https://github.blog/2020-09-01-introducing-github-container-registry/). You can follow the [getting started guide here to enable it for yourself](https://docs.github.com/en/free-pro-team@latest/packages/getting-started-with-github-container-registry).
 
 {% hint style="info" %}
- if your container registry is private, you will need to create a kubernetes secret `kubectl create secret docker-registry crPullSecret --docker-server=<cr> --docker-username=<cr-user> --docker-password=<cr-token>` and access it with an `imagePullSecret`. Here, we will assume the secret is named `crPullSecret`.
+if your container registry is private, you will need to create a kubernetes secret `kubectl create secret docker-registry crPullSecret --docker-server=<cr> --docker-username=<cr-user> --docker-password=<cr-token>` and access it with an `imagePullSecret`. Here, we will assume the secret is named `crPullSecret`.
 {% endhint %}
 
 ## Background on Discovery Handlers
@@ -101,7 +101,7 @@ impl DiscoveryHandler for DiscoveryHandlerImpl {
         let register_sender = self.register_sender.clone();
         tokio::spawn(async move {
             loop {
-                let resp = get(&url).await.unwrap(); 
+                let resp = get(&url).await.unwrap();
                 // Response is a newline separated list of devices (host:port) or empty
                 let device_list = &resp.text().await.unwrap();
                 let devices = device_list
@@ -414,10 +414,10 @@ Optional: If you've previous installed Akri and wish to reset, you may:
 ```bash
 sudo helm delete akri
 ```
+
 {% endhint %}
 
 Akri has provided helm templates for custom Discovery Handlers and their Configurations. These templates are provided as a starting point. They may need to be modified to meet the needs of a Discovery Handler. When installing Akri, specify that you want to deploy a custom Discovery Handler as a DaemonSet by setting `custom.discovery.enabled=true`. Specify the container for that DaemonSet as the HTTP discovery handler that you built [above](development-walkthrough.md#build-the-discoveryhandler-container) by setting `custom.discovery.image.repository=$DH_IMAGE` and `custom.discovery.image.repository=$TAGS`. To automatically deploy a custom Configuration, set `custom.configuration.enabled=true`. We will customize this Configuration to contain the discovery endpoint needed by our HTTP Discovery Handler by setting it in the `discovery_details` string of the Configuration, like so: `custom.configuration.discoveryDetails=http://discovery:9999/discovery`. We also need to set the name the Discovery Handler will register under (`custom.configuration.discoveryHandlerName`) and a name for the Discovery Handler and Configuration (`custom.discovery.name` and `custom.configuration.name`). All these settings come together as the following Akri installation command:
-
 
 ```bash
   helm repo add akri-helm-charts https://project-akri.github.io/akri/
@@ -464,13 +464,13 @@ We have successfully created our Discovery Handler. If you want Akri to also aut
 
 3 different broker implementations have been created for the HTTP Discovery Handler in the [http-extensibility branch](https://github.com/project-akri/akri/tree/http-extensibility), 2 in Rust and 1 in Go:
 
-* The standalone broker is a self-contained scenario that demonstrates the ability to interact with HTTP-based devices
+- The standalone broker is a self-contained scenario that demonstrates the ability to interact with HTTP-based devices
 
   by `curl`ing a device's endpoints. This type of solution would be applicable in batch-like scenarios where the broker
 
   performs a predictable set of processing steps for a device.
 
-* The second scenario uses gRPC. gRPC is an increasingly common alternative to REST-like APIs and supports
+- The second scenario uses gRPC. gRPC is an increasingly common alternative to REST-like APIs and supports
 
   high-throughput and streaming methods. gRPC is not a requirement for broker implementations in Akri but is used here
 
@@ -482,7 +482,7 @@ We have successfully created our Discovery Handler. If you want Akri to also aut
 
   single method but in practice, there could be many methods implemented.
 
-* The third implementation is a gRPC-based broker and companion client implemented in Golang. This is functionally
+- The third implementation is a gRPC-based broker and companion client implemented in Golang. This is functionally
 
   equivalent to the Rust implementation and shares a protobuf definition. For this reason, you may combine the Rust
 
@@ -652,4 +652,3 @@ We can watch as the broker pods get deployed:
 ```bash
 watch kubectl get pods -o wide
 ```
-

@@ -16,7 +16,7 @@ Once the Akri Agent understands what resources to look for (via `Configuration.d
 For each resource that is found:
 
 1. An Instance is created and uploaded to etcd
-2. A connection with the kubelet is established according to the Kubernetes Device Plugin framework.  This connection is used to convey availability changes to the kubelet. The kubelet will, in turn, expose these availability changes to the Kubernetes scheduler.
+2. A connection with the kubelet is established according to the Kubernetes Device Plugin framework. This connection is used to convey availability changes to the kubelet. The kubelet will, in turn, expose these availability changes to the Kubernetes scheduler.
 
 Each protocol will periodically reassess what resources are visible and update both the Instance and the kubelet with the current availability.
 
@@ -46,31 +46,31 @@ Reference the [Discovery Handler development document](../development/handler-de
 
 In addition to the `discoveryDetails` in Configuration that sets details for narrowing the Discovery Handlers' search, the `discoveryProperties` can be used to pass additional information to Discovery Handler. One of scenarios that can leverage `discoveryProperties` is to pass credential data to Discovery Handlers to perform
 authenticated resource discovery.
-It is common for a device to require authentication in order to access its properties. The Discovery Handler then need these credentials to properly discover and filter the device. The credential data can be placed in 
+It is common for a device to require authentication in order to access its properties. The Discovery Handler then need these credentials to properly discover and filter the device. The credential data can be placed in
 `discoverProperties`, if it is specified in Configuration, Agent reads the content and generate a list of string key-value pair properties and pass the list to
 Discovery Handler along with `discoveryDetails`.
 
-Agent supports plain text, K8s `secret` and `configMap` in the schema of `discoverProperies`. An example below shows how each type of property is specified in `discoveryProperties`. The `name` of property is required and needs to be in C_IDENTIFIER format. The value can be specified by `value` or `valueFrom`. For value specified by `valueFrom`, it can be from `secret` or `configMap`. The `optional` attribute is default to `false`, it means if the data doesn't exist (in the `secret` or `configMap`), the Configuration deployment 
+Agent supports plain text, K8s `secret` and `configMap` in the schema of `discoverProperies`. An example below shows how each type of property is specified in `discoveryProperties`. The `name` of property is required and needs to be in C_IDENTIFIER format. The value can be specified by `value` or `valueFrom`. For value specified by `valueFrom`, it can be from `secret` or `configMap`. The `optional` attribute is default to `false`, it means if the data doesn't exist (in the `secret` or `configMap`), the Configuration deployment
 will fail. If `optional` is `true`, Agent will ignore the entry if the data doesn't exist, and pass all exist properties to Discovery Handler, the Configuration deployment will success.
 
-```yaml 
-    discoveryProperties:
-    - name: property_from_plain_text
-      value: “plain text data”
-    - name: property_from_secret
-      valueFrom:
-        secretKeyRef:
-          name: mysecret
-          namespace: mysecret-namespace
-          key: secret-key
-          optional: false
-    - name: property_from_configmap
-      valueFrom:
-        configMapKeyRef:
-          name: myconfigMap
-          namespace: myconfigmap-namespace
-          key: configmap-key
-          optional: true
+```yaml
+discoveryProperties:
+  - name: property_from_plain_text
+    value: “plain text data”
+  - name: property_from_secret
+    valueFrom:
+      secretKeyRef:
+        name: mysecret
+        namespace: mysecret-namespace
+        key: secret-key
+        optional: false
+  - name: property_from_configmap
+    valueFrom:
+      configMapKeyRef:
+        name: myconfigMap
+        namespace: myconfigmap-namespace
+        key: configmap-key
+        optional: true
 ```
 
 For the example above, with the content of secret and configMap.

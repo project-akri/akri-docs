@@ -20,17 +20,16 @@ spec:
         app: onvif-camera-broker
     spec:
       containers:
-      - name: onvif-camera-broker
-        image: nginx
-        resources:
-          limits:
-            akri.sh/onvif-camera: "2"
-          requests:
-            akri.sh/onvif-camera: "2"
+        - name: onvif-camera-broker
+          image: nginx
+          resources:
+            limits:
+              akri.sh/onvif-camera: "2"
+            requests:
+              akri.sh/onvif-camera: "2"
 ```
 
 With Configuration-level resources, users could use higher level Kubernetes objects (Deployments, ReplicaSets, DaemonSets, etc.) or develop their own deployment strategies, rather than relying on the Akri Controller to deploy Pods to discovered devices.
-
 
 ### Maintaining Device Usage
 
@@ -41,26 +40,27 @@ The `Instance.deviceUsage` in Akri Instances is extended to support Configuratio
 The `Instance.deviceUsage` may look like this:
 
 ```yaml
-  deviceUsage:
-    my-resource-00095f-0: ""
-    my-resource-00095f-1: ""
-    my-resource-00095f-2: ""
-    my-resource-00095f-3: "node-a"
-    my-resource-00095f-4: ""
+deviceUsage:
+  my-resource-00095f-0: ""
+  my-resource-00095f-1: ""
+  my-resource-00095f-2: ""
+  my-resource-00095f-3: "node-a"
+  my-resource-00095f-4: ""
 ```
-where empty string means the slot is free and non-empty string indicates the slot is used (by the node). To support Configuration device plugin, 
-the `Instance.deviceUsage` format is extended to hold the additional information, the deviceUsage can be a "<node_name>" (for Instance) or a "C:<virtual_device_id>:<node_name>" (for 
-Configuration). For example, the `Instance.deviceUsage` shows the slot `my-resource-00095f-2` is used by virtual device id "0" of the 
-Configuration device plugin on `node-b`.  The slot `my-resource-00095f-3` is used by Instance device plugin on `node-a`.  The other 3 slots are 
+
+where empty string means the slot is free and non-empty string indicates the slot is used (by the node). To support Configuration device plugin,
+the `Instance.deviceUsage` format is extended to hold the additional information, the deviceUsage can be a "<node_name>" (for Instance) or a "C:<virtual_device_id>:<node_name>" (for
+Configuration). For example, the `Instance.deviceUsage` shows the slot `my-resource-00095f-2` is used by virtual device id "0" of the
+Configuration device plugin on `node-b`. The slot `my-resource-00095f-3` is used by Instance device plugin on `node-a`. The other 3 slots are
 free.
 
 ```yaml
-  deviceUsage:
-    my-resource-00095f-0: ""
-    my-resource-00095f-1: ""
-    my-resource-00095f-2: "C:0:node-b"
-    my-resource-00095f-3: "node-a"
-    my-resource-00095f-4: ""
+deviceUsage:
+  my-resource-00095f-0: ""
+  my-resource-00095f-1: ""
+  my-resource-00095f-2: "C:0:node-b"
+  my-resource-00095f-3: "node-a"
+  my-resource-00095f-4: ""
 ```
 
 ## Deployment Strategies with Configuration-level resources
@@ -85,18 +85,17 @@ spec:
         name: onvif-broker
     spec:
       containers:
-      - name: nginx
-        image: "nginx:latest"
-        resources:
-          requests:
-            "akri.sh/akri-onvif": "2"
-          limits:
-            "akri.sh/akri-onvif": "2"
+        - name: nginx
+          image: "nginx:latest"
+          resources:
+            requests:
+              "akri.sh/akri-onvif": "2"
+            limits:
+              "akri.sh/akri-onvif": "2"
 ```
 
-
 Pods will only be successfully scheduled to a Node and run if the resources exist and are available. In the case of the
-above scenario, if there were two cameras on the network, two Pods would be deployed to the cluster. If there are not 
+above scenario, if there were two cameras on the network, two Pods would be deployed to the cluster. If there are not
 enough resources, say there is only one camera on the network,
 the two Pods will be left in a `Pending` state until another is discovered. This is the case with any deployment on
 Kubernetes where there are not enough resources. However, `Pending` Pods do not use up cluster resources.

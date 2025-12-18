@@ -3,6 +3,7 @@
 ![](../art/logo-horizontal/akri-logo-horizontal-light.png)
 
 ## What is Akri?
+
 Akri is hosted by the Cloud Native Computing Foundation (CNCF) as a [Sandbox project](https://www.cncf.io/sandbox-projects/).
 
 Akri is a Kubernetes Resource Interface that lets you easily expose heterogeneous leaf devices (such as IP cameras and
@@ -39,6 +40,7 @@ Handlers, but more can be easily added by community members like you. The more p
 array of leaf devices Akri can discover. We are excited to work with you to build a more connected edge.
 
 ## Documentation
+
 Akri's documentation is divided into six sections:
 
 1. 📘 [User Guide](./user-guide/getting-started.md): Documentation for Akri users.
@@ -46,8 +48,9 @@ Akri's documentation is divided into six sections:
 1. 🚀 [Demos](./demos/usb-camera-demo.md): End-to-End demos that demostrate how Akri can discover and use devices. Contain sample brokers and end applications.
 1. ⚙️ [Architecture](./architecture/architecture-overview.md): Documentation that details the design and implementation of Akri's components.
 1. 💻 [Development](./development/development.md): Documentation for Akri developers or how to build, test, and extend Akri.
-1. 🎉 [Community](./community/roadmap.md): Information on what's next for Akri and how to get involved! 
+1. 🎉 [Community](./community/roadmap.md): Information on what's next for Akri and how to get involved!
 
 ## Trademark
 
 The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our [Trademark Usage page](https://www.linuxfoundation.org/legal/trademark-usage)
+

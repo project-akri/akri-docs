@@ -16,14 +16,14 @@ There are endless sensors, controllers, and MCU class devices on the edge and ea
 
 ### Some protocols we would love to support / have [contributed](https://docs.akri.sh/community/contributing)
 
-* Bluetooth
-* CoAP - [in progress](https://github.com/project-akri/akri/pull/346)
-* Simple scan for IP/MAC addresses
-* LoRaWAN
-* Zeroconf - [in progress](https://github.com/project-akri/akri/pull/163)
-* acpid - [issue to track](https://github.com/project-akri/akri/issues/174)
-* MQTT? - [issue to track](https://github.com/project-akri/akri/issues/106)
-* Looking for community feedback for more!
+- Bluetooth
+- CoAP - [in progress](https://github.com/project-akri/akri/pull/346)
+- Simple scan for IP/MAC addresses
+- LoRaWAN
+- Zeroconf - [in progress](https://github.com/project-akri/akri/pull/163)
+- acpid - [issue to track](https://github.com/project-akri/akri/issues/174)
+- MQTT? - [issue to track](https://github.com/project-akri/akri/issues/106)
+- Looking for community feedback for more!
 
 ## New broker deployment strategies
 

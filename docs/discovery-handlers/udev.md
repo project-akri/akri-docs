@@ -18,11 +18,11 @@ Instead of having to assemble your own udev Configuration yaml, we have provided
 
 Discovery Handlers are passed discovery details that are set in a Configuration to determine what to discover, filter out of discovery, and so on. The udev Discovery Handler requires that one discovery detail to be provided: [udev rules](https://wiki.archlinux.org/index.php/Udev).
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| udev.configuration.discoveryDetails.udevRules | array of udev rules | empty | udev rule [supported by the udev Discovery Handler](#udev-rule-format) |
-| udev.configuration.discoveryDetails.groupRecursive | boolean | false | If set to true, group devices with a matching parent |
-| udev.configuration.discoveryDetails.permissions | string | rwm | udev device mount permissions (**r**ead, **w**rite, **m**odify) |
+| Helm Key                                           | Value               | Default | Description                                                            |
+| :------------------------------------------------- | :------------------ | :------ | :--------------------------------------------------------------------- |
+| udev.configuration.discoveryDetails.udevRules      | array of udev rules | empty   | udev rule [supported by the udev Discovery Handler](#udev-rule-format) |
+| udev.configuration.discoveryDetails.groupRecursive | boolean             | false   | If set to true, group devices with a matching parent                   |
+| udev.configuration.discoveryDetails.permissions    | string              | rwm     | udev device mount permissions (**r**ead, **w**rite, **m**odify)        |
 
 The udev Discovery Handler parses the udev rules listed in a Configuration, searches for them using udev, and returns a list of discovered device nodes (ie: /dev/video0). It parses the udev rules via a grammar [grammar](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) Akri has created. It expects the udev rules to be formatted according to the [Linux Man pages](https://linux.die.net/man/7/udev).
 Additionally, the permissions for the device mount are defined as well and are set to `rwm` (read, write, modify) by default.
@@ -37,50 +37,51 @@ If you would like non-terminating workloads ("broker" Pods) to be deployed autom
 
 > Note only a `brokerJob` OR `brokerPod` should be specified.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| udev.configuration.brokerPod.image.repository | image string | "" | image of broker Pod that should be deployed to discovered devices |
-| udev.configuration.brokerPod.image.tag | tag string | "latest" | image tag of broker Pod that should be deployed to discovered devices |
-| udev.configuration.brokerPod.resources.memoryRequest | string | "10Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
-| udev.configuration.brokerPod.resources.cpuRequest | string | "10m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
-| udev.configuration.brokerPod.resources.memoryLimit | string | "30Mi" | the maximum amount of RAM this Pod can consume. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
-| udev.configuration.brokerPod.resources.cpuLimit | string | "29m" | the maximum amount of CPU this Pod can consume. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
+| Helm Key                                             | Value        | Default  | Description                                                                                                                                                                                       |
+| :--------------------------------------------------- | :----------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| udev.configuration.brokerPod.image.repository        | image string | ""       | image of broker Pod that should be deployed to discovered devices                                                                                                                                 |
+| udev.configuration.brokerPod.image.tag               | tag string   | "latest" | image tag of broker Pod that should be deployed to discovered devices                                                                                                                             |
+| udev.configuration.brokerPod.resources.memoryRequest | string       | "10Mi"   | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
+| udev.configuration.brokerPod.resources.cpuRequest    | string       | "10m"    | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
+| udev.configuration.brokerPod.resources.memoryLimit   | string       | "30Mi"   | the maximum amount of RAM this Pod can consume. Default based on the Akri udev sample broker. Adjust to the size of your broker.                                                                  |
+| udev.configuration.brokerPod.resources.cpuLimit      | string       | "29m"    | the maximum amount of CPU this Pod can consume. Default based on the Akri udev sample broker. Adjust to the size of your broker.                                                                  |
 
 ### Broker Job Settings
+
 If you would like terminating [Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/) to be deployed automatically to discovered devices, a broker image should be specified (under `brokerJob`) in the Configuration. A Kubernetes Job deploys a set number of terminating Pods.
 
 > Note only a `brokerJob` OR `brokerPod` should be specified.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| udev.configuration.brokerJob.image.repository | image string | "" | image of broker Job that should be deployed to discovered devices |
-| udev.configuration.brokerJob.image.tag | tag string | "latest" | image tag of broker Job that should be deployed to discovered devices |
-| udev.configuration.brokerJob.resources.memoryRequest | string | "10Mi" | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
-| udev.configuration.brokerJob.resources.cpuRequest | string | "10m" | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
-| udev.configuration.brokerJob.resources.memoryLimit | string | "30Mi" | the maximum amount of RAM this Pod can consume. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
-| udev.configuration.brokerJob.resources.cpuLimit | string | "29m" | the maximum amount of CPU this Pod can consume. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
-| udev.configuration.brokerJob.command | string array | Empty | command to be executed in the Pod |
-| udev.configuration.brokerJob.restartPolicy | string array | `OnFailure` | `RestartPolicy` for the Job. Can either be `OnFailure` or `Never` for Jobs.|
-| udev.configuration.brokerJob.backoffLimit | number | 2 | defines the Kubernetes Job [backoff failure policy](https://kubernetes.io/docs/concepts/workloads/controllers/job/#pod-backoff-failure-policy) |
-| udev.configuration.brokerJob.parallelism | number | 1 | defines the Kubernetes Job [`parallelism`](https://kubernetes.io/docs/concepts/workloads/controllers/job/#parallel-jobs) |
-| udev.configuration.brokerJob.completions | number | 1 | defines the Kubernetes Job [`completions`](https://kubernetes.io/docs/concepts/workloads/controllers/job) |
+| Helm Key                                             | Value        | Default     | Description                                                                                                                                                                                       |
+| :--------------------------------------------------- | :----------- | :---------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| udev.configuration.brokerJob.image.repository        | image string | ""          | image of broker Job that should be deployed to discovered devices                                                                                                                                 |
+| udev.configuration.brokerJob.image.tag               | tag string   | "latest"    | image tag of broker Job that should be deployed to discovered devices                                                                                                                             |
+| udev.configuration.brokerJob.resources.memoryRequest | string       | "10Mi"      | the minimum amount of RAM that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
+| udev.configuration.brokerJob.resources.cpuRequest    | string       | "10m"       | the minimum amount of CPU that must be available to this Pod for it to be scheduled by the Kubernetes Scheduler. Default based on the Akri udev sample broker. Adjust to the size of your broker. |
+| udev.configuration.brokerJob.resources.memoryLimit   | string       | "30Mi"      | the maximum amount of RAM this Pod can consume. Default based on the Akri udev sample broker. Adjust to the size of your broker.                                                                  |
+| udev.configuration.brokerJob.resources.cpuLimit      | string       | "29m"       | the maximum amount of CPU this Pod can consume. Default based on the Akri udev sample broker. Adjust to the size of your broker.                                                                  |
+| udev.configuration.brokerJob.command                 | string array | Empty       | command to be executed in the Pod                                                                                                                                                                 |
+| udev.configuration.brokerJob.restartPolicy           | string array | `OnFailure` | `RestartPolicy` for the Job. Can either be `OnFailure` or `Never` for Jobs.                                                                                                                       |
+| udev.configuration.brokerJob.backoffLimit            | number       | 2           | defines the Kubernetes Job [backoff failure policy](https://kubernetes.io/docs/concepts/workloads/controllers/job/#pod-backoff-failure-policy)                                                    |
+| udev.configuration.brokerJob.parallelism             | number       | 1           | defines the Kubernetes Job [`parallelism`](https://kubernetes.io/docs/concepts/workloads/controllers/job/#parallel-jobs)                                                                          |
+| udev.configuration.brokerJob.completions             | number       | 1           | defines the Kubernetes Job [`completions`](https://kubernetes.io/docs/concepts/workloads/controllers/job)                                                                                         |
 
 ### Disabling Automatic Service Creation
 
 By default, if a broker Pod is specified, the generic udev Configuration will create services for all the brokers of a specific Akri Instance and all the brokers of an Akri Configuration. The creation of these services can be disabled.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| udev.configuration.createInstanceServices | true, false | true | a service should be automatically created for each broker Pod |
-| udev.configuration.createConfigurationService | true, false | true | a single service should be created for all brokers of a Configuration |
+| Helm Key                                      | Value       | Default | Description                                                           |
+| :-------------------------------------------- | :---------- | :------ | :-------------------------------------------------------------------- |
+| udev.configuration.createInstanceServices     | true, false | true    | a service should be automatically created for each broker Pod         |
+| udev.configuration.createConfigurationService | true, false | true    | a single service should be created for all brokers of a Configuration |
 
 ### Capacity Setting
 
 By default, if a broker Pod is specified, a single broker Pod is deployed to each device. To modify the Configuration so that a device is accessed by more or fewer nodes via broker Pods, update the `udev.configuration.capacity` setting to reflect the correct number. For example, if your high availability needs are met by having 1 redundant pod, you can update the Configuration like this by setting `udev.configuration.capacity=2`.
 
-| Helm Key | Value | Default | Description |
-| :--- | :--- | :--- | :--- |
-| udev.configuration.capacity | number | 1 | maximum number of brokers that can be deployed to utilize a device (up to 1 per Node) |
+| Helm Key                    | Value  | Default | Description                                                                           |
+| :-------------------------- | :----- | :------ | :------------------------------------------------------------------------------------ |
+| udev.configuration.capacity | number | 1       | maximum number of brokers that can be deployed to utilize a device (up to 1 per Node) |
 
 ## Choosing a udev rule
 
@@ -104,11 +105,12 @@ discoveryHandler:
   discoveryDetails: |+
     udevRules:
     -  'SUBSYSTEM=="sound", ATTR{vendor}=="Great Vendor"'
+
 ```
 
 ### Testing a udev rule
 
-To test which devices Akri will discover with a udev rule, you can run the rule locally adding a tag action to it. Then you can search for all devices with that tag, which will be the ones discovered by Akri. 
+To test which devices Akri will discover with a udev rule, you can run the rule locally adding a tag action to it. Then you can search for all devices with that tag, which will be the ones discovered by Akri.
 
 1. Create a new rules file called `90-akri.rules` in the `/etc/udev/rules.d` directory, and add your udev rule(s) to it. For this example, we will be testing the rule `SUBSYSTEM=="sound", KERNEL=="card[0-9]*"`. Add `TAG+="akri_tag"` to the end of each rule. Note how 90 is the prefix to the file name. This makes sure these rules are run after the others in the default `70-snap.core.rules`, preventing them from being overwritten. Feel free to explore `70-snap.core.rules` to see numerous examples of udev rules.
 
@@ -136,7 +138,7 @@ To test which devices Akri will discover with a udev rule, you can run the rule 
    ```
 
 1. Modify the rule as needed, being sure to reload and trigger the rules each time.
-1. Remove the tag from the devices -- note how  `+=` turns to `-=` -- and reload and trigger the udev rules. Alternatively, if you are trying to discover devices with fields that Akri does not yet support, such as `ATTRS`, you could leave the tag and add it to the rule in your Configuration with `TAG=="akri_tag"`.
+1. Remove the tag from the devices -- note how `+=` turns to `-=` -- and reload and trigger the udev rules. Alternatively, if you are trying to discover devices with fields that Akri does not yet support, such as `ATTRS`, you could leave the tag and add it to the rule in your Configuration with `TAG=="akri_tag"`.
 
    ```bash
       sudo echo 'SUBSYSTEM=="sound", KERNEL=="card[0-9]*", TAG-="akri_tag"' | sudo tee -a /etc/udev/rules.d/90-akri.rules
@@ -166,8 +168,8 @@ helm install akri akri-helm-charts/akri \
 
 The following installation examples have been given to show how to the udev Configuration can be tailored to you cluster:
 
-* Modifying the udev rule
-* Specifying a broker pod image
+- Modifying the udev rule
+- Specifying a broker pod image
 
 For more advanced Configuration changes that are not aided by our Helm chart, we suggest creating a Configuration file using Helm and then manually modifying it. To do this, see our documentation on [Customizing an Akri Installation](../user-guide/customizing-an-akri-installation.md#generating-modifying-and-applying-a-custom-configuration)
 
@@ -227,6 +229,7 @@ Akri has provided further documentation on [modifying the broker PodSpec](../use
 Akri currently provides a way to group device nodes under the topmost matching node, this allows to handle a complex device with multiple device nodes as one Instance.
 
 For example with the following udev device tree and the rule `ENV{ID_SERIAL}=="Great Vendor Complex Camera"`:
+
 ```
 root
 ├── P: /devices/root/device1
@@ -247,6 +250,7 @@ root
 └── P: /devices/root/device2
     A: vendor=Another Vendor
 ```
+
 This would result in a single instance grouping `video0`, `video1` and `pcmC0D0c`.
 
 All the device nodes will get mounted into the broker pod and will be listed in the environment variables with `UDEV_DEVNODE` prefix
@@ -255,10 +259,9 @@ This behavior can be enabled by setting the `udev.configuration.discoveryDetails
 
 ## Implementation details
 
-The udev implementation can be understood by looking at several things: 
+The udev implementation can be understood by looking at several things:
 
-1. [UdevDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines the required properties 
-1. [UdevDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines udev discovery 
-1. [samples/brokers/udev-video-broker](https://github.com/project-akri/akri/blob/main/samples/brokers/udev-video-broker) defines the udev broker 
-1. [udev\_rule\_grammar.pest](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) defines the grammar for parsing udev rules and enumerate which fields are supported (such as `ATTR` and `TAG`), which are yet to be supported (`ATTRS` and `TAGS`), and which fields will never be supported, mainly due to be assignment rather than matching fields (such as `ACTION` and `GOTO`).
-
+1. [UdevDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines the required properties
+1. [UdevDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines udev discovery
+1. [samples/brokers/udev-video-broker](https://github.com/project-akri/akri/blob/main/samples/brokers/udev-video-broker) defines the udev broker
+1. [udev_rule_grammar.pest](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) defines the grammar for parsing udev rules and enumerate which fields are supported (such as `ATTR` and `TAG`), which are yet to be supported (`ATTRS` and `TAGS`), and which fields will never be supported, mainly due to be assignment rather than matching fields (such as `ACTION` and `GOTO`).

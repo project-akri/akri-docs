@@ -2,7 +2,7 @@
 
 OPC UA is a communication protocol for industrial automation. It is a client/server technology that comes with a security and communication framework. This demo will help you get started using Akri to discover OPC UA PLC Servers and utilize them via a broker that contains an OPC UA Client. Specifically, a Akri Configuration called OPC UA Monitoring was created for this scenario, which will show how Akri can be used to detect anomaly values of a specific OPC UA Variable. To do so, the OPC UA Clients in the brokers will subscribe to that variable and serve its value over gRPC for an anomaly detection web application to consume. This Configuration could be used to monitor a barometer, CO detector, and more; however, for this example, that variable will represent the PLC values for temperature of a thermostat and any value outside the range of 70-80 degrees is an anomaly.
 
-The demo consists of the following components: 
+The demo consists of the following components:
 
 1. Two OPC UA PLC Servers
 2. (Optional) Certificates for the Servers and Akri brokers
@@ -22,7 +22,8 @@ The demo consists of the following components:
 6. The OPC UA Monitoring broker will serve over gRPC the latest value of the OPC UA Variable and the address of the OPC UA Server that published the value.
 7. The anomaly detection web application will test whether that value is an outlier to its pre-configured dataset. It then will display a log of the values on a web application, showing outliers in red and normal values in green.
 
-The following steps need to be completed to run the demo: 
+The following steps need to be completed to run the demo:
+
 - [Setting up a single-node cluster ](#setting-up-a-cluster)
 - [(Optional) Creating X.509 v3 Certificates for the servers and Akri broker and storing them in a Kubernetes Secret](#creating-x509-v3-certificates)
 - [Creating two OPC UA Servers](#creating-opc-ua-servers)
@@ -60,7 +61,6 @@ generating proper certificates for OPC UA, such as the [OPC Foundation's Certifi
 Generator](https://github.com/OPCFoundation/Misc-Tools) or openssl (as in this [walk
 through](https://github.com/OPCFoundation/Misc-Tools)).
 
-
 ### Creating an opcua-broker-credentials Kubernetes Secret
 
 The OPC UA Client certificate will be passed to the OPC UA Monitoring broker as a Kubernetes Secret mounted as a volume. Read more about the decision to use Kubernetes secrets to pass the Client certificates in the [Credentials Passing Proposal](../../proposals/credentials-passing.md). Create a Kubernetes Secret, projecting each certificate/crl/private key with the expected key name (i.e. `client_certificate`, `client_key`, `ca_certificate`, and `ca_crl`). Specify the file paths such that they point to the credentials made in the previous section.
@@ -79,7 +79,7 @@ When mounting certificates is enabled later in the [Running Akri section](opc-th
 
 Now, we must create some OPC UA PLC Servers to discover. Instead of starting from scratch, we deploy OPC PLC server containers. You can read more about the containers and their parameters [here](https://github.com/Azure-Samples/iot-edge-opc-plc).
 
-1. Create an empty YAML file called `opc-deployment.yaml`. 
+1. Create an empty YAML file called `opc-deployment.yaml`.
 
 2. (Optional) If you are using security, place the OpcPlc certificate and the CA certificate as below.
 
@@ -96,6 +96,7 @@ plc
    └── crl
       └── someCA.crl
 ```
+
 3. (A) If you are not using security, copy and paste the contents below into the YAML file.
 
 ```yaml
@@ -111,24 +112,47 @@ spec:
       app: opcplc
   template:
     metadata:
-      labels: 
+      labels:
         app: opcplc
         name: opc-plc-server
     spec:
       hostNetwork: true
       containers:
-      - name: opcplc1
-        image: mcr.microsoft.com/iotedge/opc-plc:latest
-        ports:
-        - containerPort: 50000
-        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph", "--unsecuretransport"]
-      - name: opcplc2
-        image: mcr.microsoft.com/iotedge/opc-plc:latest
-        ports:
-        - containerPort: 50001
-        args: ["--portnum=50001", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph", "--unsecuretransport"]
-   ```
-   (B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates. 
+        - name: opcplc1
+          image: mcr.microsoft.com/iotedge/opc-plc:latest
+          ports:
+            - containerPort: 50000
+          args:
+            [
+              "--portnum=50000",
+              "--autoaccept",
+              "--fastnodes=1",
+              "--fasttype=uint",
+              "--fasttypelowerbound=65",
+              "--fasttypeupperbound=85",
+              "--fasttyperandomization=True",
+              "--showpnjsonph",
+              "--unsecuretransport",
+            ]
+        - name: opcplc2
+          image: mcr.microsoft.com/iotedge/opc-plc:latest
+          ports:
+            - containerPort: 50001
+          args:
+            [
+              "--portnum=50001",
+              "--autoaccept",
+              "--fastnodes=1",
+              "--fasttype=uint",
+              "--fasttypelowerbound=65",
+              "--fasttypeupperbound=85",
+              "--fasttyperandomization=True",
+              "--showpnjsonph",
+              "--unsecuretransport",
+            ]
+```
+
+(B) If you are using security, copy and paste the contents below into the YAML file, replacing the path in the last line with your path to the folder that contains the certificates.
 
 ```yaml
 apiVersion: apps/v1
@@ -143,32 +167,52 @@ spec:
       app: opcplc
   template:
     metadata:
-      labels: 
+      labels:
         app: opcplc
         name: opc-plc-server
     spec:
       hostNetwork: true
       containers:
-      - name: opcplc1
-        image: mcr.microsoft.com/iotedge/opc-plc:latest
-        ports:
-        - containerPort: 50000
-        args: ["--portnum=50000", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph"]
-        volumeMounts:
-        - mountPath: /app/pki
-          name: opc-certs
-      - name: opcplc2
-        image: mcr.microsoft.com/iotedge/opc-plc:latest
-        ports:
-        - containerPort: 50001
-        args: ["--portnum=50001", "--autoaccept", "--fastnodes=1", "--fasttype=uint", "--fasttypelowerbound=65", "--fasttypeupperbound=85", "--fasttyperandomization=True", "--showpnjsonph"]
-        volumeMounts:
-        - mountPath: /app/pki
-          name: opc-certs
+        - name: opcplc1
+          image: mcr.microsoft.com/iotedge/opc-plc:latest
+          ports:
+            - containerPort: 50000
+          args:
+            [
+              "--portnum=50000",
+              "--autoaccept",
+              "--fastnodes=1",
+              "--fasttype=uint",
+              "--fasttypelowerbound=65",
+              "--fasttypeupperbound=85",
+              "--fasttyperandomization=True",
+              "--showpnjsonph",
+            ]
+          volumeMounts:
+            - mountPath: /app/pki
+              name: opc-certs
+        - name: opcplc2
+          image: mcr.microsoft.com/iotedge/opc-plc:latest
+          ports:
+            - containerPort: 50001
+          args:
+            [
+              "--portnum=50001",
+              "--autoaccept",
+              "--fastnodes=1",
+              "--fasttype=uint",
+              "--fasttypelowerbound=65",
+              "--fasttypeupperbound=85",
+              "--fasttyperandomization=True",
+              "--showpnjsonph",
+            ]
+          volumeMounts:
+            - mountPath: /app/pki
+              name: opc-certs
       volumes:
-         - name: opc-certs
-           hostPath:
-             path: <path/to/plc>
+        - name: opc-certs
+          hostPath:
+            path: <path/to/plc>
 ```
 
 4. Save the file, then simply apply your deployment YAML to create two OPC UA servers.
@@ -176,7 +220,7 @@ spec:
 ```bash
 kubectl apply -f opc-deployment.yaml
 ```
-   
+
 We have successfully created two OPC UA PLC servers, each with one fast PLC node which generates an **unsigned integer** with **lower bound = 65** and **upper bound = 85** at a **rate of 1**. It should be up and running.
 
 ## Running Akri
@@ -191,9 +235,7 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
    our temperature variable we made earlier, which has an `Identifier` of `FastUInt1` and `NamespaceIndex`
    of `2`. Your OPC PLC discovery URL will look something like `"opc.tcp://<host IP address>:50000/`. If using security, uncomment `--set opcua.configuration.mountCertificates='true'`.
 
-
-    
-   ```bash 
+   ```bash
    helm repo add akri-helm-charts https://project-akri.github.io/akri/
    helm install akri akri-helm-charts/akri \
       --set opcua.discovery.enabled=true \
@@ -206,9 +248,9 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
       --set opcua.configuration.discoveryDetails.discoveryUrls[1]="opc.tcp://<HOST IP>:50001/" \
       # --set opcua.configuration.mountCertificates='true'
    ```
-       
-   >Note: `FastUInt1` is the identifier of the [fast changing node](https://github.com/Azure-Samples/iot-edge-opc-plc#slow-and-fast-changing-nodes) that is provided by the OPC PLC server. 
-   
+
+   > Note: `FastUInt1` is the identifier of the [fast changing node](https://github.com/Azure-Samples/iot-edge-opc-plc#slow-and-fast-changing-nodes) that is provided by the OPC PLC server.
+
    Akri Agent will discover the two Servers and create an Instance for each Server. Watch two broker pods spin up, one for each Server.
 
    ```bash
@@ -217,16 +259,15 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
 
 To inspect more of the elements of Akri:
 
-   * Run `kubectl get crd`, and you should see the CRDs listed.
-   * Run `kubectl get akric`, and you should see `akri-opcua-monitoring`. 
-   * If the OPC PLC Servers were discovered and pods spun up, the instances can be seen by running `kubectl get akrii` and further inspected by running `kubectl get akrii akri-opcua-monitoring-<ID> -o yaml`
+- Run `kubectl get crd`, and you should see the CRDs listed.
+- Run `kubectl get akric`, and you should see `akri-opcua-monitoring`.
+- If the OPC PLC Servers were discovered and pods spun up, the instances can be seen by running `kubectl get akrii` and further inspected by running `kubectl get akrii akri-opcua-monitoring-<ID> -o yaml`
 
 ## Deploying an anomaly detection web application as an end consumer of the brokers
 
-A sample anomaly detection web application was created for this end-to-end demo. It has a gRPC stub that calls the brokers' gRPC services, getting the latest temperature value. It then determines whether this value is an outlier to the dataset using the Local Outlier Factor strategy. The dataset is simply a csv with the numbers between 70-80 repeated several times; therefore, any value significantly outside this range will be seen as an outlier. The web application serves as a log, displaying all the temperature values and the address of the OPC UA Server that sent the values. It shows anomaly values in red. The anomalies always have a value of 120 due to how we set up the `DoSimulation` function in the OPC UA Servers. 
+A sample anomaly detection web application was created for this end-to-end demo. It has a gRPC stub that calls the brokers' gRPC services, getting the latest temperature value. It then determines whether this value is an outlier to the dataset using the Local Outlier Factor strategy. The dataset is simply a csv with the numbers between 70-80 repeated several times; therefore, any value significantly outside this range will be seen as an outlier. The web application serves as a log, displaying all the temperature values and the address of the OPC UA Server that sent the values. It shows anomaly values in red. The anomalies always have a value of 120 due to how we set up the `DoSimulation` function in the OPC UA Servers.
 
-1. Deploy the anomaly detection app and watch a pod spin up for the app.  
-
+1. Deploy the anomaly detection app and watch a pod spin up for the app.
 
    ```bash
    kubectl apply -f https://raw.githubusercontent.com/project-akri/akri/main/deployment/samples/akri-anomaly-detection-app.yaml
@@ -284,7 +325,7 @@ A sample anomaly detection web application was created for this end-to-end demo.
 
 ## Extensions
 
-Now that you have the end to end demo running let's talk about some ways you can go beyond the demo to better understand the advantages of Akri. This section will cover: 
+Now that you have the end to end demo running let's talk about some ways you can go beyond the demo to better understand the advantages of Akri. This section will cover:
 
 1. Adding a node to the cluster
 2. Using a Local Discovery Server to discover the Servers instead of passing the DiscoveryURLs to the OPC UA Monitoring Configuration
@@ -294,7 +335,7 @@ Now that you have the end to end demo running let's talk about some ways you can
 
 ### Adding a Node to the cluster
 
-To see how Akri easily scales as nodes are added to the cluster, add another node to your (K3s, MicroK8s, or vanilla Kubernetes) cluster. 1. If you are using MicroK8s, create another MicroK8s instance, following the same steps as in [Setting up a single-node cluster](opc-thermometer-demo.md#setting-up-a-cluster) above. Then, in your first VM that is currently running Akri, get the join command by running `microk8s add-node`. In your new VM, run one of the join commands outputted in the previous step. 
+To see how Akri easily scales as nodes are added to the cluster, add another node to your (K3s, MicroK8s, or vanilla Kubernetes) cluster. 1. If you are using MicroK8s, create another MicroK8s instance, following the same steps as in [Setting up a single-node cluster](opc-thermometer-demo.md#setting-up-a-cluster) above. Then, in your first VM that is currently running Akri, get the join command by running `microk8s add-node`. In your new VM, run one of the join commands outputted in the previous step.
 
 1. Confirm that you have successfully added a node to the cluster by running the following in your control plane VM:
 
@@ -346,7 +387,7 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
 
 A Local Discovery Server (LDS) is a unique type of OPC UA server which maintains a list of OPC UA servers that have registered with it. The OPC UA Configuration takes in a list of DiscoveryURLs, whether for LDSes or a specific servers. Rather than having to pass in the DiscoveryURL for every OPC UA Server you want Akri to discover and deploy brokers to, you can set up a Local Discovery Server on the machine your servers are running on, make the servers register with the LDS on start up, and pass only the LDS DiscoveryURL into the OPC UA Monitoring Configuration. Agent will ask the LDS for the addresses of all the servers registered with it and the demo continues as it would've without an LDS.
 
-The OPC Foundation has provided a Windows based LDS executable which can be downloaded from their [website](https://opcfoundation.org/developer-tools/samples-and-tools-unified-architecture/local-discovery-server-lds/). Download version 1.03.401. It runs as a background service on Windows and can be started or stopped under Windows -&gt; Services. The OPC Foundation has provided [documentation](https://apps.opcfoundation.org/LDS/) on configuring your LDS. Most importantly, it states that you must add the LDS executable to your firewall as an inbound rule. 
+The OPC Foundation has provided a Windows based LDS executable which can be downloaded from their [website](https://opcfoundation.org/developer-tools/samples-and-tools-unified-architecture/local-discovery-server-lds/). Download version 1.03.401. It runs as a background service on Windows and can be started or stopped under Windows -&gt; Services. The OPC Foundation has provided [documentation](https://apps.opcfoundation.org/LDS/) on configuring your LDS. Most importantly, it states that you must add the LDS executable to your firewall as an inbound rule.
 
 Make sure you have restarted your OPC UA Servers, since they attempt to register with their LDS on start up. Now, we can install Akri with the OPC UA Configuration, passing in the LDS DiscoveryURL instead of both servers' DiscoveryURLs. Replace "Windows host IP address" with the IP address of the Windows machine you installed the LDS on (and is hosting the servers). Be sure to uncomment mounting certificates if you are enabling security:
 
@@ -385,7 +426,6 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.discoveryDetails.applicationNames.items[0]="SomeServer0" \
     # --set opcua.configuration.mountCertificates='true'
 ```
-
 
 Alternatively, to only discover the server named "SomeServer0", do the following:
 
