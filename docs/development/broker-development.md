@@ -12,16 +12,16 @@ Akri takes a micro-service approach to deploying brokers. A broker is deployed t
 
 The first step to developing a broker is understanding what information will be made available to the Pod via the Discovery Handler (aka the `Device.properties`). The following table contains the environment variables specified by each of Akri's currently supported Discovery Handlers, and the expected content of the environment variables.
 
-| Discovery Handler | Env Var Name | Value Type | Examples | Always Present? (Y/N) |
-| :--- | :--- | :--- | :--- | :--- |
-| debugEcho (for testing) | `DEBUG_ECHO_DESCRIPTION_{INSTANCE_HASH_ID}` | some random string | `foo`, `bar` | Y |
-| ONVIF | `ONVIF_DEVICE_SERVICE_URL_{INSTANCE_HASH_ID}` | ONVIF camera source URL | `http://10.123.456.789:1000/onvif/device_service` | Y |
-| ONVIF | `ONVIF_DEVICE_UUID_{INSTANCE_HASH_ID}` | ONVIF camera device uuid | `30b10f68-c915-4053-b3f1-bd15b2105091` | Y |
-| ONVIF | `ONVIF_DEVICE_IP_ADDRESS_{INSTANCE_HASH_ID}` | IP address of the camera | `10.123.456.789` | Y |
-| ONVIF | `ONVIF_DEVICE_MAC_ADDRESS_{INSTANCE_HASH_ID}` | MAC address of the camera | `48:0f:cf:4e:1b:3d`, `480fcf4e1b3d` | Y |
-| OPC UA | `OPCUA_DISCOVERY_URL_{INSTANCE_HASH_ID}` | [DiscoveryURL](https://reference.opcfoundation.org/GDS/docs/4.3.3/) of specific OPC UA Server/Application | `10.123.456.789:1000/Some/Path/` | Y |
-| udev | `UDEV_DEVNODE_{INSTANCE_HASH_ID}` | device node for specific device | `/dev/video1`, `/dev/snd/pcmC1D0p`, `/dev/dri/card0` | N |
-| udev | `UDEV_DEVPATH_{INSTANCE_HASH_ID}` | device path for specific device | `/devices/pci0000:00/0000:00:02.0/drm/card0/card0-HDMI-A-1` | Y |
+| Discovery Handler       | Env Var Name                                  | Value Type                                                                                                | Examples                                                    | Always Present? (Y/N) |
+| :---------------------- | :-------------------------------------------- | :-------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------- | :-------------------- |
+| debugEcho (for testing) | `DEBUG_ECHO_DESCRIPTION_{INSTANCE_HASH_ID}`   | some random string                                                                                        | `foo`, `bar`                                                | Y                     |
+| ONVIF                   | `ONVIF_DEVICE_SERVICE_URL_{INSTANCE_HASH_ID}` | ONVIF camera source URL                                                                                   | `http://10.123.456.789:1000/onvif/device_service`           | Y                     |
+| ONVIF                   | `ONVIF_DEVICE_UUID_{INSTANCE_HASH_ID}`        | ONVIF camera device uuid                                                                                  | `30b10f68-c915-4053-b3f1-bd15b2105091`                      | Y                     |
+| ONVIF                   | `ONVIF_DEVICE_IP_ADDRESS_{INSTANCE_HASH_ID}`  | IP address of the camera                                                                                  | `10.123.456.789`                                            | Y                     |
+| ONVIF                   | `ONVIF_DEVICE_MAC_ADDRESS_{INSTANCE_HASH_ID}` | MAC address of the camera                                                                                 | `48:0f:cf:4e:1b:3d`, `480fcf4e1b3d`                         | Y                     |
+| OPC UA                  | `OPCUA_DISCOVERY_URL_{INSTANCE_HASH_ID}`      | [DiscoveryURL](https://reference.opcfoundation.org/GDS/docs/4.3.3/) of specific OPC UA Server/Application | `10.123.456.789:1000/Some/Path/`                            | Y                     |
+| udev                    | `UDEV_DEVNODE_{INSTANCE_HASH_ID}`             | device node for specific device                                                                           | `/dev/video1`, `/dev/snd/pcmC1D0p`, `/dev/dri/card0`        | N                     |
+| udev                    | `UDEV_DEVPATH_{INSTANCE_HASH_ID}`             | device path for specific device                                                                           | `/devices/pci0000:00/0000:00:02.0/drm/card0/card0-HDMI-A-1` | Y                     |
 
 A broker should look up the variables set by the appropriate Discovery Handler and use the contents to connect to a specific device. For example, a broker can look up `DEBUG_ECHO_DESCRIPTION_8120FE` for the debugEcho device represented by Akri instance `akri-debug-echo-foo-8120fe`.
 
@@ -54,12 +54,12 @@ helm install akri akri-helm-charts/akri \
 
 The default broker Pod memory and CPU resource request and limits in Akri's Helm chart are based off the requirements of Akri's sample brokers. The following brokers were created for demo purposes:
 
-| Discovery Handler | Akri Sample Broker Pod image | Description |
-| :--- | :--- | :--- |
-| debugEcho | `nginx:stable-alpine` | standard nginx image for testing |
-| ONVIF | `ghcr.io/project-akri/akri/onvif-video-broker:latest` | .NET camera frame server |
-| OPC UA | `ghcr.io/project-akri/akri/opcua-monitoring-broker:latest` | .Net App subscribes to specific NodeID and serves latest value |
-| udev | `ghcr.io/project-akri/akri/udev-video-broker:latest` | Rust camera frame server |
+| Discovery Handler | Akri Sample Broker Pod image                               | Description                                                    |
+| :---------------- | :--------------------------------------------------------- | :------------------------------------------------------------- |
+| debugEcho         | `nginx:stable-alpine`                                      | standard nginx image for testing                               |
+| ONVIF             | `ghcr.io/project-akri/akri/onvif-video-broker:latest`      | .NET camera frame server                                       |
+| OPC UA            | `ghcr.io/project-akri/akri/opcua-monitoring-broker:latest` | .Net App subscribes to specific NodeID and serves latest value |
+| udev              | `ghcr.io/project-akri/akri/udev-video-broker:latest`       | Rust camera frame server                                       |
 
 The limit and request bounds were obtained using Kubernetes' [Vertical Pod Autoscaler (VPA)](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler). You should choose bounds appropriate to your broker Pod. [This blog](https://pretired.dazwilkin.com/posts/210305/#vertical-pod-autoscaler-vpa) is a good starting point for learning how to use the VPA to choose bounds.
 
@@ -79,4 +79,3 @@ You can request that additional environment variables are set in Pods that reque
   --set udev.configuration.brokerProperties.RESOLUTION_WIDTH='1000' \
   --set udev.configuration.brokerProperties.RESOLUTION_HEIGHT='800'
 ```
-

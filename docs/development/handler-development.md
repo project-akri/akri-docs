@@ -10,7 +10,7 @@ A Discovery Handler can be written in any language using protobuf; however, Akri
 
 ## Creating a Discovery Handler using Akri's Discovery Handler proto file
 
-This section covers how to use [Akri's discovery gRPC proto file](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto) to create a Discovery Handler in the language of your choosing. It consists of three steps: 
+This section covers how to use [Akri's discovery gRPC proto file](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto) to create a Discovery Handler in the language of your choosing. It consists of three steps:
 
 1. Registering your Discovery Handler with the Akri Agent
 2. Specifying device filtering in a Configuration
@@ -36,7 +36,7 @@ message RegisterDiscoveryHandlerRequest {
     }
     EndpointType endpoint_type = 3;
     // Specifies whether this device could be used by multiple nodes (e.g. an IP camera)
-    // or can only be ever be discovered by a single node (e.g. a local USB device) 
+    // or can only be ever be discovered by a single node (e.g. a local USB device)
     bool shared = 4;
 }
 ```
@@ -68,22 +68,23 @@ metadata:
 name: http
 spec:
 discoveryHandler:
-    name: onvif
-    discoveryDetails: |+
-        ipAddresses: 
-        action: Exclude
-        items:
-        - 10.0.0.1
-        - 10.0.0.2
-        macAddresses:
-        action: Exclude
-        items: []
-        scopes:
-        action: Include
-        items:
-        - onvif://www.onvif.org/name/GreatONVIFCamera
-        - onvif://www.onvif.org/name/AwesomeONVIFCamera
-        discoveryTimeoutSeconds: 2
+  name: onvif
+  discoveryDetails: |+
+    ipAddresses: 
+    action: Exclude
+    items:
+    - 10.0.0.1
+    - 10.0.0.2
+    macAddresses:
+    action: Exclude
+    items: []
+    scopes:
+    action: Include
+    items:
+    - onvif://www.onvif.org/name/GreatONVIFCamera
+    - onvif://www.onvif.org/name/AwesomeONVIFCamera
+    discoveryTimeoutSeconds: 2
+
 ```
 
 The `discoveryHandler.name` must match `RegisterDiscoveryHandlerRequest.name` the Discovery Handler uses when registering with the Agent. Once you know what will be passed to your Discovery Handler, its time to implement the discovery functionality.
@@ -172,9 +173,11 @@ Now that you have created a Discovery Handler, deploy Akri and see how it discov
 
 {% hint style="info" %}
 Optional: If you've previous installed Akri and wish to reset, you may:
+
 ```bash
 sudo helm delete akri
 ```
+
 {% endhint %}
 
 Akri has provided Helm templates for custom Discovery Handlers and their Configurations. These templates are provided as a starting point. They may need to be modified to meet the needs of a Discovery Handler. When installing Akri, specify that you want to deploy a custom Discovery Handler as a DaemonSet by setting `custom.discovery.enabled=true`. Specify the container for that DaemonSet as the Discovery Handler that you built [above](handler-development.md#creating-a-discovery-handler-in-rust-using-a-template) by setting `custom.discovery.image.repository=$DH_IMAGE` and `custom.discovery.image.repository=$TAGS`. To automatically deploy a custom Configuration, set `custom.configuration.enabled=true`. Customize the Configuration's `discovery_details` string to contain any filtering information: `custom.configuration.discoveryDetails=<filtering info>`.
@@ -200,7 +203,6 @@ Also set the name the Discovery Handler will register under (`custom.configurati
 {% hint style="info" %}
 Note: if your Discovery Handler's `discoveryDetails` cannot be easily set using Helm, generate a Configuration file and modify it as needed. configuration.enabled\`.)
 
-
 ```bash
   helm install akri akri-helm-charts/akri \
    --set imagePullSecrets[0].name="crPullSecret" \
@@ -216,11 +218,13 @@ Note: if your Discovery Handler's `discoveryDetails` cannot be easily set using 
    --set controller.enabled=false \
    --set agent.enabled=false > configuration.yaml
 ```
+
 After modifying the file, apply it to the cluster using standard kubectl:
 
 ```bash
 kubectl apply -f configuration.yaml
 ```
+
 {% endhint %}
 
 Watch as the Agent, Controller, and Discovery Handler Pods are spun up and as Instances are created for each of the discovery devices.
@@ -264,20 +268,19 @@ Now that you can discover new devices, see our [documentation on creating broker
 
 ## Contributing your Discovery Handler back to Akri
 
-Now that you have a working Discovery Handler and broker, we'd love for you to contribute your code to Akri. The following steps will need to be completed to do so: 
+Now that you have a working Discovery Handler and broker, we'd love for you to contribute your code to Akri. The following steps will need to be completed to do so:
 
 1. Create an Issue with a feature request for this Discovery Handler.
-2. Create a proposal and put in PR for it to be added to the [proposals folder](../../proposals). 
+2. Create a proposal and put in PR for it to be added to the [proposals folder](../../proposals).
 3. Implement your Discovery Handler and a document named `/akri/docs/<name>-configuration.md` on how to create a Configuration that uses your Discovery Handler.
 4. Create a pull request, that includes Discovery Handler and Dockerfile in the [Discovery Handler modules](https://github.com/project-akri/akri/tree/main/discovery-handler-modules) and [build](https://github.com/project-akri/akri/tree/main/build/containers) directories, respectively. Be sure to also update the minor version of Akri. See [contributing](../community/contributing.md#versioning) to learn more about our versioning strategy.
 
-For a Discovery Handler to be considered fully implemented the following must be included in the PR. 
+For a Discovery Handler to be considered fully implemented the following must be included in the PR.
 
 1. A new [`DiscoveryHandler`](https://github.com/project-akri/akri/blob/main/discovery-utils/proto/discovery.proto) implementation
 2. A [sample broker](broker-development.md) for the new resource.
-3. A sample Configuration that uses the new protocol in the form of a Helm template and values. 
-4. (Optional) A sample end application that utilizes the services exposed by the Configuration 
+3. A sample Configuration that uses the new protocol in the form of a Helm template and values.
+4. (Optional) A sample end application that utilizes the services exposed by the Configuration
 5. Dockerfile\[s\] for broker \[and sample app\] and associated update to the [makefile](https://github.com/project-akri/akri/blob/main/build/akri-containers.mk)
 6. Github workflow\[s\] for broker \[and sample app\] to build containers and push to Akri container repository.
 7. Documentation on how to use the new sample Configuration, like the [udev Configuration document](../discovery-handlers/udev.md)
-

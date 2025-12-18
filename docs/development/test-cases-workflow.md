@@ -22,9 +22,9 @@ File:
 
 A GitHub workflow that:
 
-+ runs Python pytest-based end-to-end tests;
-+ through 4 different Kubernetes versions: 1.24, 1.25, 1.26, 1.27;
-+ on 3 different Kubernetes distros: [K3s](https://k3s.io), [Kubernetes (Kubeadm)](https://kubernetes.io/docs/reference/setup-tools/kubeadm/), [MicroK8s](https://microk8s.io).
+- runs Python pytest-based end-to-end tests;
+- through 4 different Kubernetes versions: 1.24, 1.25, 1.26, 1.27;
+- on 3 different Kubernetes distros: [K3s](https://k3s.io), [Kubernetes (Kubeadm)](https://kubernetes.io/docs/reference/setup-tools/kubeadm/), [MicroK8s](https://microk8s.io).
 
 ### Jobs|Steps
 
@@ -47,15 +47,15 @@ its steps across the different Kubernetes distros and versions summarized at the
 New Kubernetes distro versions may be added to the job by adding entries to `jobs.test-cases.strategy.matrix.kube`. Each
 array entry must include:
 
-|Property|Description|
-|--------|-----------|
-|`runtime`|The Kubernetes distribution name (`k3s`, `k8s` or `microk8s`)|
-|`version`|A distro-specific unique identifier for the Kubernetes version|
+| Property  | Description                                                    |
+| --------- | -------------------------------------------------------------- |
+| `runtime` | The Kubernetes distribution name (`k3s`, `k8s` or `microk8s`)  |
+| `version` | A distro-specific unique identifier for the Kubernetes version |
 
 Notes:
 
-+ `runtime` is used by subsequent steps as a way to determine the distro, e.g. `startsWith(matrix.kube.runtime, 'k3s')`
-+ `version` is used by each distro to determine which binary, snap etc. to install. Refer to each distro's documentation
+- `runtime` is used by subsequent steps as a way to determine the distro, e.g. `startsWith(matrix.kube.runtime, 'k3s')`
+- `version` is used by each distro to determine which binary, snap etc. to install. Refer to each distro's documentation
   to determine the value required
 
 ##### Distro installation and Akri container images insertion
@@ -93,9 +93,9 @@ Once the end-to-end script is complete, the workflow uses the GitHub Action
 
 In order to run the test suite on your computer, you need:
 
-+ [Python ≥3.10](https://wiki.python.org/moin/BeginnersGuide/Download)
-+ [Poetry](https://python-poetry.org/docs/#installation)
-+ [Helm client](https://helm.sh/docs/intro/install/)
+- [Python ≥3.10](https://wiki.python.org/moin/BeginnersGuide/Download)
+- [Poetry](https://python-poetry.org/docs/#installation)
+- [Helm client](https://helm.sh/docs/intro/install/)
 
 You also need a clean Kubernetes cluster, one can be easily created using [k3d](https://k3d.io/).
 
@@ -115,13 +115,13 @@ By default, the tests will run on latest `akri-dev` chart.
 
 There are other options in addition to `--distribution` that affect the test run:
 
-| Option | Description |
-| ------ | ----------- |
+| Option           | Description                                                                             |
+| ---------------- | --------------------------------------------------------------------------------------- |
 | `--distribution` | Specify the target distribution for the tests, can be one of `k3s`, `k8s` or `microk8s` |
-| `--release` | Use `akri` chart instead of `akri-dev` |
-| `--test-version` | Version of the chart to use |
-| `--use-local` | Use local chart (i.e `/deployment/helm` and local images) |
-| `--local-tag` | When using local images, the tag used by images (by default will look for `pr` tag) |
+| `--release`      | Use `akri` chart instead of `akri-dev`                                                  |
+| `--test-version` | Version of the chart to use                                                             |
+| `--use-local`    | Use local chart (i.e `/deployment/helm` and local images)                               |
+| `--local-tag`    | When using local images, the tag used by images (by default will look for `pr` tag)     |
 
 ## Technical details and writing new tests
 

@@ -7,9 +7,9 @@ The Makefiles are using `docker buildx` behind the scenes, ensure you have it in
 In essence, Akri components can be thought of as:
 
 1. Runtime components
-    1. Rust code: containers based on Rust code are built using `Cargo cross` and subsequent `docker build` commands include the cross-built binaries.
-        > Note: For Rust code, `build/Dockerfile.*` does NOT run `cargo build`, instead they simply copy cross-built binaries into the container
-    2. Other code: these containers can be .NET or python or whatever else ... the `build/Dockerfile.*` must do whatever building is required.
+   1. Rust code: containers based on Rust code are built using `Cargo cross` and subsequent `docker build` commands include the cross-built binaries.
+      > Note: For Rust code, `build/Dockerfile.*` does NOT run `cargo build`, instead they simply copy cross-built binaries into the container
+   2. Other code: these containers can be .NET or python or whatever else ... the `build/Dockerfile.*` must do whatever building is required.
 2. Intermediate components: these containers are used as part of the build process and are not used in production explicitly
 
 ## Akri components
@@ -20,47 +20,47 @@ The samples containers are a set of brokers and applications that can be written
 
 All components are built with a `make` command. These are the supporting Makefiles:
 
-* `Makefile`: this provides a single point of entry to build any Akri component
-* `build/akri-containers.mk`: this provides the build and push functionality for Akri core containers
-* `build/samples.mk`: this provides the build and push functionality for containers used in the samples and documentation
-* `build/intermediate-container.mk`: this provides the build and push functionality for the opcvsharp base container
+- `Makefile`: this provides a single point of entry to build any Akri component
+- `build/akri-containers.mk`: this provides the build and push functionality for Akri core containers
+- `build/samples.mk`: this provides the build and push functionality for containers used in the samples and documentation
+- `build/intermediate-container.mk`: this provides the build and push functionality for the opcvsharp base container
 
 ### Configurability
 
 The makefiles allow for several configurations:
 
-* PUSH: if set, the make commands will push the built container images to the registry
-* LOAD: if set, the make command will load the built container images into the local docker daemon
-* PLATFORMS: space separated list of architectures to build for (default to local architecture in LOAD mode, and to `"amd64 arm64 arm/v7"` otherwise)
-* REGISTRY: allows configuration of the container registry (defaults to imaginary: devcaptest.azurecr.io)
-* UNIQUE\_ID: allows configuration of container registry account (defaults to $USER)
-* PREFIX: allows configuration of container registry path for containers
-* LABEL\_PREFIX: allows configuration of container labels
+- PUSH: if set, the make commands will push the built container images to the registry
+- LOAD: if set, the make command will load the built container images into the local docker daemon
+- PLATFORMS: space separated list of architectures to build for (default to local architecture in LOAD mode, and to `"amd64 arm64 arm/v7"` otherwise)
+- REGISTRY: allows configuration of the container registry (defaults to imaginary: devcaptest.azurecr.io)
+- UNIQUE_ID: allows configuration of container registry account (defaults to $USER)
+- PREFIX: allows configuration of container registry path for containers
+- LABEL_PREFIX: allows configuration of container labels
 
 ### Local development usage
 
 For a local build, some typical patterns are:
 
-* `make akri`: build akri core container images for all architectures (build only, no push nor load)
-* `make akri PLATFORMS=arm64`: build akri core containers for ARM64 (build only, no push nor load)
-* `make akri PREFIX=ghcr.io/myaccount PUSH=1`: builds all of the Akri core containers and stores them in a container registry, `ghcr.io/myaccount`.
-* `make akri PREFIX=ghcr.io/myaccount LABEL_PREFIX=local PUSH=1`: builds all of the Akri containers and stores them in a container registry, `ghcr.io/myaccount` with labels set to `local`.
-* `make akri PREFIX=ghcr.io/myaccount PLATFORMS=amd64`: builds all of the Akri containers for AMD64 and stores them in a container registry, `ghcr.io/myaccount`.
-* `make akri-controller PREFIX=ghcr.io/myaccount PUSH=1`: builds the Akri controller container for all platforms and stores them in a container registry, `ghcr.io/myaccount`.
-* `make akri LOAD=1`: build akri core containers for the local architecture and load them into the docker daemon
+- `make akri`: build akri core container images for all architectures (build only, no push nor load)
+- `make akri PLATFORMS=arm64`: build akri core containers for ARM64 (build only, no push nor load)
+- `make akri PREFIX=ghcr.io/myaccount PUSH=1`: builds all of the Akri core containers and stores them in a container registry, `ghcr.io/myaccount`.
+- `make akri PREFIX=ghcr.io/myaccount LABEL_PREFIX=local PUSH=1`: builds all of the Akri containers and stores them in a container registry, `ghcr.io/myaccount` with labels set to `local`.
+- `make akri PREFIX=ghcr.io/myaccount PLATFORMS=amd64`: builds all of the Akri containers for AMD64 and stores them in a container registry, `ghcr.io/myaccount`.
+- `make akri-controller PREFIX=ghcr.io/myaccount PUSH=1`: builds the Akri controller container for all platforms and stores them in a container registry, `ghcr.io/myaccount`.
+- `make akri LOAD=1`: build akri core containers for the local architecture and load them into the docker daemon
 
 ### make targets
 
 Here is the list of supported make targets:
 
-* `all`: builds all core samples and intermediate container images
-* `push`: shortcut for `all PUSH=1`
-* `load`: shortcut for `all LOAD=1`
-* `akri`: builds all core container images
-* `samples`: builds all samples container images
-* `akri-<component>`: builds the container image for this specific core component, core components are currently one of these: agent, agent-full, controller, webhook-configuration, debug-echo-discovery-handler, onvif-discovery-handler, opcua-discovery-handler, udev-discovery-handler
-* `<sample-name>`: builds this specific sample container image, can be one of: opcua-monitoring-broker, onvif-video-broker, akri-udev-video-broker, anomaly-detection-app, video-streaming-app
-* `opencv-base`: see [opencvsharp-build](#opencvsharp-build)
+- `all`: builds all core samples and intermediate container images
+- `push`: shortcut for `all PUSH=1`
+- `load`: shortcut for `all LOAD=1`
+- `akri`: builds all core container images
+- `samples`: builds all samples container images
+- `akri-<component>`: builds the container image for this specific core component, core components are currently one of these: agent, agent-full, controller, webhook-configuration, debug-echo-discovery-handler, onvif-discovery-handler, opcua-discovery-handler, udev-discovery-handler
+- `<sample-name>`: builds this specific sample container image, can be one of: opcua-monitoring-broker, onvif-video-broker, akri-udev-video-broker, anomaly-detection-app, video-streaming-app
+- `opencv-base`: see [opencvsharp-build](#opencvsharp-build)
 
 ### Adding a new component
 
@@ -73,7 +73,7 @@ To add a new Rust-based component, follow these steps:
 
 These are the intermediate components:
 
-* [opencvsharp-build](https://github.com/orgs/project-akri/packages/container/package/akri%2Fopencvsharp-build)
+- [opencvsharp-build](https://github.com/orgs/project-akri/packages/container/package/akri%2Fopencvsharp-build)
 
 ### opencvsharp-build
 
@@ -94,7 +94,7 @@ The automated CI builds are using several jobs and leverages the docker build-pu
 
 ```bash
 # Build and push all images on ghcr.io/project-akri using v<version>-dev label
-make push PREFIX="ghcr.io/project-akri" LABEL_PREFIX="v$(cat version.txt)-dev" 
+make push PREFIX="ghcr.io/project-akri" LABEL_PREFIX="v$(cat version.txt)-dev"
 ```
 
 ## Build and run Akri without a Container Registry
