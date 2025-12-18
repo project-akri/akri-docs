@@ -92,23 +92,23 @@ The Akri Agent is only able to browse services accessible to its cluster's hosts
 
 There are no security considerations for service (mDNS) browsing. This functionality is akin to DNS lookups.
 
-Accessing services that are found by service browsing *may* require the provision of credentials. This would be an implementation detail of an Akri Broker and is not considered further here.
+Accessing services that are found by service browsing _may_ require the provision of credentials. This would be an implementation detail of an Akri Broker and is not considered further here.
 
 ## Outstanding Questions
 
-+ What would a generic Akri Zeroconf Broker do? In practice, the application developer would likely wish to implement the Broker for their specific application.
+- What would a generic Akri Zeroconf Broker do? In practice, the application developer would likely wish to implement the Broker for their specific application.
 
 The limit of a generic Akri Zeroconf Broker is to enumerate services that it discovers and this is demonstrated by a sample Broker included in the Zeroconf Protocol implementation. In practice, a Zeroconf Broker would need to be aware of the implementation(s) of the service that it "twins".
 
 ## Feature Requests
 
-+ Support `TXT` records in filtering (see [Filters](#filters))
+- Support `TXT` records in filtering (see [Filters](#filters))
 
 ## Miscellany
 
 ### Filters
 
-+ Discovery applies user-defined filters against services so that the Agent limits discovered filtered services to those matching the user's requirements.
+- Discovery applies user-defined filters against services so that the Agent limits discovered filtered services to those matching the user's requirements.
 
 For example to filter services named `freddie` on `local` domain with a kind of `_http._tcp`, an example Zeroconf configuration may be applied to the cluster as:
 
@@ -133,20 +133,21 @@ properties:
   zeroconf: # {{ZeroconfDiscoveryHandler}}
     type: object
     properties:
-      kind: 
+      kind:
         type: string
-      name: 
+      name:
         type: string
-      domain: 
+      domain:
         type: string
-      port: 
+      port:
         type: integer
 ```
 
 ## References
 
-+ [Zero-configuration networking](https://en.wikipedia.org/wiki/Zero-configuration_networking).
-+ [IANA Zeroconf Service Name and Transport Protocol Port Number Registry](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml?skey=9&page=132)
-+ [Rust `zeroconf` crate](https://crates.io/crates/zeroconf)
-+ [Development Branch of Akri Zeroconf Protocol & Broker](https://github.com/DazWilkin/akri/tree/protocol-zeroconf)
+- [Zero-configuration networking](https://en.wikipedia.org/wiki/Zero-configuration_networking).
+- [IANA Zeroconf Service Name and Transport Protocol Port Number Registry](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml?skey=9&page=132)
+- [Rust `zeroconf` crate](https://crates.io/crates/zeroconf)
+- [Development Branch of Akri Zeroconf Protocol & Broker](https://github.com/DazWilkin/akri/tree/protocol-zeroconf)
+
 ---

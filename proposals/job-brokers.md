@@ -1,21 +1,23 @@
 # Support for Deploying Terminating Pods as Brokers
+
 This document discusses how to add support for deploying terminating Pods to use discovered IoT devices.
 
-| | |
-| --- | --- |
-| Proposal Date | 11/29/2021 |
-| Author | Kate Goldenring |
-
+|               |                 |
+| ------------- | --------------- |
+| Proposal Date | 11/29/2021      |
+| Author        | Kate Goldenring |
 
 ## Terms
-| Term | Definition |
-| --- | --- |
-| `capacity`  | Maximum amount of containers that can use a device. Defines the number of usage slots a device's device plugin advertises to the kubelet |
-| broker | The word Akri uses to describe the workload (currently only Pods) that the Akri Controller automatically deploys to use discovered IoT devices |
-| Pod | The smallest deployable unit in Kubernetes |
-| Jobs  | a [Job](https://kubernetes.io/docs/concepts/workloads/controllers/job/) is a higher level Kubernetesobject that creates one or more (by increasing `parallism` value) identical Pods and will retry until a set number of them successfully terminate. |
+
+| Term       | Definition                                                                                                                                                                                                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `capacity` | Maximum amount of containers that can use a device. Defines the number of usage slots a device's device plugin advertises to the kubelet                                                                                                               |
+| broker     | The word Akri uses to describe the workload (currently only Pods) that the Akri Controller automatically deploys to use discovered IoT devices                                                                                                         |
+| Pod        | The smallest deployable unit in Kubernetes                                                                                                                                                                                                             |
+| Jobs       | a [Job](https://kubernetes.io/docs/concepts/workloads/controllers/job/) is a higher level Kubernetesobject that creates one or more (by increasing `parallism` value) identical Pods and will retry until a set number of them successfully terminate. |
 
 ## Background
+
 When Akri was first designed, one of the main use cases it was targeting was the easy creation of protocol translation
 gateways. For example, Akri could be used to discover a USB camera and automatically deploy a non-terminating Pod that
 would continuously advertise the camera as an IP camera. The fact that these Pods act as middleware is why they were
@@ -26,12 +28,13 @@ where a short lived (or terminating) Pod should be deployed to use a device. The
 (such as taking a picture, reading the temperature, etc), inventory (adding a device to a catalog after discovery by
 Akri), and more. These scenarios are powerful and should be enabled in Akri by supporting the deployment of Pods that
 are allowed to complete. In particular, support for specifying a single Kubernetes Job that should be deployed upon
-discovery of each device should be enabled. 
+discovery of each device should be enabled.
 
 This document proposes modification the Controller, Agent, and Configuration CRD can be redesigned to support
 terminating Pods.
 
 ## Akri's Current Deployment Strategy
+
 Currently, Akri has only one deployment strategy: for each discovered device a broker Pod is deployed to each node on
 the associated Instance's `nodes` list. If the device is no longer visible (i.e. goes offline), then the Instance is
 deleted by the Agent and the broker is brought down by the Controller. If the device reappears, the broker is
@@ -45,6 +48,7 @@ to ever terminate. In this way, the Controller is creating a deployment of pods 
 > except for Jobs and ChronJobs
 
 ## Simple Extension of Akri to Support Terminating Pods
+
 Previously, Akri has only supported deploying non-terminating Kubernetes Pods as brokers. If a Pod ever went down, the
 Controller would immediately re-deploy it. To support terminating Pods, Akri could simply modify this automatic
 redeployment to be configurable. However, many of the scenarios mentioned in [the Background](#Background) that use
@@ -60,12 +64,14 @@ approach to deploying Pods. Using Jobs will offload scheduling decisions from th
 Scheduler for terminating Pods. Non-terminating Pods will Continue to be scheduled by the Controller.
 
 To support both terminating and non-terminating Pods, changes will be made to the following parts of Akri:
+
 - The Configuration: The `brokerPod` section of the Configuration will be changed to a `brokerType` enum with a Pod or
   Job option.
 - The Controller: Logic to deploy a Pod or Job depending on the `brokerType` of the Configuration.
 - The Agent: Logic to not bring down a Configuration if the `brokerType` changed.
 
 ## Add on to Support More Robust Scenarios with Terminating Pods
+
 One of the main use cases for deploying Pods that terminate (or Jobs) to use IoT devices is device management. In these
 scenarios, it may be useful to marshall information from the Broker to the Instance about the status of the workload.
 Take the scenario of Akri being used to change the frame rate of an IP camera. A Configuration would be deployed that
@@ -77,25 +83,30 @@ Instances, information could be transferred over the file system. During allocat
 the Instance (if it does not already exist) and a sub-directory for the specific workload. Then, it would mount that
 subdirectory in the Pod. The Agent would contain a file watcher on the appropriate directories. Each time a file
 changed, it would propagate the contents into the Instance Custom Resource's `brokerInfo` map, a proposed addition to
-the Instance. 
+the Instance.
 
 ## Implementation
-### Configuration CRD 
+
+### Configuration CRD
+
 A Configuration initiates two actions: discovery and use of devices. Currently, the discovery part of the Configuration
 sits in the `discoveryHandler` section and the `brokerPodSpec`, `instanceServiceSpec`, and `configurationServiceSpec`
 describe what should be deployed to discovered devices.
+
 #### Current Configuration CRD
+
 Akri's Configuration CRD consist of the following fields. The next section describes how `brokerPodSpec` will be moved
 under a larger `brokerType` field.
+
 - `discoveryHandler`: Discovery Handler that should be used to discover the devices. `discoveryHandler.name` specifies
   the name of the Discovery Handler and `DiscoveryHandler.discoveryDetails` contains extra filter information that is
   passed on to the Discovery Handler. Format is unique to each Discovery Handler.
-- `brokerPodSpec`: PodSpec for the "broker" Pod that is deployed to use each discovered device 
-- `instanceServiceSpec`: a service that is created for each broker of this Configuration. 
+- `brokerPodSpec`: PodSpec for the "broker" Pod that is deployed to use each discovered device
+- `instanceServiceSpec`: a service that is created for each broker of this Configuration.
 - `configurationServiceSpec`: a service that is created for each broker of this Configuration.
 - `brokerProperties`: environment variables that will be set in all broker Pods/Jobs and displayed in the Instances of
-   the Configuration.
-- `capacity`: Maximum number of Pods that can use a device at once. 
+  the Configuration.
+- `capacity`: Maximum number of Pods that can use a device at once.
 
 ```yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -141,13 +152,13 @@ spec:
                     type: string
                   type: object
       additionalPrinterColumns:
-      - name: Capacity
-        type: string
-        description: The capacity for each Instance discovered
-        jsonPath: .spec.capacity
-      - name: Age
-        type: date
-        jsonPath: .metadata.creationTimestamp
+        - name: Capacity
+          type: string
+          description: The capacity for each Instance discovered
+          jsonPath: .spec.capacity
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp
   scope: Namespaced
   names:
     plural: configurations
@@ -156,15 +167,17 @@ spec:
     shortNames:
       - akric
 ```
+
 > Note: Latest release version of the Configuration CRD can be viewed
 > [here](https://github.com/project-akri/akri/blob/v0.7.0/deployment/helm/crds/akri-configuration-crd.yaml).
 
-
 #### Proposed Configuration CRD Addition
+
 In the Configuration, the `brokerPodSpec` field will be expanded to a `brokerType` enum expands definition of a broker
 to a Pod or Job.
+
 - `brokerType`: optional declaration of an object Pod or Job that should be deployed. A maximum of one can be specified.
-   If not specified, no Pods/Jobs or services are made. This is the expanded version of `brokerPodSpec`.
+  If not specified, no Pods/Jobs or services are made. This is the expanded version of `brokerPodSpec`.
 
 ```yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -193,9 +206,9 @@ spec:
                       type: string
                 capacity:
                   type: integer
-                brokerType: 
+                brokerType:
                   type: object # enum of deployment types
-                  properties: 
+                  properties:
                     brokerJobSpec: # {{JobSpec}}
                       x-kubernetes-preserve-unknown-fields: true
                       type: object
@@ -217,13 +230,13 @@ spec:
                     type: string
                   type: object
       additionalPrinterColumns:
-      - name: Capacity
-        type: string
-        description: The capacity for each Instance discovered
-        jsonPath: .spec.capacity
-      - name: Age
-        type: date
-        jsonPath: .metadata.creationTimestamp
+        - name: Capacity
+          type: string
+          description: The capacity for each Instance discovered
+          jsonPath: .spec.capacity
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp
   scope: Namespaced
   names:
     plural: configurations
@@ -232,13 +245,18 @@ spec:
     shortNames:
       - akric
 ```
+
 > Note: **Should this design move away from `broker` terminology and towards `workload` or another term indicative of
-any workload deployed to discovered devices, whether it does management or brokers information?**
+> any workload deployed to discovered devices, whether it does management or brokers information?**
 
 ### Controller Redesign
-The Controller will need to be expanded to support the new deployment strategies. 
+
+The Controller will need to be expanded to support the new deployment strategies.
+
 #### Current design
-Currently, the Controller has Instance, Pod, and Node watchers. 
+
+Currently, the Controller has Instance, Pod, and Node watchers.
+
 1. Instance Watcher: Creates Pods and Services as specified in the Configuration. Specifically, for added Instances,
    deploys a Pod and Service to each Node on the `Instance.NodeList`. If the Instance has changed, checks if a Node was
    added or removed and adds and removes the associated Pod and Services, respectively. If the Instance was removed, it
@@ -252,9 +270,11 @@ Currently, the Controller has Instance, Pod, and Node watchers.
 Current (as ov `v0.7.0`) Controller flow: ![Controller design as of v0.7.0](../media/controller-v0-7-0-flow.png)
 
 #### New design
-The new design of the Controller will add logic to the Instance Watcher to deploy Jobs. 
-1. Instance Watcher: Extended to also create and delete Jobs (not just Pods).  Instance deletion events lead to the
-   deletion of Pods/Jobs with that Instance label. 
+
+The new design of the Controller will add logic to the Instance Watcher to deploy Jobs.
+
+1. Instance Watcher: Extended to also create and delete Jobs (not just Pods). Instance deletion events lead to the
+   deletion of Pods/Jobs with that Instance label.
 
 Proposed Controller flow to support Jobs:
 
@@ -263,10 +283,12 @@ Proposed Controller flow to support Jobs:
 ![Controller proposed redesign](../media/controller-with-jobs-flow.png)
 
 ## Implementation steps
+
 Just as Akri has one Pod deployment scenario. The implementation will support one (and possibly the only desired) Job
 scenario: deploying a Job to each discovered Instance. No effort will be made to deploy a Job to each Node that can see
 a device. In fact no Node selector will be specified. The Kubernetes Scheduler will choose one of the Nodes that can see
 the Instance (it's Kubernetes resource).
+
 1. Configuration CRD: Add `brokerType` to the Configuration CRD.
 1. Controller: Expand instance watcher to support Jobs. When Instances are created, check the `brokerType` of the
    associated Configuration. If it is `brokerType.pod`, proceed as usual. Otherwise, deploy a Job to use the Instance
@@ -275,31 +297,34 @@ the Instance (it's Kubernetes resource).
 1. Expand documentation [on requesting Akri resources](https://docs.akri.sh/user-guide/requesting-akri-resources).
 
 ### Extension: Broker Bi-Directional Communication
+
 Currently, information travels from Akri (Agent) to brokers via environment variables that contain device connection
 information. There is currently no support in Akri for brokers to pass information back to the Agent. Support of this
 bi-direction communication could be useful in scenarios that use Jobs. For example, a firmware update broker may want to
 report back the firmware version that a device was updated to or the general status of an update. While this information
 could also be obtained via the Discovery Handler querying firmware and Job status, it may be worth directly receiving
-the information from the broker. 
+the information from the broker.
 
 One naive example of how information could be passed from brokers to the Agent could be through the file system.
 Specifically, the Agent could create a directory for the Job within some established `JOB_DIRECTORIES`. It could then
 mount this subdirectory into the Job. The Agent could contain a file watcher that watches this directory for any
 updates. Any changes in file contents would cause the contents to be (re)written to a section of the instance reserved
 for this information (say a `Instance.brokerInfo` map, where the key would be the file name and the value will be the
-contents). 
+contents).
 
 The Agent could also expose an interface for communicating with brokers like it does for Discovery Handlers.
 
 ### Note: Supporting Gracefully Handling Configuration Changes
+
 Currently, Akri does not gracefully handle changes to Configurations; rather, it deletes the old and adds the new Configuration.
-However, gracefully handling Configuration changes requires the Agent to track the state of the Configuration and could lead to 
+However, gracefully handling Configuration changes requires the Agent to track the state of the Configuration and could lead to
 the Configuration not accurately being represented in the cluster. For example, say Akri wanted to gracefully handle changes
 to brokerSpecs so that an operator could request a different broker be deployed without instances being deleted and re-created.
 In this case, the Controller would need to somehow know to re-deloy the brokers without being signaled by an instant state change as usual.
 This would mean the Controller would need a Configuration watcher just like the Agent. Then, the Agent would need to be able to detect
 that only the brokerSpec changed and choose to take no further action, trusting that the Controller will also notice the change in the
-Configuration and deploy the new brokers. This is complex -- possibly unnecessarily so. One way to avoid this "trusting" between the 
+Configuration and deploy the new brokers. This is complex -- possibly unnecessarily so. One way to avoid this "trusting" between the
 Controller and Agent would be to separate the Configuration into two separate CRDs, one for deployment and the other for discovery.
 Then, the Agent could watch the discovery CRD and the Controller would watch the deployment CRD. They would be two separate Operators
 in Kubernetes terms.
+
