@@ -113,7 +113,7 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
         sudo -E DEBUG_ECHO_INSTANCES_SHARED=true ENABLE_DEBUG_ECHO=1 RUST_LOG=info METRICS_PORT=8082 KUBECONFIG=$HOME/.kube/config DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode $HOME/.cargo/bin/cargo run
         ```
 
-        > Note: `DISCOVERY_HANDLERS_DIRECTORY` is where Akri agent creates an unix domain socket for discovery handler's registeration. This example uses ~/tmp/akri that should exist or is created before executing this command.
+        > Note: `DISCOVERY_HANDLERS_DIRECTORY` is where Akri agent creates an unix domain socket for discovery handler's registration. This example uses ~/tmp/akri that should exist or is created before executing this command.
 
         By default, the Agent does not have embedded Discovery Handlers. To allow embedded Discovery Handlers in the
         Agent, turn on the `agent-full` feature and the feature for each Discovery Handler you wish to embed -- Debug echo

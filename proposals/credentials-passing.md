@@ -14,7 +14,7 @@ Whether secrets should be passed as environment variables or mounted files could
 
 ### How Secrets are used in OPC UA
 
-For OPC UA, a client maintains a certificate store at a certain path. So the Kubernetes Secrets only need to be passed in at the path expected by the OPC UA Client (Akri Broker). In this case, as shown in the abreviated broker PodSpec below, that path is /etc/opcua-cert/client-pki. Specifically, the client certificate can be found at /etc/opcua-cert/client-pki/own/certs/AkriClient.der.
+For OPC UA, a client maintains a certificate store at a certain path. So the Kubernetes Secrets only need to be passed in at the path expected by the OPC UA Client (Akri Broker). In this case, as shown in the abbreviated broker PodSpec below, that path is /etc/opcua-cert/client-pki. Specifically, the client certificate can be found at /etc/opcua-cert/client-pki/own/certs/AkriClient.der.
 
 ```
 brokerPodSpec:

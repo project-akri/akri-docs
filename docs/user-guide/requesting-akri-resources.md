@@ -64,7 +64,7 @@ kubectl get akrii onvif-camera-<id> -o yaml
 
 ## Requesting resources at Configuration level
 
-Akri also exposes all discovered devices as resources at Configuration level. Configuration level resources can be referred by the name of Configuration. With Configuration-level resources, instead of needing to know the specific Instances id `onvif-camera-<id>` to request, you can use Configuration name `<configuration-name>` to requst resources. Agent will behind the scenes do the work of selecting which Instances to reserve.
+Akri also exposes all discovered devices as resources at Configuration level. Configuration level resources can be referred by the name of Configuration. With Configuration-level resources, instead of needing to know the specific Instances id `onvif-camera-<id>` to request, you can use Configuration name `<configuration-name>` to request resources. Agent will behind the scenes do the work of selecting which Instances to reserve.
 
 ```yaml
 apiVersion: apps/v1
