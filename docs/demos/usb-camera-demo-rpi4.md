@@ -39,7 +39,7 @@ The following will be covered in this demo:
    sudo kubeadm init
    ```
 
-   You will then need to setup kubenetes config and environment variables using the commands below
+   You will then need to setup kubernetes config and environment variables using the commands below
 
    ```sh
    mkdir -p $HOME/.kube

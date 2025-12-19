@@ -31,11 +31,11 @@ The majority of Akri is written in Rust. To install Rust and Akri's component's 
 ./build/setup.sh
 ```
 
-If you previously installed Rust ensure you are using the v1.82.0 toolchain that Akri's build system uses:
+If you previously installed Rust ensure you are using the v1.88.0 toolchain that Akri's build system uses:
 
 ```sh
-sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.82.0
-rustup default 1.82.0
+sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.88.0
+rustup default 1.88.0
 cargo version
 ```
 
@@ -49,17 +49,17 @@ cargo version
    ./build/setup.sh
    ```
 
-   If you previously installed Rust, ensure you are using the v1.82.0 toolchain that Akri's build system uses:
+   If you previously installed Rust, ensure you are using the v1.88.0 toolchain that Akri's build system uses:
 
    ```sh
-   sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.82.0
+   sudo curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain=1.88.0
    ```
 
-   Then, configure your current shell to see Cargo and set `v1.82.0` as default toolchain.
+   Then, configure your current shell to see Cargo and set `v1.88.0` as default toolchain.
 
    ```sh
    source $HOME/.cargo/env
-   rustup default 1.82.0
+   rustup default 1.88.0
    cargo version
    ```
 
@@ -113,7 +113,7 @@ To locally run Akri's Agent, Controller, and Discovery Handlers as part of a Kub
         sudo -E DEBUG_ECHO_INSTANCES_SHARED=true ENABLE_DEBUG_ECHO=1 RUST_LOG=info METRICS_PORT=8082 KUBECONFIG=$HOME/.kube/config DISCOVERY_HANDLERS_DIRECTORY=~/tmp/akri AGENT_NODE_NAME=myNode $HOME/.cargo/bin/cargo run
         ```
 
-        > Note: `DISCOVERY_HANDLERS_DIRECTORY` is where Akri agent creates an unix domain socket for discovery handler's registeration. This example uses ~/tmp/akri that should exist or is created before executing this command.
+        > Note: `DISCOVERY_HANDLERS_DIRECTORY` is where Akri agent creates an unix domain socket for discovery handler's registration. This example uses ~/tmp/akri that should exist or is created before executing this command.
 
         By default, the Agent does not have embedded Discovery Handlers. To allow embedded Discovery Handlers in the
         Agent, turn on the `agent-full` feature and the feature for each Discovery Handler you wish to embed -- Debug echo

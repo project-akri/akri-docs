@@ -45,7 +45,7 @@ Akri's documentation is divided into six sections:
 
 1. 📘 [User Guide](./user-guide/getting-started.md): Documentation for Akri users.
 1. 🔎 [Discovery Handlers](./discovery-handlers/onvif.md): Documentation on how to configure Akri using Akri's currently supported Discovery Handlers
-1. 🚀 [Demos](./demos/usb-camera-demo.md): End-to-End demos that demostrate how Akri can discover and use devices. Contain sample brokers and end applications.
+1. 🚀 [Demos](./demos/usb-camera-demo.md): End-to-End demos that demonstrate how Akri can discover and use devices. Contain sample brokers and end applications.
 1. ⚙️ [Architecture](./architecture/architecture-overview.md): Documentation that details the design and implementation of Akri's components.
 1. 💻 [Development](./development/development.md): Documentation for Akri developers or how to build, test, and extend Akri.
 1. 🎉 [Community](./community/roadmap.md): Information on what's next for Akri and how to get involved!

@@ -44,7 +44,7 @@ The Akri discovery handler is written in Rust and uses [`zeroconf`](https://crat
 
 The Akri Agent is deployed to a Kubernetes cluster. Kubernetes clusters commonly run in-cluster DNS services (nowadays [`CoreDNS`](https://kubernetes.io/docs/tasks/administer-cluster/coredns/)). For this reason, the applicability of the Akri Zeroconf protocol is to devices not accessible within the cluster. The benefit of the Akri Zeroconf protocol is to make off-cluster Zeroconf-accessible hosts (devices) and services accessible to Kubernetes cluster resources (e.g. applications).
 
-For Zeroconf discovery to occur, the Agent's Pod must leverage several Zeroconf depdendencies and libraries. These depdendencies not only expand the size of the Akri Agent (~800MB) but they increase the Agent's surface area and increase the possibility of vulnerabilities.
+For Zeroconf discovery to occur, the Agent's Pod must leverage several Zeroconf dependencies and libraries. These dependencies not only expand the size of the Akri Agent (~800MB) but they increase the Agent's surface area and increase the possibility of vulnerabilities.
 
 Discovery is a key functionality of Zeroconf and is straightforward to implement. See the [Browsing services](https://crates.io/crates/zeroconf#browsing-services) examples of the `zeroconf` crate.
 

@@ -178,7 +178,7 @@ stringData:
 Device credential ref list is similar to Device credential list except the device ids are listed and the credentials are references
 to another entries in the Akri `discoveryProperties`. The key name for device credential ref list is “`device_credential_ref_list`”.
 
-For example, the device credential ref list below contains an array of “device id”->”credential reference” objects. The credential of device id “5f5a69c2-e0ae-504f-829b-00fcdab169cc” is refered to (username-> device1_username, password->device1_password). The device1_username and device1_password are entries in Akri discoverProperties that point to the actual secret information in Kubernetes Secrets. Note different device ids may use the same secret reference.
+For example, the device credential ref list below contains an array of “device id”->”credential reference” objects. The credential of device id “5f5a69c2-e0ae-504f-829b-00fcdab169cc” is referred to (username-> device1_username, password->device1_password). The device1_username and device1_password are entries in Akri discoverProperties that point to the actual secret information in Kubernetes Secrets. Note different device ids may use the same secret reference.
 
 ```yaml
 - name: "device_credential_ref_list"
@@ -365,7 +365,7 @@ helm install akri akri-helm-charts/akri \
 
 The Onvif sample broker (`akri-onvif-video-broker`) can be configured to access Secret and ConfigMap data, if configured, it expects the Secret and ConfigMap data are
 mounted as files. The sample broker checks the environment variables `CREDENTIAL_DIRECTORY` for the directory that contains Secret data and
-`CREDENTIAL_CONFIGMAP_DIRECTORY` for direcctory contains configMap data. `CREDENTIAL_CONFIGMAP_DIRECTORY` is optional. When the sample broker launched, the uuids of
+`CREDENTIAL_CONFIGMAP_DIRECTORY` for directory contains configMap data. `CREDENTIAL_CONFIGMAP_DIRECTORY` is optional. When the sample broker launched, the uuids of
 discovered Onvif devices are set in the environment variables `ONVIF_DEVICE_UUID_{INSTANCE_HASH_ID}`, the sample broker picks the first one found from the environment variables `ONVIF_DEVICE_UUID_{INSTANCE_HASH_ID}` as device uuid and get match credential from files under `CREDENTIAL_DIRECTORY` and `CREDENTIAL_CONFIGMAP_DIRECTORY`.
 The schema of how the Secret/ConfigMap files are organized aligned to the schema that Onvif Discovery Handler used for passing the secret data, as follow:
 
@@ -375,7 +375,7 @@ The schema of how the Secret/ConfigMap files are organized aligned to the schema
    not be found.
 2. If the sample broker can not find a matched credential from the username/password secret files directly, it looks for credentials from the device credential ref list `device_credential_ref_list`. The sample broker try to get a file name `device_credential_ref_list` from `CREDENTIAL_CONFIGMAP_DIRECTORY`, and if the file does not
    exists, it tries to get the same file name under `CREDENTIAL_DIRECTORY`. The credential ref list should contains reference entries to the actual credentals. The sample
-   broker look up the device uuid from the list to get the credential referece and read the actual credential files from `CREDENTIAL_DIRECTORY`. Similar to the fallback credenial "username_default" and "password_default", a credential ref entry with key "default" indicates the fallback credental.
+   broker look up the device uuid from the list to get the credential reference and read the actual credential files from `CREDENTIAL_DIRECTORY`. Similar to the fallback credenial "username_default" and "password_default", a credential ref entry with key "default" indicates the fallback credental.
 3. if the sample broker can not find a matched credental from credential ref list, it looks for credentials from crdential list `device_credential_list`. The sample broker try to get a file name `device_credential_list` from `CREDENTIAL_CONFIGMAP_DIRECTORY`, and if the file does not exist, it tries to get the same file name under `CREDENTIAL_DIRECTORY`. The credential list should contains actual credential entries. The sample broker look up the device uuid from the list to get the credential. Similarly, a credential entry with key "default" indicates the fallback credental.
 
 The following example shows how the credential information is organized in Secret and ConfigMap. There are 4 credentials specified in this example, credential for device id

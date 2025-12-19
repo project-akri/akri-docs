@@ -105,9 +105,9 @@ helm upgrade akri akri-helm-charts/akri-dev \
    --set onvif.configuration.capacity=3 \
    --set onvif.configuration.discoveryProperties[0].name=device_credential_list \
    --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.name=onvif-auth-secret \
-   --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.namesapce=default \
+   --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.namespace=default \
    --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.key=device_credential_list \
-   --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.optoinal=false \
+   --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.optional=false \
    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
    --set onvif.configuration.brokerPod.image.tag="latest-dev" \
    --set onvif.configuration.brokerPod.image.pullPolicy="Always" \

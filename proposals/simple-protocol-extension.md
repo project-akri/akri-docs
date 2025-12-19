@@ -14,7 +14,7 @@ Wouldn't it be great if users could deploy only the implementations they wanted?
 
 1. Within the existing code, create set of build flags that allow people to easily include/exclude protocols. This would provide a simple method for people to get exactly what they want ... the build system would likely still create the "all-in-one" Agent executable/containers.
 1. Create a plugin system that allows Agent to load any libraries that are available. This would allow people to modify our Dockerfiles to embed only the protocols they desire.
-1. Implement all protocols as Pods that can be deployed where needed. In essence, each protocol discovery implementation would be moved out of Agent and into its own executable. This executable would notify Agent of its discovery results (maybe over gRPC, similar to Kuberetes' device plugin framework). This would provide an ability to implement protocol discovery in any programming language and without any dependencies on the Akri binaries. To enable a specific protocol in a cluster, the operator would need to deploy both Agent and the specific protocol container. Our build system would produce Agent (without any protocols) ... and would build a container for each protocol implementation.
+1. Implement all protocols as Pods that can be deployed where needed. In essence, each protocol discovery implementation would be moved out of Agent and into its own executable. This executable would notify Agent of its discovery results (maybe over gRPC, similar to Kubernetes' device plugin framework). This would provide an ability to implement protocol discovery in any programming language and without any dependencies on the Akri binaries. To enable a specific protocol in a cluster, the operator would need to deploy both Agent and the specific protocol container. Our build system would produce Agent (without any protocols) ... and would build a container for each protocol implementation.
 1. Akri Agent (minus specific protocol implementations) could be exposed as a library.  Each protocol would create its own tailored Agent that was basically an implementation of the DiscoveryHandler trait and an invocation of the Agent library. This would simplify anyone's effort to implement a new protocol and deploy it in isolation.
    ```rust
    struct FooProtocol {}
@@ -28,7 +28,7 @@ Wouldn't it be great if users could deploy only the implementations they wanted?
        akri_agent.start();
    }
    ```
-   This idea could be extended to allow mutliple protocol handlers. That would allow our build system to create an "all-in-one" Agent example:
+   This idea could be extended to allow multiple protocol handlers. That would allow our build system to create an "all-in-one" Agent example:
    ```rust
    pub fn main() {
        // add all protocol handlers

@@ -28,7 +28,7 @@ To enable resource sharing, the Akri Agent creates and updates the `Instance.dev
 
 For more detailed information, see the [in-depth resource sharing doc](resource-sharing-in-depth.md).
 
-Akri Agent also exposes all discovered resources at Configuration level. Configuration level resources can be referred by the name of Configuration so Configuration name can be used to requst resources without the need to know the specific Instances id to request. Agent will behind the scenes do the work of selecting which Instances to reserve.
+Akri Agent also exposes all discovered resources at Configuration level. Configuration level resources can be referred by the name of Configuration so Configuration name can be used to request resources without the need to know the specific Instances id to request. Agent will behind the scenes do the work of selecting which Instances to reserve.
 
 For more detailed information about Configuration level resource, see the [Configuration-level resources doc](configuration-level-resource-in-depth.md).
 
@@ -50,7 +50,7 @@ It is common for a device to require authentication in order to access its prope
 `discoverProperties`, if it is specified in Configuration, Agent reads the content and generate a list of string key-value pair properties and pass the list to
 Discovery Handler along with `discoveryDetails`.
 
-Agent supports plain text, K8s `secret` and `configMap` in the schema of `discoverProperies`. An example below shows how each type of property is specified in `discoveryProperties`. The `name` of property is required and needs to be in C_IDENTIFIER format. The value can be specified by `value` or `valueFrom`. For value specified by `valueFrom`, it can be from `secret` or `configMap`. The `optional` attribute is default to `false`, it means if the data doesn't exist (in the `secret` or `configMap`), the Configuration deployment
+Agent supports plain text, K8s `secret` and `configMap` in the schema of `discoverProperties`. An example below shows how each type of property is specified in `discoveryProperties`. The `name` of property is required and needs to be in C_IDENTIFIER format. The value can be specified by `value` or `valueFrom`. For value specified by `valueFrom`, it can be from `secret` or `configMap`. The `optional` attribute is default to `false`, it means if the data doesn't exist (in the `secret` or `configMap`), the Configuration deployment
 will fail. If `optional` is `true`, Agent will ignore the entry if the data doesn't exist, and pass all exist properties to Discovery Handler, the Configuration deployment will success.
 
 ```yaml

@@ -14,7 +14,7 @@ This document discusses how to add support for deploying terminating Pods to use
 | `capacity` | Maximum amount of containers that can use a device. Defines the number of usage slots a device's device plugin advertises to the kubelet                                                                                                               |
 | broker     | The word Akri uses to describe the workload (currently only Pods) that the Akri Controller automatically deploys to use discovered IoT devices                                                                                                         |
 | Pod        | The smallest deployable unit in Kubernetes                                                                                                                                                                                                             |
-| Jobs       | a [Job](https://kubernetes.io/docs/concepts/workloads/controllers/job/) is a higher level Kubernetesobject that creates one or more (by increasing `parallism` value) identical Pods and will retry until a set number of them successfully terminate. |
+| Jobs       | a [Job](https://kubernetes.io/docs/concepts/workloads/controllers/job/) is a higher level Kubernetesobject that creates one or more (by increasing `parallelism` value) identical Pods and will retry until a set number of them successfully terminate. |
 
 ## Background
 

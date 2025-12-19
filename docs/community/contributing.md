@@ -44,7 +44,7 @@ Alternatively, you could skip running `version.sh` file altogether. Once you mak
 - `/version minor` for non-breaking feature changes
 - `/version major` for major and/or breaking changes
 
-Commenting these commmands on your pull request will automatically update the version for you and push the changes to your pull request branch.
+Commenting these commands on your pull request will automatically update the version for you and push the changes to your pull request branch.
 
 ## Logging
 

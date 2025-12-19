@@ -107,7 +107,7 @@ To run all the tests run `poetry run pytest -v --distribution ${DISTRO}`, with `
 
 To run specific test suite, add the suite file as argument to the pytest command (e.g add `test_webhook.py`).
 
-To run a specific test in a test suite add the fully quialified test name as argument to the pytest command (e.g add `test_webhook::test_valid_configuration_accepted`).
+To run a specific test in a test suite add the fully qualified test name as argument to the pytest command (e.g add `test_webhook::test_valid_configuration_accepted`).
 
 You can specify multiple tests or test suites in you pytest command.
 
@@ -126,15 +126,15 @@ There are other options in addition to `--distribution` that affect the test run
 ## Technical details and writing new tests
 
 All end to end tests suites are located in `/test/e2e/`, as we use pytest to run those, a test suite file must be named `test_${SUITE}.py`.
-Within these files every `test_*` functions will run independently, fixtures are here to help in setting up and tearing down the test evironment.
+Within these files every `test_*` functions will run independently, fixtures are here to help in setting up and tearing down the test environment.
 
 Every fixture will get set up when first used in scope (everything before the `yield` is executed), and teared down after last use in scope (everything after the `yield` is executed).
 Useful scopes for our usecases are `session` for the entire time of the pytest run, `module` for a specific suite and `function` for a specific test.
-An `autouse` fixture will get automatically added without explicitely asking for it.
+An `autouse` fixture will get automatically added without explicitly asking for it.
 
 Akri will be installed thanks to the `autouse` fixture `install_akri`, the scope of this fixture is `module`, meaning it will get installed and uninstalled
 for every test suite. This fixture is configured by the module variable `discovery_handlers` that must be set to a list of discovery handlers to enable.
 
 A test passes if the function return; a test fails if the function raises an exception.
 
-Be careful when writing new tests, the test order is **not** guarenteed, so make sure your test reverts any modification.
+Be careful when writing new tests, the test order is **not** guaranteed, so make sure your test reverts any modification.
