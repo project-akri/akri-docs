@@ -296,8 +296,7 @@ Akri was made to be easily extensible as Discovery Handlers and brokers can be i
 
 This document focuses on developing Akri's Rust components; however, Akri has several non-Rust components. Reference their respective READMEs in [Akri's source code](https://github.com/project-akri/akri) for instructions on developing.
 
-- Several [sample brokers](https://github.com/project-akri/akri/tree/main/samples/brokers) and [applications](https://github.com/project-akri/akri/tree/main/samples/apps) for demo purposes.
-- A [certificate generator](https://github.com/project-akri/akri/tree/main/samples/opcua-certificate-generator) for testing and using Akri's OPC UA Discovery Handler
+- Several [sample brokers](https://github.com/project-akri/examples/tree/main/brokers) and [applications](https://github.com/project-akri/examples/tree/main/apps) for demo purposes.
 - Python script for running [end-to-end integration tests](https://github.com/project-akri/akri/blob/main/test/run-end-to-end.py).
 - Python script for [testing Akri's Configuration validation webhook](https://github.com/project-akri/akri/blob/main/test/run-webhook.py).
 

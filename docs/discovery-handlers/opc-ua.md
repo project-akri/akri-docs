@@ -28,7 +28,7 @@ The generic OPC UA Configuration takes in a list of DiscoveryURLs, whether for L
 
 ### Broker Pod Settings
 
-If you would like non-terminating workloads ("broker" Pods) to be deployed automatically to discovered devices, a broker image should be specified (under `brokerPod`) in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/akri/opcua-video-broker"). If you would rather manually deploy pods to utilize the devices advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+If you would like non-terminating workloads ("broker" Pods) to be deployed automatically to discovered devices, a broker image should be specified (under `brokerPod`) in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/examples/opcua-monitoring-broker"). If you would rather manually deploy pods to utilize the devices advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
 
 > Note only a `brokerJob` OR `brokerPod` should be specified.
 
@@ -196,7 +196,7 @@ kubectl create secret generic opcua-broker-credentials \
 --from-file=ca_crl=/path/to/SomeCA.crl
 ```
 
-Certificates can be created and signed with a CA manually using openssl, by using the OPC Foundation [certificate generator tool](https://github.com/OPCFoundation/Misc-Tools), or Akri's [certificate generator](https://github.com/project-akri/akri/blob/main/samples/opcua-certificate-generator/README.md). Be sure that the certificates are in the format expected by your OPC UA Client.
+Certificates can be created and signed with a CA manually using openssl, or by using the OPC Foundation [certificate generator tool](https://github.com/OPCFoundation/Misc-Tools). Be sure that the certificates are in the format expected by your OPC UA Client.
 
 Finally, when mounting certificates is enabled with Helm via `--set opcua.configuration.mountCertificates='true'`, the secret named `opcua-broker-credentials` will be mounted into the OPC UA brokers. It is mounted to the volume `credentials` at the `mountPath` /etc/opcua-certs/client-pki, as shown in the [OPC UA Helm template](https://github.com/project-akri/akri/blob/main/deployment/helm/templates/opcua-configuration.yaml). This is the path where the broker expects to find the certificates. The following is an example how to enable security:
 
@@ -220,4 +220,4 @@ The OPC UA implementation can be understood by looking at several things:
 
 1. [OpcuaDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines the required properties.
 1. [OpcuaDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/opcua/src/discovery_handler.rs) defines OPC UA Server discovery.
-1. [sample-brokers/opcua-monitoring-broker](https://github.com/project-akri/akri/tree/main/samples/brokers/opcua-monitoring-broker) defines a sample OPC UA protocol broker that monitors an OPC UA Variable with a specific NodeID.
+1. [sample-brokers/opcua-monitoring-broker](https://github.com/project-akri/examples/tree/main/brokers/opcua-monitoring-broker) defines a sample OPC UA protocol broker that monitors an OPC UA Variable with a specific NodeID.
