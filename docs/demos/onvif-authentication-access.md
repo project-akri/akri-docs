@@ -108,7 +108,7 @@ helm upgrade akri akri-helm-charts/akri-dev \
    --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.namespace=default \
    --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.key=device_credential_list \
    --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.optional=false \
-   --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
+   --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
    --set onvif.configuration.brokerPod.image.tag="latest-dev" \
    --set onvif.configuration.brokerPod.image.pullPolicy="Always" \
    --set onvif.configuration.brokerProperties.CREDENTIAL_DIRECTORY="/etc/credential_directory" \
@@ -201,7 +201,7 @@ spec:
       serviceAccountName: akri-video-streaming-app-sa
       containers:
       - name: akri-video-streaming-app
-        image: ghcr.io/project-akri/akri/video-streaming-app:latest-dev
+        image: ghcr.io/project-akri/examples/video-streaming-app:latest-dev
         imagePullPolicy: Always
         securityContext:
           runAsUser: 1000

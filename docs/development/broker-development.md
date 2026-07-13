@@ -33,7 +33,7 @@ Oftentimes, it is useful for a broker to expose some information from its device
 This default creation of Instance and Configuration services can be disabled by setting `<Discovery Handler name>.configuration.createInstanceServices=false` and `<Discovery Handler name>.configuration.createConfigurationService=false` when installing Akri's Helm chart.
 {% endhint %}
 
-A broker can expose information via REST, gRPC, etc. Akri's [sample brokers](https://github.com/project-akri/akri/tree/main/samples/brokers) all use gRPC. For example, the udev video and ONVIF brokers both use the same [camera proto file](https://github.com/project-akri/akri/blob/main/samples/brokers/udev-video-broker/proto/camera.proto) for their gRPC interfaces, which contains a service that serves camera frames. This means that one end application can be deployed that implements the client side of the interface and grabs frames from all cameras, whether IP or USB based. This is exactly what our [sample streaming application](https://github.com/project-akri/akri/tree/main/samples/apps) does.
+A broker can expose information via REST, gRPC, etc. Akri's [sample brokers](https://github.com/project-akri/examples/tree/main/brokers) all use gRPC. For example, the udev video and ONVIF brokers both use the same [camera proto file](https://github.com/project-akri/examples/blob/main/brokers/udev-video-broker/proto/camera.proto) for their gRPC interfaces, which contains a service that serves camera frames. This means that one end application can be deployed that implements the client side of the interface and grabs frames from all cameras, whether IP or USB based. This is exactly what our [sample streaming application](https://github.com/project-akri/examples/tree/main/apps) does.
 
 ## Deploying your custom broker
 
@@ -57,9 +57,9 @@ The default broker Pod memory and CPU resource request and limits in Akri's Helm
 | Discovery Handler | Akri Sample Broker Pod image                               | Description                                                    |
 | :---------------- | :--------------------------------------------------------- | :------------------------------------------------------------- |
 | debugEcho         | `nginx:stable-alpine`                                      | standard nginx image for testing                               |
-| ONVIF             | `ghcr.io/project-akri/akri/onvif-video-broker:latest`      | .NET camera frame server                                       |
-| OPC UA            | `ghcr.io/project-akri/akri/opcua-monitoring-broker:latest` | .Net App subscribes to specific NodeID and serves latest value |
-| udev              | `ghcr.io/project-akri/akri/udev-video-broker:latest`       | Rust camera frame server                                       |
+| ONVIF             | `ghcr.io/project-akri/examples/onvif-video-broker:latest`      | .NET camera frame server                                       |
+| OPC UA            | `ghcr.io/project-akri/examples/opcua-monitoring-broker:latest` | .Net App subscribes to specific NodeID and serves latest value |
+| udev              | `ghcr.io/project-akri/examples/udev-video-broker:latest`       | Rust camera frame server                                       |
 
 The limit and request bounds were obtained using Kubernetes' [Vertical Pod Autoscaler (VPA)](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler). You should choose bounds appropriate to your broker Pod. [This blog](https://pretired.dazwilkin.com/posts/210305/#vertical-pod-autoscaler-vpa) is a good starting point for learning how to use the VPA to choose bounds.
 
@@ -74,7 +74,7 @@ You can request that additional environment variables are set in Pods that reque
   --set udev.configuration.enabled=true \
   --set udev.configuration.name=akri-udev-video \
   --set udev.configuration.discoveryDetails.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
-  --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker" \
+  --set udev.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/udev-video-broker" \
   --set udev.configuration.brokerProperties.FORMAT='JPEG' \
   --set udev.configuration.brokerProperties.RESOLUTION_WIDTH='1000' \
   --set udev.configuration.brokerProperties.RESOLUTION_HEIGHT='800'

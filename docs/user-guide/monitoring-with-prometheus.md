@@ -83,7 +83,7 @@ Metrics can also be published by Broker Pods and exposed to Prometheus. This wor
 
 ### Example: Exposing metrics from the udev video sample Broker
 
-As an example, an `akri_frame_count` metric has been created in the sample [udev-video-broker](https://github.com/project-akri/akri/tree/main/samples/brokers/udev-video-broker). Like the Agent and Controller, it publishes both the default process metrics and the custom `akri_frame_count` metric to port 8080 at a `/metrics` endpoint.
+As an example, an `akri_frame_count` metric has been created in the sample [udev-video-broker](https://github.com/project-akri/examples/tree/main/brokers/udev-video-broker). Like the Agent and Controller, it publishes both the default process metrics and the custom `akri_frame_count` metric to port 8080 at a `/metrics` endpoint.
 
 1. Akri can be installed with the udev Configuration, filtering for only usb video cameras and specifying a
 
@@ -95,7 +95,7 @@ As an example, an `akri_frame_count` metric has been created in the sample [udev
         --set udev.enabled=true \
         --set udev.name=akri-udev-video \
         --set udev.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
-        --set udev.brokerPod.image.repository="ghcr.io/project-akri/akri/udev-video-broker"
+        --set udev.brokerPod.image.repository="ghcr.io/project-akri/examples/udev-video-broker"
    ```
 
    > **Note**: To expose the Agent and Controller's Prometheus metrics, add `--set prometheus.enabled=true`.

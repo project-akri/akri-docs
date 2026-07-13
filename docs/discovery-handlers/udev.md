@@ -33,7 +33,7 @@ While udev rules are normally used to both find devices and perform actions on d
 
 ### Broker Pod Settings
 
-If you would like non-terminating workloads ("broker" Pods) to be deployed automatically to discovered cameras, a broker image should be specified (under `brokerPod`) in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/akri/udev-video-broker"). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+If you would like non-terminating workloads ("broker" Pods) to be deployed automatically to discovered cameras, a broker image should be specified (under `brokerPod`) in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/examples/udev-video-broker"). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
 
 > Note only a `brokerJob` OR `brokerPod` should be specified.
 
@@ -263,5 +263,5 @@ The udev implementation can be understood by looking at several things:
 
 1. [UdevDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines the required properties
 1. [UdevDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/discovery_handler.rs) defines udev discovery
-1. [samples/brokers/udev-video-broker](https://github.com/project-akri/akri/blob/main/samples/brokers/udev-video-broker) defines the udev broker
+1. [samples/brokers/udev-video-broker](https://github.com/project-akri/examples/blob/main/brokers/udev-video-broker) defines the udev broker
 1. [udev_rule_grammar.pest](https://github.com/project-akri/akri/blob/main/discovery-handlers/udev/src/udev_rule_grammar.pest) defines the grammar for parsing udev rules and enumerate which fields are supported (such as `ATTR` and `TAG`), which are yet to be supported (`ATTRS` and `TAGS`), and which fields will never be supported, mainly due to be assignment rather than matching fields (such as `ACTION` and `GOTO`).

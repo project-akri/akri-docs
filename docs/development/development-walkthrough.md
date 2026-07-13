@@ -1,5 +1,9 @@
 # Walkthrough of Implementing a Custom Discovery Handler and Broker
 
+{% hint style="warning" %}
+**This walkthrough is being updated for the examples-repo migration.** It instructs the reader to add new files under `samples/brokers/` and `samples/apps/` inside the `project-akri/akri` repo, but those directories were removed from the main repo (see project-akri/akri#790). Sample brokers and apps now live in [project-akri/examples](https://github.com/project-akri/examples). Until this walkthrough is rewritten to target that layout, treat the `samples/...` paths below as illustrative of the *shape* of the work, not as concrete paths to use.
+{% endhint %}
+
 This document will walk through an end-to-end example of creating Discovery Handler to discover **HTTP-based devices** that publish random sensor data. It will also walk through how to create a custom broker to leverage the discovered devices. Reference the [Discovery Handler development](handler-development.md) and [broker Pod development](broker-development.md) documents if you prefer generic documentation over an example.
 
 Before continuing, you may wish to reference the [Akri architecture](../architecture/architecture-overview.md) and [Akri agent](../architecture/agent-in-depth.md) documentation. They will provide a good understanding of Akri, how it works, and what components it is composed of.

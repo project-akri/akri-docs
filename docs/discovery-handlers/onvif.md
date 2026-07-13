@@ -44,7 +44,7 @@ The same UUID can be retrieved by the `GetEndpointReference` command after a cam
 
 ### Broker Pod Settings
 
-If you would like non-terminating workloads ("broker" Pods) to be deployed automatically to discovered cameras, a broker image should be specified (under `brokerPod`) in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/akri/onvif-video-broker"). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
+If you would like non-terminating workloads ("broker" Pods) to be deployed automatically to discovered cameras, a broker image should be specified (under `brokerPod`) in the Configuration. Alternatively, if it meets your scenario, you could use the Akri frame server broker ("ghcr.io/project-akri/examples/onvif-video-broker"). If you would rather manually deploy pods to utilize the cameras advertized by Akri, don't specify a broker pod and see our documentation on [requesting resources advertized by Akri](../user-guide/requesting-akri-resources.md).
 
 > Note only a `brokerJob` OR `brokerPod` should be specified.
 
@@ -296,7 +296,7 @@ helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
-    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
     --set onvif.configuration.brokerPod.image.tag="latest"
 ```
 
@@ -318,7 +318,7 @@ helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
-    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.ipAddresses.action=Exclude \
     --set onvif.configuration.discoveryDetails.ipAddresses.items[0]=10.0.0.1
 ```
@@ -330,7 +330,7 @@ helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
-    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.uuids.action=Exclude \
     --set onvif.configuration.discoveryDetails.uuids.items[0]="3fa1fe68-b915-4053-a3e1-ac15a21f5f91"
 ```
@@ -342,7 +342,7 @@ helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
-    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.scopes.action=Include \
     --set onvif.configuration.discoveryDetails.scopes.items[0]="onvif://www.onvif.configuration.org/name/GreatONVIFCamera" \
     --set onvif.configuration.discoveryDetails.scopes.items[1]="onvif://www.onvif.configuration.org/name/AwesomeONVIFCamera"
@@ -357,7 +357,7 @@ helm repo add akri-helm-charts https://project-akri.github.io/akri/
 helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
-    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/akri/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
     --set onvif.configuration.discoveryDetails.discoveryTimeoutSeconds=2
 ```
 
@@ -433,4 +433,4 @@ The ONVIF implementation can be understood by looking at several things:
 
 1. [OnvifDiscoveryDetails](https://github.com/project-akri/akri/blob/main/discovery-handlers/onvif/src/discovery_handler.rs) defines the required properties
 2. [OnvifDiscoveryHandler](https://github.com/project-akri/akri/blob/main/discovery-handlers/onvif/src/discovery_handler.rs) defines ONVIF camera discovery
-3. [samples/brokers/onvif-video-broker](https://github.com/project-akri/akri/tree/main/samples/brokers/onvif-video-broker) defines the ONVIF broker
+3. [samples/brokers/onvif-video-broker](https://github.com/project-akri/examples/tree/main/brokers/onvif-video-broker) defines the ONVIF broker
