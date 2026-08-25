@@ -572,8 +572,8 @@ tokio = { version = "0.2", features = ["rt-threaded", "time", "stream", "fs", "m
 To build the HTTP broker, we need to create a Dockerfile, `samples/brokers/http/Dockerfiles/standalone`:
 
 ```text
-FROM amd64/rust:1.47 as build
-RUN rustup component add rustfmt --toolchain 1.47.0-x86_64-unknown-linux-gnu
+FROM amd64/rust:1.88 as build
+RUN rustup component add rustfmt --toolchain 1.88.0-x86_64-unknown-linux-gnu
 RUN USER=root cargo new --bin http
 WORKDIR /http
 

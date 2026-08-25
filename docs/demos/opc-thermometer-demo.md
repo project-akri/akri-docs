@@ -242,6 +242,7 @@ We have successfully created two OPC UA PLC servers, each with one fast PLC node
       --set opcua.configuration.enabled=true \
       --set opcua.configuration.name=akri-opcua-monitoring \
       --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/opcua-monitoring-broker" \
+      --set opcua.configuration.brokerPod.image.tag="v0.14.0" \
       --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
       --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
       --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<HOST IP>:50000/" \
@@ -357,6 +358,7 @@ To see how Akri easily scales as nodes are added to the cluster, add another nod
       --set opcua.configuration.enabled=true \
       --set opcua.configuration.name=akri-opcua-monitoring \
       --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/opcua-monitoring-broker" \
+      --set opcua.configuration.brokerPod.image.tag="v0.14.0" \
       --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
       --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
       --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<HOST IP>:50000/" \
@@ -397,6 +399,7 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
     --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/opcua-monitoring-broker" \
+    --set opcua.configuration.brokerPod.image.tag="v0.14.0" \
     --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
     --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \
@@ -419,6 +422,7 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
     --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/opcua-monitoring-broker" \
+    --set opcua.configuration.brokerPod.image.tag="v0.14.0" \
     --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
     --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \
@@ -435,6 +439,7 @@ helm install akri akri-helm-charts/akri \
     --set opcua.configuration.enabled=true \
     --set opcua.configuration.name=akri-opcua-monitoring \
     --set opcua.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/opcua-monitoring-broker" \
+    --set opcua.configuration.brokerPod.image.tag="v0.14.0" \
     --set opcua.configuration.brokerProperties.IDENTIFIER='FastUInt1' \
     --set opcua.configuration.brokerProperties.NAMESPACE_INDEX='2' \
     --set opcua.configuration.discoveryDetails.discoveryUrls[0]="opc.tcp://<Windows host IP address>:4840/" \

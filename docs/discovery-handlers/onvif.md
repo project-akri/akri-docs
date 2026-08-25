@@ -297,6 +297,7 @@ helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.tag="v0.14.0" \
     --set onvif.configuration.brokerPod.image.tag="latest"
 ```
 
@@ -319,6 +320,7 @@ helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.tag="v0.14.0" \
     --set onvif.configuration.discoveryDetails.ipAddresses.action=Exclude \
     --set onvif.configuration.discoveryDetails.ipAddresses.items[0]=10.0.0.1
 ```
@@ -331,6 +333,7 @@ helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.tag="v0.14.0" \
     --set onvif.configuration.discoveryDetails.uuids.action=Exclude \
     --set onvif.configuration.discoveryDetails.uuids.items[0]="3fa1fe68-b915-4053-a3e1-ac15a21f5f91"
 ```
@@ -343,6 +346,7 @@ helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.tag="v0.14.0" \
     --set onvif.configuration.discoveryDetails.scopes.action=Include \
     --set onvif.configuration.discoveryDetails.scopes.items[0]="onvif://www.onvif.configuration.org/name/GreatONVIFCamera" \
     --set onvif.configuration.discoveryDetails.scopes.items[1]="onvif://www.onvif.configuration.org/name/AwesomeONVIFCamera"
@@ -358,6 +362,7 @@ helm install akri akri-helm-charts/akri \
     --set onvif.discovery.enabled=true \
     --set onvif.configuration.enabled=true \
     --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
+    --set onvif.configuration.brokerPod.image.tag="v0.14.0" \
     --set onvif.configuration.discoveryDetails.discoveryTimeoutSeconds=2
 ```
 

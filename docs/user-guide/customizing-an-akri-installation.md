@@ -58,7 +58,7 @@ spec:
   brokerPodSpec:
     containers:
       - name: akri-onvif-video-broker
-        image: "ghcr.io/project-akri/examples/onvif-video-broker:latest-dev"
+        image: "ghcr.io/project-akri/examples/onvif-video-broker:v0.14.0"
         resources:
           limits:
             "{{PLACEHOLDER}}": "1"

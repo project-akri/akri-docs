@@ -38,7 +38,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
       curl -sfL https://get.k3s.io | sh -
    ```
 
-   > Note: Optionally specify a version with the `INSTALL_K3S_VERSION` env var as follows: `curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.21.5+k3s1 sh -`
+   > Note: Optionally specify a version with the `INSTALL_K3S_VERSION` env var as follows: `curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.33.12+k3s1 sh -`
 
 2. Grant admin privilege to access kube config.
 
