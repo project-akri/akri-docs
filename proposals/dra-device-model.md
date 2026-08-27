@@ -217,7 +217,7 @@ all three are interchangeable behind a single `akri.sh/onvif` resource.
 | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `Configuration`                         | Split per [akri-docs#106][4]. `DiscoveryConfiguration` stays Akri-side and informs one or more `DeviceClass` objects. |
 | `Instance`                              | A device entry in a `ResourceSlice`, with Discovery Handler properties as attributes.                                 |
-| Per-device device plugin server         | A DRA kubelet plugin that publishes slices and handles `NodePrepareResources` and `NodeUnprepareResources`.           |
+| Per-device device plugin server         | One DRA kubelet plugin per Discovery Handler, all hosted in the Agent DaemonSet.                                      |
 | `capacity` and `device_usage`           | `Device.capacity`, and `allowMultipleAllocations` where sharing is needed.                                            |
 | Device reported on every candidate node | One `ResourceSlice` with a node selector.                                                                             |
 | `akri.sh/<config>: "1"`                 | A `ResourceClaim` selecting on attributes. Prepare returns the CDI device IDs Akri already computes.                  |
@@ -266,6 +266,7 @@ Three options:
 5. Do we accept exclusive allocation at first, or take a dependency on the alpha consumable capacity gate to preserve `capacity` semantics?
 6. Is the DRA scheduler and kubelet path acceptable on resource-constrained edge nodes?
 7. Do we still want the 2023 intent of Akri as a DRA reference implementation, now that KEP-4381 already cites Akri as motivation?
+8. One DRA driver for Akri, or one per Discovery Handler? The examples above assume one per handler, so each handler owns its driver name and `DeviceClass` selects on `device.driver`. A single driver keeps kubelet registration static, which matters because Discovery Handlers register with the Agent at runtime. Per-handler drivers mean registering and unregistering kubelet plugins as handlers come and go. [akri-docs#88][3] chose one per handler, using subdomains of `driver.akri.sh`.
 
 ## References
 
