@@ -95,7 +95,8 @@ As an example, an `akri_frame_count` metric has been created in the sample [udev
         --set udev.enabled=true \
         --set udev.name=akri-udev-video \
         --set udev.udevRules[0]='KERNEL=="video[0-9]*"\, ENV{ID_V4L_CAPABILITIES}==":capture:"' \
-        --set udev.brokerPod.image.repository="ghcr.io/project-akri/examples/udev-video-broker"
+        --set udev.brokerPod.image.repository="ghcr.io/project-akri/examples/udev-video-broker" \
+        --set udev.brokerPod.image.tag="v0.14.0"
    ```
 
    > **Note**: To expose the Agent and Controller's Prometheus metrics, add `--set prometheus.enabled=true`.

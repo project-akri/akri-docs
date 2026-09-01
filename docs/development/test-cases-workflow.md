@@ -23,7 +23,7 @@ File:
 A GitHub workflow that:
 
 - runs Python pytest-based end-to-end tests;
-- through 4 different Kubernetes versions: 1.24, 1.25, 1.26, 1.27;
+- through 3 different Kubernetes versions: 1.33, 1.34, 1.36;
 - on 3 different Kubernetes distros: [K3s](https://k3s.io), [Kubernetes (Kubeadm)](https://kubernetes.io/docs/reference/setup-tools/kubeadm/), [MicroK8s](https://microk8s.io).
 
 ### Jobs|Steps

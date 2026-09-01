@@ -35,9 +35,9 @@ Here is the result of running the installation command above on a cluster with 1
 ```bash=
 $ kubectl get nodes,akric,akrii,pods
 NAME           STATUS   ROLES           AGE   VERSION
-node/kube-01   Ready    control-plane   22d   v1.26.1
-node/kube-02   Ready    <none>          22d   v1.26.1
-node/kube-03   Ready    <none>          22d   v1.26.1
+node/kube-01   Ready    control-plane   22d   v1.33.12
+node/kube-02   Ready    <none>          22d   v1.33.12
+node/kube-03   Ready    <none>          22d   v1.33.12
 
 NAME                               CAPACITY   AGE
 configuration.akri.sh/akri-onvif   3          62s
@@ -109,7 +109,7 @@ helm upgrade akri akri-helm-charts/akri-dev \
    --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.key=device_credential_list \
    --set onvif.configuration.discoveryProperties[0].valueFrom.secretKeyRef.optional=false \
    --set onvif.configuration.brokerPod.image.repository="ghcr.io/project-akri/examples/onvif-video-broker" \
-   --set onvif.configuration.brokerPod.image.tag="latest-dev" \
+   --set onvif.configuration.brokerPod.image.tag="v0.14.0" \
    --set onvif.configuration.brokerPod.image.pullPolicy="Always" \
    --set onvif.configuration.brokerProperties.CREDENTIAL_DIRECTORY="/etc/credential_directory" \
    --set onvif.configuration.brokerProperties.CREDENTIAL_CONFIGMAP_DIRECTORY="/etc/credential_cfgmap_directory" \
@@ -125,9 +125,9 @@ With the secret information, the Onvif discovery handler is able to discovery th
 ```bash=
 $ kubectl get nodes,akric,akrii,pods
 NAME           STATUS   ROLES           AGE   VERSION
-node/kube-01   Ready    control-plane   22d   v1.26.1
-node/kube-02   Ready    <none>          22d   v1.26.1
-node/kube-03   Ready    <none>          22d   v1.26.1
+node/kube-01   Ready    control-plane   22d   v1.33.12
+node/kube-02   Ready    <none>          22d   v1.33.12
+node/kube-03   Ready    <none>          22d   v1.33.12
 
 NAME                               CAPACITY   AGE
 configuration.akri.sh/akri-onvif   3          18m
@@ -201,7 +201,7 @@ spec:
       serviceAccountName: akri-video-streaming-app-sa
       containers:
       - name: akri-video-streaming-app
-        image: ghcr.io/project-akri/examples/video-streaming-app:latest-dev
+        image: ghcr.io/project-akri/examples/video-streaming-app:v0.14.0
         imagePullPolicy: Always
         securityContext:
           runAsUser: 1000
